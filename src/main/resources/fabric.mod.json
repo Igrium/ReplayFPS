@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "replayfps",
+  "version": "${version}",
+  "name": "Replay FPS",
+  "description": "An addon for the Replay Mod making it play nicer with first person views (local client only)",
+  "authors": [
+    "Igrium"
+  ],
+  "contributors": [],
+  "contact": {},
+  "license": "GPL-3.0",
+  "icon": "assets/replayfps/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.igrium.replayfps.ReplayFPS"
+    ],
+    "client": [],
+    "server": []
+  },
+  "mixins": [
+    "replayfps.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.12",
+    "fabric": "*",
+    "replaymod": ">=1.19.3-2.6.9"
+
+  }
+}
