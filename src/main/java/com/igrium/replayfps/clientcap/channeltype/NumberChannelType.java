@@ -1,4 +1,4 @@
-package com.igrium.replayfps.clientcap.channel;
+package com.igrium.replayfps.clientcap.channeltype;
 
 import java.io.DataInputStream;
 import java.io.IOException;

@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.igrium.replayfps.clientcap.ClientCapRecorder;
+
 public class ReplayFPS implements ModInitializer {
 
     public static Logger LOGGER = LogManager.getLogger();
@@ -13,10 +15,15 @@ public class ReplayFPS implements ModInitializer {
     public static final String MOD_ID = "replayfps";
     public static final String MOD_NAME = "Replay FPS";
 
+    private static ReplayFPS instance;
+
+    public static ReplayFPS getInstance() {
+        return instance;
+    }
+
     @Override
     public void onInitialize() {
-        log(Level.INFO, "Initializing");
-        //TODO: Initializer
+        instance = this;
     }
 
     public static void log(Level level, String message){

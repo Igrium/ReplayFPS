@@ -1,24 +1,24 @@
-package com.igrium.replayfps.clientcap.channel;
+package com.igrium.replayfps.clientcap.channeltype;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class UnsignedByteChannelType implements NumberChannelType<Integer> {
+public class IntChannelType implements NumberChannelType<Integer> {
 
     @Override
     public int getLength() {
-        return Byte.SIZE;
+        return Integer.BYTES;
     }
 
     @Override
     public Integer read(DataInputStream in) throws IOException {
-        return in.readUnsignedByte();
+        return in.readInt();
     }
 
     @Override
     public void write(DataOutputStream out, Integer val) throws IOException {
-        out.writeByte(val.byteValue());
+        out.writeInt(val);
     }
     
 }

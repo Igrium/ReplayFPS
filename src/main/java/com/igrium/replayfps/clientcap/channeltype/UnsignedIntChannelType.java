@@ -1,10 +1,10 @@
-package com.igrium.replayfps.clientcap.channel;
+package com.igrium.replayfps.clientcap.channeltype;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class UnsignedIntChannel implements NumberChannelType<Long> {
+public class UnsignedIntChannelType implements NumberChannelType<Long> {
 
     @Override
     public int getLength() {
