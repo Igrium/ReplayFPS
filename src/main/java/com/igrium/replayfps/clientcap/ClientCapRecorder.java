@@ -1,6 +1,7 @@
 package com.igrium.replayfps.clientcap;
 
 import java.io.Closeable;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayDeque;
@@ -118,10 +119,12 @@ public class ClientCapRecorder implements Closeable {
     }
 
     public void saveChunks() throws IOException {
+        DataOutputStream buffer = new DataOutputStream(outputStream);
         Chunk chunk;
         while ((chunk = chunksToSave.poll()) != null) {
-            chunk.serialize(outputStream);
+            chunk.serialize(buffer);
         }
+        buffer.flush();
     }
 
     @Override

@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.igrium.replayfps.clientcap.channels.AnimChannel;
-import com.igrium.replayfps.clientcap.channels.AnimChannels;
+import com.igrium.replayfps.clientcap.animchannels.AnimChannelType;
+import com.igrium.replayfps.clientcap.animchannels.AnimChannels;
 
 /**
  * Represents the metadata for a single client capture file.
@@ -19,10 +19,10 @@ public class ClientCapFile {
     private static final byte VERSION = 0;
 
     // TODO: Customizable channels
-    private List<AnimChannel<?>> channels = new ArrayList<>(AnimChannels.getStandardChannels());
+    private List<AnimChannelType<?>> channels = new ArrayList<>(AnimChannels.getStandardChannels());
     private int chunkLength = 4000; // 4 seconds.
 
-    public List<AnimChannel<?>> getChannels() {
+    public List<AnimChannelType<?>> getChannels() {
         return Collections.unmodifiableList(channels);
     }
 
@@ -45,8 +45,8 @@ public class ClientCapFile {
 
     public int getFrameSize() {
         int size = 0;
-        for (AnimChannel<?> channel : channels) {
-            size += channel.getChannelType().getLength();
+        for (AnimChannelType<?> channel : channels) {
+            size += channel.getLength();
         }
         return size;
     }
@@ -60,7 +60,7 @@ public class ClientCapFile {
 
         ByteArrayOutputStream declaration = new ByteArrayOutputStream(16);
         DataOutputStream declarationData = new DataOutputStream(declaration);
-        for (AnimChannel<?> channel : channels) {
+        for (AnimChannelType<?> channel : channels) {
             declarationData.writeUTF(AnimChannels.getName(channel));
         }
 
@@ -92,14 +92,12 @@ public class ClientCapFile {
     public static class Chunk {
         public final List<Frame> frames = new ArrayList<>();
 
-        public void serialize(OutputStream os) throws IOException {
-            DataOutputStream buffer = new DataOutputStream(new BufferedOutputStream(os));
-            buffer.writeShort(frames.size());
+        public void serialize(DataOutputStream out) throws IOException {
+            out.writeShort(frames.size());
 
             for (Frame frame : frames) {
-                frame.serialize(buffer);
+                frame.serialize(out);
             }
-            buffer.flush();
         }
     }
 
@@ -133,13 +131,13 @@ public class ClientCapFile {
         public void serialize(DataOutputStream out) throws IOException {
             out.writeInt(delta);
             for (int i = 0; i < values.length; i++) {
-                serializeChannel(file.channels.get(i), i, null);
+                serializeChannel(file.channels.get(i), i, out);
             }
         }
 
-        private <T> void serializeChannel(AnimChannel<T> channel, int index, DataOutputStream out) throws IOException {
+        private <T> void serializeChannel(AnimChannelType<T> channel, int index, DataOutputStream out) throws IOException {
             T value = channel.cast(values[index]);
-            channel.getChannelType().write(out, value);
+            channel.write(out, value);
         }
     }
 

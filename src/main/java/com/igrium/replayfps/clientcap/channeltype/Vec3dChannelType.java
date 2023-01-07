@@ -11,7 +11,7 @@ public class Vec3dChannelType implements ChannelType<Vector3dc> {
 
     @Override
     public int getLength() {
-        return Double.SIZE * 3;
+        return Double.BYTES * 3;
     }
 
     @Override

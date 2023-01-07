@@ -1,4 +1,4 @@
-package com.igrium.replayfps.clientcap.channels;
+package com.igrium.replayfps.clientcap.animchannels;
 
 import java.util.List;
 
@@ -11,11 +11,11 @@ import com.google.common.collect.ImmutableList;
 public final class AnimChannels {
     private AnimChannels() {};
 
-    public static final BiMap<String, AnimChannel<?>> REGISTRY = HashBiMap.create();
+    public static final BiMap<String, AnimChannelType<?>> REGISTRY = HashBiMap.create();
 
-    public static final CameraPosChannel CAMERA_POS = new CameraPosChannel();
-    public static final CameraRotChannel CAMERA_ROT = new CameraRotChannel();
-    public static final FovChannel FOV = new FovChannel();
+    public static final CameraPosChannelType CAMERA_POS = new CameraPosChannelType();
+    public static final CameraRotChannelType CAMERA_ROT = new CameraRotChannelType();
+    public static final FovChannelType FOV = new FovChannelType();
 
     static {
         REGISTRY.put("camerapos", CAMERA_POS);
@@ -34,18 +34,18 @@ public final class AnimChannels {
      * @throws ClassCastException If the channel types do not match.
      */
     @Nullable
-    public static <T> AnimChannel<T> getChannel(String name, Class<T> clazz) throws ClassCastException {
-        AnimChannel<?> channel = REGISTRY.get(name);
+    public static <T> AnimChannelType<T> getChannel(String name, Class<T> clazz) throws ClassCastException {
+        AnimChannelType<?> channel = REGISTRY.get(name);
         if (channel == null) return null;
         return castChannel(channel, clazz);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> AnimChannel<T> castChannel(AnimChannel<?> channel, Class<T> clazz) throws ClassCastException {
+    public static <T> AnimChannelType<T> castChannel(AnimChannelType<?> channel, Class<T> clazz) throws ClassCastException {
         if (!channel.getChannelClass().equals(clazz)) {
             throw new ClassCastException(clazz.getSimpleName()+" is not compatible with anim channel type: "+channel.getChannelClass());
         }
-        return (AnimChannel<T>) channel;
+        return (AnimChannelType<T>) channel;
     }
 
     /**
@@ -54,7 +54,7 @@ public final class AnimChannels {
      * @return The channel name.
      * @throws IllegalStateException If the channel has not been registered.
      */
-    public static String getName(AnimChannel<?> channel) throws IllegalStateException {
+    public static String getName(AnimChannelType<?> channel) throws IllegalStateException {
         String name = REGISTRY.inverse().get(channel);
         if (name == null) {
             throw new IllegalStateException("That channel has not been registered!");
@@ -62,9 +62,9 @@ public final class AnimChannels {
         return name;
     }
 
-    private static List<AnimChannel<?>> standardChannels = ImmutableList.of(CAMERA_POS, CAMERA_ROT, FOV);
+    private static List<AnimChannelType<?>> standardChannels = ImmutableList.of(CAMERA_POS, CAMERA_ROT, FOV);
 
-    public static List<AnimChannel<?>> getStandardChannels() {
+    public static List<AnimChannelType<?>> getStandardChannels() {
         return standardChannels;
     }
 }

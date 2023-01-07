@@ -1,4 +1,4 @@
-package com.igrium.replayfps.clientcap;
+package com.igrium.replayfps.recording;
 
 import java.io.IOException;
 
@@ -6,6 +6,8 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.igrium.replayfps.clientcap.ClientCapRecorder;
+import com.igrium.replayfps.clientcap.ClientCaptureContext;
 import com.igrium.replayfps.events.RecordingEvents;
 import com.igrium.replayfps.mixins.GameRendererAccessor;
 import com.igrium.replayfps.mixins.PacketListenerAccessor;
@@ -13,6 +15,7 @@ import com.replaymod.core.Module;
 import com.replaymod.core.ReplayMod;
 import com.replaymod.lib.de.johni0702.minecraft.gui.utils.EventRegistrations;
 import com.replaymod.recording.ReplayModRecording;
+import com.replaymod.recording.mixin.IntegratedServerAccessor;
 import com.replaymod.recording.packet.PacketListener;
 import com.replaymod.replaystudio.replay.ReplayFile;
 
@@ -26,15 +29,19 @@ import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.integrated.IntegratedServer;
 
 @Environment(EnvType.CLIENT)
 public class ClientRecordingModule extends EventRegistrations implements Module {
     private static ClientRecordingModule instance;
 
     public static final String ENTRY = "client.ccap";
+    public static final int SAVE_INTERVAL = 10000; // 10 seconds
 
     private final ReplayMod replayMod;
+    @Nullable
     private ClientCapRecorder currentRecording;
+    private long lastSave;
 
     public ClientRecordingModule(ReplayMod replayMod) {
         this.replayMod = replayMod;
@@ -57,6 +64,7 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
     protected void onStartedRecording(PacketListener packetListener, ReplayFile file) {
         currentRecording = new ClientCapRecorder(() -> file.write(ENTRY));
         currentRecording.beginCapture();
+        lastSave = System.currentTimeMillis();
     }
 
     { on(RecordingEvents.STOP_RECORDING, this::onStoppingRecording); }
@@ -67,6 +75,16 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
             LogManager.getLogger().error("Error finalizing client capture: ", e);
         }
         currentRecording = null;
+    }
+
+    protected void checkForGamePaused() {
+        MinecraftClient client = replayMod.getMinecraft();
+        if (currentRecording != null && client.isIntegratedServerRunning()) {
+            IntegratedServer server = client.getServer();
+            if (((IntegratedServerAccessor) server).isGamePaused()) {
+                currentRecording.setServerWasPaused();
+            }
+        }
     }
 
     @Override
@@ -83,8 +101,18 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
 
         CaptureContextImpl capContext = new CaptureContextImpl(replayMod.getMinecraft(), context.tickDelta(),
                 context.camera(), fov, context.frustum());
-
+        
         currentRecording.captureFrame(capContext);
+
+        long now = System.currentTimeMillis();
+        if (now > lastSave + SAVE_INTERVAL) {
+            try {
+                currentRecording.saveChunks();
+            } catch (IOException e) {
+                LogManager.getLogger().error("Error saving client capture: ", e);
+            }
+            lastSave = now;
+        }
     }
 
     /**

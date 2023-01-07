@@ -1,10 +1,9 @@
-package com.igrium.replayfps.clientcap.channels;
+package com.igrium.replayfps.clientcap.animchannels;
 
 import com.igrium.replayfps.clientcap.ClientCaptureContext;
-import com.igrium.replayfps.clientcap.channeltype.ChannelTypes;
 import com.igrium.replayfps.clientcap.channeltype.DoubleChannelType;
 
-public class FovChannel implements AnimChannel<Double> {
+public class FovChannelType extends DoubleChannelType implements AnimChannelType<Double> {
 
     @Override
     public Double capture(ClientCaptureContext context) {
@@ -14,11 +13,6 @@ public class FovChannel implements AnimChannel<Double> {
     @Override
     public void apply(Double frame) {
         
-    }
-
-    @Override
-    public DoubleChannelType getChannelType() {
-        return ChannelTypes.DOUBLE;
     }
 
     @Override

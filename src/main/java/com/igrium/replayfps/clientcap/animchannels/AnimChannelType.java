@@ -1,4 +1,4 @@
-package com.igrium.replayfps.clientcap.channels;
+package com.igrium.replayfps.clientcap.animchannels;
 
 import com.igrium.replayfps.clientcap.ClientCaptureContext;
 import com.igrium.replayfps.clientcap.channeltype.ChannelType;
@@ -9,7 +9,10 @@ import com.igrium.replayfps.clientcap.channeltype.ChannelType;
  * <p>In contrast to {@link ChannelType}, this manages interaction with the game
  * during recording and playback rather than serialization.</p>
  */
-public interface AnimChannel<T> {
+/**
+ * A single channel within the ClientCap that knows how to interact with the game.
+ */
+public interface AnimChannelType<T> extends ChannelType<T> {
 
     /**
      * Capture a frame right now.
@@ -23,8 +26,6 @@ public interface AnimChannel<T> {
      * @param frame Frame to apply.
      */
     void apply(T frame);
-
-    ChannelType<T> getChannelType();
 
     /**
      * Get the class of the objects managed by this channel.
