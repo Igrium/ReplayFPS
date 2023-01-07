@@ -18,7 +18,8 @@ import com.igrium.replayfps.clientcap.channels.AnimChannels;
 public class ClientCapFile {
     private static final byte VERSION = 0;
 
-    private List<AnimChannel<?>> channels = new ArrayList<>();
+    // TODO: Customizable channels
+    private List<AnimChannel<?>> channels = new ArrayList<>(AnimChannels.getStandardChannels());
     private int chunkLength = 4000; // 4 seconds.
 
     public List<AnimChannel<?>> getChannels() {
@@ -66,6 +67,7 @@ public class ClientCapFile {
         byte[] declarationBytes = declaration.toByteArray();
         buffer.writeShort(declarationBytes.length);
         buffer.write(declarationBytes);
+        buffer.flush();
     }
 
     /**

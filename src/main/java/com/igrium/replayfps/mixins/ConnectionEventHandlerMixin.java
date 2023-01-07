@@ -16,7 +16,7 @@ public class ConnectionEventHandlerMixin {
     @Shadow(remap = false)
     private PacketListener packetListener;
     
-    @Inject(method = "onConnectedToServerEvent", at = @At(value = "NEW", target = "Lcom/replaymod/recording/gui/GuiRecordingControls"), remap = false)
+    @Inject(method = "onConnectedToServerEvent", at = @At(value = "TAIL"), remap = false)
     void finishReplaySetup(CallbackInfo ci) {
         RecordingEvents.STARTED_RECORDING.invoker().onStartRecording(packetListener, ((PacketListenerAccessor) packetListener).getReplayFile());
     }

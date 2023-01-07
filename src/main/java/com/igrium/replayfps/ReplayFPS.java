@@ -37,6 +37,7 @@ public class ReplayFPS implements ModInitializer {
             clientRecordingModule.initCommon();
             clientRecordingModule.initClient();
             clientRecordingModule.registerKeyBindings(mod.getKeyBindingRegistry());
+            clientRecordingModule.register();
         });
     }
 

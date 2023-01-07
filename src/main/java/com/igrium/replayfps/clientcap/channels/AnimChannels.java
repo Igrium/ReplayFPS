@@ -1,18 +1,26 @@
 package com.igrium.replayfps.clientcap.channels;
 
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
 
 public final class AnimChannels {
     private AnimChannels() {};
 
     public static final BiMap<String, AnimChannel<?>> REGISTRY = HashBiMap.create();
 
+    public static final CameraPosChannel CAMERA_POS = new CameraPosChannel();
+    public static final CameraRotChannel CAMERA_ROT = new CameraRotChannel();
+    public static final FovChannel FOV = new FovChannel();
+
     static {
-        REGISTRY.put("camerapos", new CameraPosChannel());
-        REGISTRY.put("camerarot", new CameraRotChannel());
+        REGISTRY.put("camerapos", CAMERA_POS);
+        REGISTRY.put("camerarot", CAMERA_ROT);
+        REGISTRY.put("fov", FOV);
     }
 
     /**
@@ -52,5 +60,11 @@ public final class AnimChannels {
             throw new IllegalStateException("That channel has not been registered!");
         }
         return name;
+    }
+
+    private static List<AnimChannel<?>> standardChannels = ImmutableList.of(CAMERA_POS, CAMERA_ROT, FOV);
+
+    public static List<AnimChannel<?>> getStandardChannels() {
+        return standardChannels;
     }
 }

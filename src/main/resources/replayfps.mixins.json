@@ -4,6 +4,8 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "ReplayModMixin",
+        "ConnectionEventHandlerMixin",
+        "PacketListenerMixin",
         "PacketListenerAccessor"
     ],
     "client": [],

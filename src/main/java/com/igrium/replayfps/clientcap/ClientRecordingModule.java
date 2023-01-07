@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import org.apache.logging.log4j.LogManager;
 
 import com.igrium.replayfps.events.RecordingEvents;
+import com.igrium.replayfps.mixins.GameRendererAccessor;
 import com.igrium.replayfps.mixins.PacketListenerAccessor;
 import com.replaymod.core.Module;
 import com.replaymod.core.ReplayMod;
@@ -18,6 +19,7 @@ import com.replaymod.replaystudio.replay.ReplayFile;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
@@ -67,10 +69,21 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
         currentRecording = null;
     }
 
+    @Override
+    public void register() {
+        super.register();
+        WorldRenderEvents.END.register(this::eachFrame);
+    }
+
     protected void eachFrame(WorldRenderContext context) {
         if (currentRecording == null) return;
+        // double fov = ((GameRendererAccessor) context.gameRenderer())
+        //         .getFov(context.camera(), context.tickDelta(), true);
+        double fov = 70;
+
         CaptureContextImpl capContext = new CaptureContextImpl(replayMod.getMinecraft(), context.tickDelta(),
-                context.camera(), context.frustum());
+                context.camera(), fov, context.frustum());
+
         currentRecording.captureFrame(capContext);
     }
 
@@ -90,12 +103,14 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
         private final MinecraftClient client;
         private final float tickDelta;
         private final Camera camera;
+        private final double fov;
         private final Frustum frustum;
 
-        public CaptureContextImpl(MinecraftClient client, float tickDelta, Camera camera, Frustum frustum) {
+        public CaptureContextImpl(MinecraftClient client, float tickDelta, Camera camera, double fov, Frustum frustum) {
             this.client = client;
             this.tickDelta = tickDelta;
             this.camera = camera;
+            this.fov = fov;
             this.frustum = frustum;
         }
 
@@ -117,6 +132,11 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
         @Override
         public Camera camera() {
             return camera;
+        }
+        
+        @Override
+        public double fov() {
+            return fov;
         }
 
         @Override

@@ -32,6 +32,11 @@ public interface ClientCaptureContext {
     Camera camera();
 
     /**
+     * The camera's FOV.
+     */
+    double fov();
+
+    /**
      * The client's game renderer.
      */
     GameRenderer gameRenderer();

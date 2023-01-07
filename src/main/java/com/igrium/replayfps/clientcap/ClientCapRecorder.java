@@ -26,7 +26,7 @@ public class ClientCapRecorder implements Closeable {
     private long timePassedWhilePaused;
 
     private Chunk currentChunk;
-    private int currentChunkIndex;
+    private int currentChunkIndex = -1;
 
     private Queue<Chunk> chunksToSave = new ArrayDeque<>();
     
