@@ -13,24 +13,33 @@ import com.igrium.replayfps.clientcap.channels.AnimChannel;
 import com.igrium.replayfps.clientcap.channels.AnimChannels;
 
 /**
- * Represents a single "client capture" file.
+ * Represents the metadata for a single client capture file.
  */
 public class ClientCapFile {
     private static final byte VERSION = 0;
 
     private List<AnimChannel<?>> channels = new ArrayList<>();
-    private int chunkLengthTicks = 1000;
+    private int chunkLength = 4000; // 4 seconds.
 
     public List<AnimChannel<?>> getChannels() {
         return Collections.unmodifiableList(channels);
     }
 
-    public int getChunkLengthTicks() {
-        return chunkLengthTicks;
+    /**
+     * The number of milliseconds each chunk will account for.
+     */
+    public int getChunkLength() {
+        return chunkLength;
     }
 
-    public void setChunkLengthTicks(int chunkLength) {
-        this.chunkLengthTicks = chunkLength;
+    /**
+     * Set the number of milliseconds each chunk will account for. <b>Warning:
+     * invalidates all previous chunks.</code>
+     * 
+     * @param chunkLength The new chunk length.
+     */
+    public void setChunkLength(int chunkLength) {
+        this.chunkLength = chunkLength;
     }
 
     public int getFrameSize() {
@@ -45,7 +54,7 @@ public class ClientCapFile {
         DataOutputStream buffer = new DataOutputStream(new BufferedOutputStream(os));
         buffer.writeByte(VERSION);
 
-        buffer.writeShort(chunkLengthTicks);
+        buffer.writeShort(chunkLength);
         
 
         ByteArrayOutputStream declaration = new ByteArrayOutputStream(16);
@@ -60,8 +69,8 @@ public class ClientCapFile {
     }
 
     /**
-     * Captures a new frame that's compatible with this file. Does <i>not</code> add
-     * it to the file.
+     * Captures a new frame that's compatible with this file. <b>Does <i>not</i> add
+     * it to the file.</b>
      * 
      * @param captureContext The capture context.
      * @param chunkDelta     The number of milliseconds since the beginning of this
@@ -69,7 +78,7 @@ public class ClientCapFile {
      * @return The captured frame.
      */
     public Frame captureFrame(ClientCaptureContext captureContext, int chunkDelta) {
-        Frame frame = new Frame();
+        Frame frame = new Frame(this);
         frame.delta = chunkDelta;
 
         for (int i = 0; i < channels.size(); i++) {
@@ -78,24 +87,11 @@ public class ClientCapFile {
         return frame;
     }
 
-    public class Chunk {
+    public static class Chunk {
         public final List<Frame> frames = new ArrayList<>();
-        private long time;
-
-        /**
-         * The world time (ticks) at which this chunk starts.
-         */
-        public long getTime() {
-            return time;
-        }
-
-        public void setTime(long time) {
-            this.time = time;
-        }
 
         public void serialize(OutputStream os) throws IOException {
             DataOutputStream buffer = new DataOutputStream(new BufferedOutputStream(os));
-            buffer.writeInt((int) time);
             buffer.writeShort(frames.size());
 
             for (Frame frame : frames) {
@@ -105,8 +101,17 @@ public class ClientCapFile {
         }
     }
 
-    public class Frame {
+    public static class Frame {
         private int delta;
+        
+        private final ClientCapFile file;
+
+        public Frame(ClientCapFile file) {
+            this.file = file;
+            values = new Object[file.channels.size()];
+        }
+
+        public final Object[] values;
 
         /**
          * The time since the beginning of the chunk in miliseconds.
@@ -119,12 +124,14 @@ public class ClientCapFile {
             this.delta = delta;
         }
 
-        public final Object[] values = new Object[channels.size()];
+        public ClientCapFile getFile() {
+            return file;
+        }
 
         public void serialize(DataOutputStream out) throws IOException {
             out.writeInt(delta);
             for (int i = 0; i < values.length; i++) {
-                serializeChannel(channels.get(i), i, null);
+                serializeChannel(file.channels.get(i), i, null);
             }
         }
 
