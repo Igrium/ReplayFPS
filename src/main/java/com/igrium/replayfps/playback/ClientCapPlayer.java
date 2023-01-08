@@ -15,6 +15,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.igrium.replayfps.clientcap.ClientCapFile;
 import com.igrium.replayfps.clientcap.ClientCapFile.Chunk;
+import com.igrium.replayfps.clientcap.ClientCapFile.Frame;
 import com.igrium.replayfps.util.ManagedInputStream;
 import com.igrium.replayfps.util.ManagedInputStream.InputStreamSupplier;
 
@@ -98,7 +99,7 @@ public class ClientCapPlayer implements Closeable {
         
         inputStream.close();
     }
-
+    
     public Chunk getChunk(int index) {
         if (index < 0 || index >= chunks.size()) {
             throw new IndexOutOfBoundsException(index);
@@ -111,6 +112,42 @@ public class ClientCapPlayer implements Closeable {
         inputStream.jumpTo(offset);
 
         return file.readChunk(inputStream);
+    }
+
+    /**
+     * Get the frame at a particular timestamp.
+     * @param timestamp Timestamp in milliseconds.
+     * @return The frame.
+     */
+    public Frame getFrame(int timestamp) {
+        if (timestamp < 0) throw new IllegalArgumentException("Timestamp may not be negative.");
+        int chunkIndex = file.chunkAt(timestamp);
+        
+        if (chunkIndex >= chunks.size()) {
+            chunkIndex = chunks.size() - 1;
+        }
+
+        return getFrame(timestamp, chunkIndex);
+    }
+
+    private Frame getFrame(int timestamp, int chunkIndex) {
+        Chunk chunk = getChunk(chunkIndex);
+        int chunkStart = file.getChunkLength() * chunkIndex;
+
+        int frameIndex = chunk.frameAt(timestamp - chunkStart);
+        // Go backwards until we find a chunk with a frame.
+        if (frameIndex == -1) {
+            if (chunkIndex == 0) {
+                if (chunk.frames.isEmpty()) {
+                    throw new IllegalStateException("This ClientCapture has no frames!");
+                }
+                return chunk.frames.get(1);
+            } else {
+                return getFrame(timestamp, chunkIndex - 1);
+            }
+        }
+
+        return chunk.frames.get(frameIndex);
     }
     
     /**

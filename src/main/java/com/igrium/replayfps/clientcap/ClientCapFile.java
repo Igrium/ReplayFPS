@@ -15,7 +15,7 @@ import org.apache.logging.log4j.LogManager;
 
 import com.google.common.io.CountingInputStream;
 import com.igrium.replayfps.clientcap.animchannels.AnimChannelType;
-import com.igrium.replayfps.clientcap.animchannels.AnimChannels;
+import com.igrium.replayfps.clientcap.animchannels.AnimChannelTypes;
 
 /**
  * Represents the metadata for a single client capture file.
@@ -24,7 +24,7 @@ public class ClientCapFile {
     private static final byte VERSION = 0;
 
     // TODO: Customizable channels
-    private List<AnimChannelType<?>> channels = new ArrayList<>(AnimChannels.getStandardChannels());
+    private List<AnimChannelType<?>> channels = new ArrayList<>(AnimChannelTypes.getStandardChannels());
     private int chunkLength = 4000; // 4 seconds.
 
     public List<AnimChannelType<?>> getChannels() {
@@ -68,7 +68,7 @@ public class ClientCapFile {
         ByteArrayOutputStream declaration = new ByteArrayOutputStream(16);
         DataOutputStream declarationData = new DataOutputStream(declaration);
         for (AnimChannelType<?> channel : channels) {
-            declarationData.writeUTF(AnimChannels.getName(channel));
+            declarationData.writeUTF(AnimChannelTypes.getName(channel));
         }
 
         byte[] declarationBytes = declaration.toByteArray();
@@ -106,7 +106,7 @@ public class ClientCapFile {
         channels.clear();
         while (counter.getCount() - declarationStart < declarationLength) {
             String name = data.readUTF();
-            AnimChannelType<?> channel = AnimChannels.REGISTRY.get(name);
+            AnimChannelType<?> channel = AnimChannelTypes.REGISTRY.get(name);
             if (channel == null) {
                 throw new IOException("Unknown channel type: "+name);
             }
@@ -194,7 +194,8 @@ public class ClientCapFile {
         }
 
         /**
-         * Get the frame at a particular time in the chunk.
+         * Get the frame at a particular time in the chunk. If <code>time</code> is
+         * greater than the length of the chunk, return the last frame.
          * 
          * @param time The time in milliseconds since the start of the chunk.
          * @return The index of the frame at that time. <code>-1</code> if the chunk has

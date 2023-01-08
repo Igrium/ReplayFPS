@@ -1,6 +1,7 @@
 package com.igrium.replayfps.clientcap;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.GameRenderer;
@@ -30,6 +31,11 @@ public interface ClientCaptureContext {
      * The active camera.
      */
     Camera camera();
+
+    /**
+     * The player this client is controlling.
+     */
+    ClientPlayerEntity localPlayer();
 
     /**
      * The camera's FOV.

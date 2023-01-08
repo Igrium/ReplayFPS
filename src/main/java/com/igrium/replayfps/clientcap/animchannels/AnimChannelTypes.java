@@ -8,8 +8,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 
-public final class AnimChannels {
-    private AnimChannels() {};
+public final class AnimChannelTypes {
+    private AnimChannelTypes() {};
 
     public static final BiMap<String, AnimChannelType<?>> REGISTRY = HashBiMap.create();
 
@@ -17,10 +17,16 @@ public final class AnimChannels {
     public static final CameraRotChannelType CAMERA_ROT = new CameraRotChannelType();
     public static final FovChannelType FOV = new FovChannelType();
 
+    public static final PlayerPosChannelType PLAYER_POS = new PlayerPosChannelType();
+    public static final PlayerRotChannelType PLAYER_ROT = new PlayerRotChannelType();
+
     static {
         REGISTRY.put("camerapos", CAMERA_POS);
         REGISTRY.put("camerarot", CAMERA_ROT);
         REGISTRY.put("fov", FOV);
+
+        REGISTRY.put("playerpos", PLAYER_POS);
+        REGISTRY.put("playerrot", PLAYER_ROT);
     }
 
     /**
@@ -62,7 +68,7 @@ public final class AnimChannels {
         return name;
     }
 
-    private static List<AnimChannelType<?>> standardChannels = ImmutableList.of(CAMERA_POS, CAMERA_ROT, FOV);
+    private static List<AnimChannelType<?>> standardChannels = ImmutableList.of(PLAYER_POS, PLAYER_ROT);
 
     public static List<AnimChannelType<?>> getStandardChannels() {
         return standardChannels;

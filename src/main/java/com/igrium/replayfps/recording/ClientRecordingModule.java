@@ -24,6 +24,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.GameRenderer;
@@ -156,6 +157,11 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
         @Override
         public Entity cameraEntity() {
             return client.cameraEntity;
+        }
+
+        @Override
+        public ClientPlayerEntity localPlayer() {
+            return client.player;
         }
 
         @Override

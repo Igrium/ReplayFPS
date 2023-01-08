@@ -5,22 +5,23 @@ import com.igrium.replayfps.clientcap.ClientPlaybackContext;
 import com.igrium.replayfps.clientcap.channeltype.PositionChannelType;
 
 import net.minecraft.util.math.Position;
-import net.minecraft.util.math.Vec3d;
 
-public class CameraPosChannelType extends PositionChannelType implements AnimChannelType<Position> {
+public class PlayerPosChannelType extends PositionChannelType implements AnimChannelType<Position> {
 
     @Override
-    public Vec3d capture(ClientCaptureContext context) {
-        return context.camera().getPos();
+    @SuppressWarnings("resource") // This should NOT be necessary.
+    public Position capture(ClientCaptureContext context) {
+        return context.client().player.getPos();
     }
 
     @Override
     public void apply(Position frame, ClientPlaybackContext context) {
-        // context.camera().getPos();
+        context.localPlayer().setPos(frame.getX(), frame.getY(), frame.getZ());
     }
-    
+
     @Override
     public Class<Position> getChannelClass() {
         return Position.class;
     }
+    
 }
