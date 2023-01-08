@@ -1,6 +1,7 @@
 package com.igrium.replayfps.clientcap.animchannels;
 
 import com.igrium.replayfps.clientcap.ClientCaptureContext;
+import com.igrium.replayfps.clientcap.ClientPlaybackContext;
 import com.igrium.replayfps.clientcap.channeltype.ChannelType;
 
 /**
@@ -23,9 +24,10 @@ public interface AnimChannelType<T> extends ChannelType<T> {
 
     /**
      * Apply a frame during playback.
-     * @param frame Frame to apply.
+     * @param frame The frame data.
+     * @param context The playback context.
      */
-    void apply(T frame);
+    void apply(T frame, ClientPlaybackContext context);
 
     /**
      * Get the class of the objects managed by this channel.

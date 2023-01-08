@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.igrium.replayfps.playback.ClientPlaybackModule;
 import com.igrium.replayfps.recording.ClientRecordingModule;
 import com.igrium.replayfps.util.ReplayModHooks;
 
@@ -23,6 +24,7 @@ public class ReplayFPS implements ModInitializer {
     }
 
     private ClientRecordingModule clientRecordingModule;
+    private ClientPlaybackModule clientPlaybackModule;
 
     public ClientRecordingModule getClientRecordingModule() {
         return clientRecordingModule;
@@ -36,8 +38,12 @@ public class ReplayFPS implements ModInitializer {
             clientRecordingModule = new ClientRecordingModule(mod);
             clientRecordingModule.initCommon();
             clientRecordingModule.initClient();
-            clientRecordingModule.registerKeyBindings(mod.getKeyBindingRegistry());
             clientRecordingModule.register();
+
+            clientPlaybackModule = new ClientPlaybackModule();
+            clientPlaybackModule.initCommon();
+            clientPlaybackModule.initClient();
+            clientPlaybackModule.register();
         });
     }
 

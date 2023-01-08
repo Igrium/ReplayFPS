@@ -4,6 +4,7 @@ import org.joml.Quaternionf;
 import org.joml.Quaternionfc;
 
 import com.igrium.replayfps.clientcap.ClientCaptureContext;
+import com.igrium.replayfps.clientcap.ClientPlaybackContext;
 import com.igrium.replayfps.clientcap.channeltype.QuaternionChannelType;
 
 public class CameraRotChannelType extends QuaternionChannelType implements AnimChannelType<Quaternionfc> {
@@ -15,7 +16,7 @@ public class CameraRotChannelType extends QuaternionChannelType implements AnimC
     }
 
     @Override
-    public void apply(Quaternionfc frame) {
+    public void apply(Quaternionfc frame, ClientPlaybackContext context) {
         
     }
     

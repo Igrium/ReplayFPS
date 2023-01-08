@@ -1,6 +1,7 @@
 package com.igrium.replayfps.clientcap.animchannels;
 
 import com.igrium.replayfps.clientcap.ClientCaptureContext;
+import com.igrium.replayfps.clientcap.ClientPlaybackContext;
 import com.igrium.replayfps.clientcap.channeltype.PositionChannelType;
 
 import net.minecraft.util.math.Position;
@@ -14,7 +15,7 @@ public class CameraPosChannelType extends PositionChannelType implements AnimCha
     }
 
     @Override
-    public void apply(Position frame) {
+    public void apply(Position frame, ClientPlaybackContext context) {
         
     }
     

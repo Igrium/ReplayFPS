@@ -1,6 +1,7 @@
 package com.igrium.replayfps.clientcap.animchannels;
 
 import com.igrium.replayfps.clientcap.ClientCaptureContext;
+import com.igrium.replayfps.clientcap.ClientPlaybackContext;
 import com.igrium.replayfps.clientcap.channeltype.DoubleChannelType;
 
 public class FovChannelType extends DoubleChannelType implements AnimChannelType<Double> {
@@ -11,7 +12,7 @@ public class FovChannelType extends DoubleChannelType implements AnimChannelType
     }
 
     @Override
-    public void apply(Double frame) {
+    public void apply(Double frame, ClientPlaybackContext context) {
         
     }
 

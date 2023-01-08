@@ -9,10 +9,10 @@ import org.apache.logging.log4j.LogManager;
 import com.igrium.replayfps.clientcap.ClientCapRecorder;
 import com.igrium.replayfps.clientcap.ClientCaptureContext;
 import com.igrium.replayfps.events.RecordingEvents;
-import com.igrium.replayfps.mixins.GameRendererAccessor;
 import com.igrium.replayfps.mixins.PacketListenerAccessor;
 import com.replaymod.core.Module;
 import com.replaymod.core.ReplayMod;
+import com.replaymod.core.events.PreRenderCallback;
 import com.replaymod.lib.de.johni0702.minecraft.gui.utils.EventRegistrations;
 import com.replaymod.recording.ReplayModRecording;
 import com.replaymod.recording.mixin.IntegratedServerAccessor;
@@ -77,6 +77,7 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
         currentRecording = null;
     }
 
+    { on(PreRenderCallback.EVENT, this::checkForGamePaused); }
     protected void checkForGamePaused() {
         MinecraftClient client = replayMod.getMinecraft();
         if (currentRecording != null && client.isIntegratedServerRunning()) {
