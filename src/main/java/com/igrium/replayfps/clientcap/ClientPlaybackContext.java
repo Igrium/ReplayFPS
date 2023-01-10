@@ -1,5 +1,7 @@
 package com.igrium.replayfps.clientcap;
 
+import java.util.Optional;
+
 import com.replaymod.replay.ReplayHandler;
 
 import net.minecraft.client.MinecraftClient;
@@ -26,12 +28,12 @@ public interface ClientPlaybackContext {
     /**
      * The current camera entity.
      */
-    Entity cameraEntity();
+    Optional<Entity> cameraEntity();
 
     /**
      * The player that the client was controlling during recording.
      */
-    AbstractClientPlayerEntity localPlayer();
+    Optional<AbstractClientPlayerEntity> localPlayer();
 
     /**
      * The active camera.
@@ -46,5 +48,5 @@ public interface ClientPlaybackContext {
     /**
      * The current world.
      */
-    ClientWorld world();
+    Optional<ClientWorld> world();
 }

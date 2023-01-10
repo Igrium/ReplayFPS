@@ -8,7 +8,7 @@ public class UnsignedByteChannelType implements NumberChannelType<Integer> {
 
     @Override
     public int getLength() {
-        return Byte.SIZE;
+        return Byte.BYTES;
     }
 
     @Override

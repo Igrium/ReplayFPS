@@ -11,7 +11,7 @@ public class PositionChannelType implements ChannelType<Position> {
 
     @Override
     public int getLength() {
-        return Double.SIZE * 3;
+        return Double.BYTES * 3;
     }
 
     @Override

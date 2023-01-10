@@ -81,8 +81,8 @@ public class ClientCapPlayer implements Closeable {
         // CountingInputStream inputStream = new CountingInputStream(new BufferedInputStream(inputStreamSupplier.get()));
         inputStream = new ManagedInputStream(inputStreamSupplier);
         file = ClientCapFile.readHeader(inputStream);
-
-        DataInputStream data = new DataInputStream(inputStream);
+        int frameSize = file.calcFrameSize();
+        DataInputStream buffer = new DataInputStream(inputStream);
 
         // EOFException breaks us out of the loop
         try {
@@ -90,8 +90,8 @@ public class ClientCapPlayer implements Closeable {
             int length;
             while (true) {
                 offset = inputStream.getHead();
-                length = data.readUnsignedShort();
-                data.skipBytes(length);
+                length = buffer.readUnsignedShort();
+                buffer.skipBytes(length * frameSize);
 
                 chunks.add(offset);
             }

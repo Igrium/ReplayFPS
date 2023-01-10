@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.LogManager;
 
-import com.igrium.replayfps.clientcap.ClientCapRecorder;
 import com.igrium.replayfps.clientcap.ClientCaptureContext;
 import com.igrium.replayfps.events.RecordingEvents;
 import com.igrium.replayfps.mixins.PacketListenerAccessor;
@@ -40,6 +39,7 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
     public static final int SAVE_INTERVAL = 10000; // 10 seconds
 
     private final ReplayMod replayMod;
+    private final MinecraftClient client = MinecraftClient.getInstance();
     @Nullable
     private ClientCapRecorder currentRecording;
     private long lastSave;
@@ -62,11 +62,14 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
     }
 
     { on(RecordingEvents.STARTED_RECORDING, this::onStartedRecording); }
+    @SuppressWarnings("resource") // Why is the leak detection so bad? This doesn't leak.
     protected void onStartedRecording(PacketListener packetListener, ReplayFile file) {
-        currentRecording = new ClientCapRecorder(() -> file.write(ENTRY));
+        currentRecording = new ClientCapRecorder(() -> file.write(ENTRY)).setPlayerSupplier(() -> client.player);
         currentRecording.beginCapture();
         lastSave = System.currentTimeMillis();
     }
+
+    
 
     { on(RecordingEvents.STOP_RECORDING, this::onStoppingRecording); }
     protected void onStoppingRecording(PacketListener packetListener, ReplayFile file) {
@@ -101,7 +104,7 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
         //         .getFov(context.camera(), context.tickDelta(), true);
         double fov = 70;
 
-        CaptureContextImpl capContext = new CaptureContextImpl(replayMod.getMinecraft(), context.tickDelta(),
+        CaptureContextImpl capContext = new CaptureContextImpl(client, context.tickDelta(),
                 context.camera(), fov, context.frustum());
         
         currentRecording.captureFrame(capContext);

@@ -25,10 +25,23 @@ public class ClientCapFile {
 
     // TODO: Customizable channels
     private List<AnimChannelType<?>> channels = new ArrayList<>(AnimChannelTypes.getStandardChannels());
+    private int localPlayerId;
     private int chunkLength = 4000; // 4 seconds.
 
     public List<AnimChannelType<?>> getChannels() {
         return Collections.unmodifiableList(channels);
+    }
+
+    /**
+     * The network ID of the player entity which was controlled by the client when
+     * the file was recorded.
+     */
+    public int getLocalPlayerId() {
+        return localPlayerId;
+    }
+
+    public void setLocalPlayerId(int localPlayerId) {
+        this.localPlayerId = localPlayerId;
     }
 
     /**
@@ -51,18 +64,10 @@ public class ClientCapFile {
         this.chunkLength = chunkLength;
     }
 
-    public int getFrameSize() {
-        int size = 0;
-        for (AnimChannelType<?> channel : channels) {
-            size += channel.getLength();
-        }
-        return size;
-    }
-
     public void writeHeader(OutputStream os) throws IOException {
         DataOutputStream buffer = new DataOutputStream(new BufferedOutputStream(os));
         buffer.writeByte(VERSION);
-
+        buffer.writeInt(localPlayerId);
         buffer.writeShort(chunkLength);
 
         ByteArrayOutputStream declaration = new ByteArrayOutputStream(16);
@@ -98,6 +103,7 @@ public class ClientCapFile {
             LogManager.getLogger().warn("Attempting to load unsupported ClientCap version: "+version);
         }
 
+        setLocalPlayerId(data.readInt());
         setChunkLength(data.readUnsignedShort());
 
         int declarationLength = data.readUnsignedShort();
@@ -157,11 +163,19 @@ public class ClientCapFile {
      * @return The number of bytes in the chunk.
      */
     public int calcChunkSize(int numFrames) {
-        int frameSize = Short.BYTES;
+        return calcFrameSize() * numFrames;
+    }
+
+    /**
+     * Calculate the size of each frame in this file.
+     * @return The number of bytes in each frame.
+     */
+    public int calcFrameSize() {
+        int frameSize = Short.BYTES; // delta
         for (AnimChannelType<?> channel : channels) {
             frameSize += channel.getLength();
         }
-        return frameSize * numFrames;
+        return frameSize;
     }
 
     /**
@@ -206,15 +220,14 @@ public class ClientCapFile {
                 throw new IllegalArgumentException("Time cannot be negative!");
             }
 
-            int index = -1;
 
             // This only works because the frames must be in order.
-            for (int i = 0; i < frames.size(); i++) {
+            for (int i = frames.size() - 1; i >= 0; i--) {
                 if (frames.get(i).delta <= time) {
-                    index = i;
+                    return i;
                 }
             }
-            return index;
+            return -1;
         }
     }
 

@@ -1,4 +1,4 @@
-package com.igrium.replayfps.clientcap;
+package com.igrium.replayfps.recording;
 
 import java.io.Closeable;
 import java.io.DataOutputStream;
@@ -6,9 +6,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.function.Supplier;
 
+import com.igrium.replayfps.clientcap.ClientCapFile;
+import com.igrium.replayfps.clientcap.ClientCaptureContext;
 import com.igrium.replayfps.clientcap.ClientCapFile.Chunk;
 import com.igrium.replayfps.clientcap.ClientCapFile.Frame;
+
+import net.minecraft.client.network.ClientPlayerEntity;
 
 public class ClientCapRecorder implements Closeable {
 
@@ -29,6 +34,9 @@ public class ClientCapRecorder implements Closeable {
     private Chunk currentChunk;
     private int currentChunkIndex = -1;
 
+    private Supplier<ClientPlayerEntity> playerSupplier = () -> null;
+    private boolean headerWritten;
+
     private Queue<Chunk> chunksToSave = new ArrayDeque<>();
     
     public ClientCapRecorder(OutputStreamSupplier outputStreamSupplier) {
@@ -46,6 +54,19 @@ public class ClientCapRecorder implements Closeable {
     public long getStartTime() {
         return startTime;
     }
+    
+    /**
+     * Set the function used to retrieve the local player entity. This function
+     * <i>may</i> return null, and if it does, the header will not be written until
+     * it returns a value.
+     * 
+     * @param playerSupplier The player supplier.
+     * @return <code>this</code>
+     */
+    public ClientCapRecorder setPlayerSupplier(Supplier<ClientPlayerEntity> playerSupplier) {
+        this.playerSupplier = playerSupplier;
+        return this;
+    }
 
     public final boolean serverWasPaused() {
         return serverWasPaused;
@@ -61,7 +82,6 @@ public class ClientCapRecorder implements Closeable {
     public void beginCapture() {
         try {
             outputStream = outputStreamSupplier.get();
-            writeHeader();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,6 +89,13 @@ public class ClientCapRecorder implements Closeable {
     }
 
     public void captureFrame(ClientCaptureContext context) {
+        if (outputStream == null) {
+            throw new IllegalStateException("Please call beginCapture() first!");
+        }
+        if (!headerWritten) {
+            if (!tryWriteHeader()) return;
+        }
+
         long now = System.currentTimeMillis();
 
         // This math makes sense to me now, but don't ask me to explain it later.
@@ -88,6 +115,23 @@ public class ClientCapRecorder implements Closeable {
         
         Frame frame = file.captureFrame(context, timestamp - chunkStart);
         currentChunk.frames.add(frame);
+    }
+
+    private boolean tryWriteHeader() {
+        if (headerWritten) {
+            throw new IllegalStateException("The header has already been written.");
+        }
+        ClientPlayerEntity player = playerSupplier.get();
+        if (player == null) return false;
+
+        file.setLocalPlayerId(player.getId());
+        try {
+            file.writeHeader(outputStream);
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing header: ", e);
+        }
+        headerWritten = true;
+        return true;
     }
 
     private void createNewChunk(int chunkIndex) {
@@ -113,9 +157,10 @@ public class ClientCapRecorder implements Closeable {
     /*
      * Serialization
      */
-
+    @Deprecated
     protected void writeHeader() throws IOException {
         file.writeHeader(outputStream);
+        headerWritten = true;
     }
 
     public void saveChunks() throws IOException {

@@ -6,8 +6,8 @@ import java.io.InputStream;
 
 import org.apache.logging.log4j.LogManager;
 
-import com.igrium.replayfps.clientcap.ClientPlaybackContext;
 import com.igrium.replayfps.clientcap.ClientCapFile.Frame;
+import com.igrium.replayfps.clientcap.ClientPlaybackContext;
 import com.igrium.replayfps.recording.ClientRecordingModule;
 import com.replaymod.core.Module;
 import com.replaymod.core.events.PreRenderCallback;
@@ -92,10 +92,11 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
     { on(PreRenderCallback.EVENT, this::preRender); }
     private void preRender() {
         if (currentPlayer == null) return;
+        if (client.world == null) return;
 
         int timestamp = currentReplay.getReplaySender().currentTimeStamp();
         Frame frame = currentPlayer.getFrame(timestamp);
-        frame.apply(new ClientPlaybackContextImpl(client, currentReplay, timestamp));
+        frame.apply(new ClientPlaybackContextImpl(client, currentReplay, timestamp, currentPlayer.getFile().getLocalPlayerId()));
     }
 
     private static class ClientPlaybackContextImpl implements ClientPlaybackContext {
@@ -103,11 +104,17 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         final MinecraftClient client;
         final ReplayHandler handler;
         final int timestamp;
+        final AbstractClientPlayerEntity localPlayer;
 
-        public ClientPlaybackContextImpl(MinecraftClient client, ReplayHandler handler, int timestamp) {
+        public ClientPlaybackContextImpl(MinecraftClient client, ReplayHandler handler, int timestamp, int localPlayerId) {
             this.client = client;
             this.handler = handler;
             this.timestamp = timestamp;
+            if (client.world != null) {
+                localPlayer = (AbstractClientPlayerEntity) client.world.getEntityById(localPlayerId);
+            } else {
+                localPlayer = null;
+            }
         }
 
         @Override
@@ -121,14 +128,13 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         }
 
         @Override
-        public Entity cameraEntity() {
-            return client.cameraEntity;
+        public java.util.Optional<Entity> cameraEntity() {
+            return java.util.Optional.ofNullable(client.cameraEntity);
         }
 
         @Override
-        public AbstractClientPlayerEntity localPlayer() {
-            // TODO: Make this return the actual player.
-            return null;
+        public java.util.Optional<AbstractClientPlayerEntity> localPlayer() {
+            return java.util.Optional.ofNullable(localPlayer);
         }
 
         @Override
@@ -142,8 +148,8 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         }
 
         @Override
-        public ClientWorld world() {
-            return client.world;
+        public java.util.Optional<ClientWorld> world() {
+            return java.util.Optional.ofNullable(client.world);
         }
         
     }

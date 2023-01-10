@@ -16,7 +16,8 @@ public class PlayerPosChannelType extends PositionChannelType implements AnimCha
 
     @Override
     public void apply(Position frame, ClientPlaybackContext context) {
-        context.localPlayer().setPos(frame.getX(), frame.getY(), frame.getZ());
+        if (context.localPlayer().isEmpty()) return;
+        context.localPlayer().get().setPos(frame.getX(), frame.getY(), frame.getZ());
     }
 
     @Override
