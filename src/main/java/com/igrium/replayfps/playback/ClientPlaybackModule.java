@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.LogManager;
 
 import com.igrium.replayfps.clientcap.ClientCapFile.Frame;
@@ -30,6 +32,9 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
     private ReplayHandler currentReplay;
     private ClientCapPlayer currentPlayer;
     private MinecraftClient client = MinecraftClient.getInstance();
+
+    @Nullable
+    private VirtualCamera virtualCamera;
 
     public static ClientPlaybackModule getInstance() {
         return instance;
@@ -72,6 +77,7 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
             currentPlayer = new ClientCapPlayer(() -> openStream(file));
             currentPlayer.beginPlayback();
             currentPlayer.precache(0, 20);
+            virtualCamera = new VirtualCamera();
         }
     }
 
@@ -86,6 +92,7 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
                 LogManager.getLogger().error("Error closing ClientCap player:", e);
             }
             currentPlayer = null;
+            virtualCamera = null;
         }
     }
 
@@ -95,8 +102,18 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         if (client.world == null) return;
 
         int timestamp = currentReplay.getReplaySender().currentTimeStamp();
+        currentPlayer.applyFrame(genContext(timestamp), false);
         Frame frame = currentPlayer.getFrame(timestamp);
-        frame.apply(new ClientPlaybackContextImpl(client, currentReplay, timestamp, currentPlayer.getFile().getLocalPlayerId()));
+        frame.apply(genContext(timestamp));
+    }
+
+    private ClientPlaybackContext genContext(int timestamp) {
+        return new ClientPlaybackContextImpl(client, currentReplay, timestamp,
+                currentPlayer.getFile().getLocalPlayerId(), virtualCamera);
+    }
+
+    public VirtualCamera getVirtualCamera() {
+        return virtualCamera;
     }
 
     private static class ClientPlaybackContextImpl implements ClientPlaybackContext {
@@ -105,11 +122,14 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         final ReplayHandler handler;
         final int timestamp;
         final AbstractClientPlayerEntity localPlayer;
+        final VirtualCamera virtualCamera;
 
-        public ClientPlaybackContextImpl(MinecraftClient client, ReplayHandler handler, int timestamp, int localPlayerId) {
+        public ClientPlaybackContextImpl(MinecraftClient client, ReplayHandler handler, int timestamp,
+                int localPlayerId, VirtualCamera virtualCamera) {
             this.client = client;
             this.handler = handler;
             this.timestamp = timestamp;
+            this.virtualCamera = virtualCamera;
             if (client.world != null) {
                 localPlayer = (AbstractClientPlayerEntity) client.world.getEntityById(localPlayerId);
             } else {
@@ -140,6 +160,11 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         @Override
         public Camera camera() {
             return client.gameRenderer.getCamera();
+        }
+
+        @Override
+        public VirtualCamera virtualCamera() {
+            return virtualCamera;
         }
 
         @Override

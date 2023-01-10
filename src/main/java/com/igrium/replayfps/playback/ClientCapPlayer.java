@@ -14,6 +14,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.igrium.replayfps.clientcap.ClientCapFile;
+import com.igrium.replayfps.clientcap.ClientPlaybackContext;
 import com.igrium.replayfps.clientcap.ClientCapFile.Chunk;
 import com.igrium.replayfps.clientcap.ClientCapFile.Frame;
 import com.igrium.replayfps.util.ManagedInputStream;
@@ -112,6 +113,11 @@ public class ClientCapPlayer implements Closeable {
         inputStream.jumpTo(offset);
 
         return file.readChunk(inputStream);
+    }
+
+    public void applyFrame(ClientPlaybackContext context, boolean interpolate) {
+        Frame frame = getFrame(context.timestamp());
+        frame.apply(context);
     }
 
     /**

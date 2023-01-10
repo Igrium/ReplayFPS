@@ -4,10 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 
-public class PositionChannelType implements ChannelType<Position> {
+public class PositionChannelType implements ChannelType<Vec3d> {
 
     @Override
     public int getLength() {
@@ -20,7 +19,7 @@ public class PositionChannelType implements ChannelType<Position> {
     }
 
     @Override
-    public void write(DataOutputStream out, Position val) throws IOException {
+    public void write(DataOutputStream out, Vec3d val) throws IOException {
         out.writeDouble(val.getX());
         out.writeDouble(val.getY());
         out.writeDouble(val.getZ());

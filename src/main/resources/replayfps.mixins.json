@@ -6,7 +6,8 @@
         "ReplayModMixin",
         "ConnectionEventHandlerMixin",
         "PacketListenerMixin",
-        "PacketListenerAccessor"
+        "PacketListenerAccessor",
+        "CameraAccessor"
     ],
     "client": [],
     "server": [],
