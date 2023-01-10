@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class FloatChannelType implements NumberChannelType<Float> {
+public class FloatChannelType extends NumberChannelType<Float> {
 
     @Override
     public int getLength() {
@@ -19,6 +19,16 @@ public class FloatChannelType implements NumberChannelType<Float> {
     @Override
     public void write(DataOutputStream out, Float val) throws IOException {
         out.writeFloat(val);
+    }
+
+    @Override
+    public Class<? extends Float> getChannelClass() {
+        return Float.class;
+    }
+
+    @Override
+    protected Float valueOf(Number value) {
+        return value.floatValue();
     }
     
 }

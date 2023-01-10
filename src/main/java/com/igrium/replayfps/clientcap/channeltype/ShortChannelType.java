@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class ShortChannelType implements NumberChannelType<Short> {
+public class ShortChannelType extends NumberChannelType<Short> {
 
     @Override
     public int getLength() {
@@ -21,4 +21,14 @@ public class ShortChannelType implements NumberChannelType<Short> {
         out.writeShort(val);
     }
     
+    @Override
+    public Class<? extends Short> getChannelClass() {
+        return Short.class;
+    }
+
+    @Override
+    protected Short valueOf(Number value) {
+        return value.shortValue();
+    }
+
 }

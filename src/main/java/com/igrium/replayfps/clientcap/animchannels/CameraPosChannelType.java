@@ -18,9 +18,5 @@ public class CameraPosChannelType extends PositionChannelType implements AnimCha
     public void apply(Vec3d frame, ClientPlaybackContext context) {
         CameraUtils.setPos(context.camera(), frame);
     }
-    
-    @Override
-    public Class<Vec3d> getChannelClass() {
-        return Vec3d.class;
-    }
+
 }

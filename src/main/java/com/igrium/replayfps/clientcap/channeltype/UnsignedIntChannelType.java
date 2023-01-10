@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class UnsignedIntChannelType implements NumberChannelType<Long> {
+public class UnsignedIntChannelType extends LongChannelType {
 
     @Override
     public int getLength() {
@@ -20,5 +20,5 @@ public class UnsignedIntChannelType implements NumberChannelType<Long> {
     public void write(DataOutputStream out, Long val) throws IOException {
         out.writeInt(val.intValue());
     }
-    
+
 }

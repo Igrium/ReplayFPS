@@ -28,17 +28,4 @@ public interface AnimChannelType<T> extends ChannelType<T> {
      * @param context The playback context.
      */
     void apply(T frame, ClientPlaybackContext context);
-
-    /**
-     * Get the class of the objects managed by this channel.
-     */
-    Class<T> getChannelClass();
-
-    @SuppressWarnings("unchecked")
-    default T cast(Object val) {
-        if (!getChannelClass().isAssignableFrom(val.getClass())) {
-            throw new ClassCastException();
-        }
-        return (T) val;
-    }
 }

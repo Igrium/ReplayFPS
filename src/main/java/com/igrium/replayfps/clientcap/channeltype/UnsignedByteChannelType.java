@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class UnsignedByteChannelType implements NumberChannelType<Integer> {
+public class UnsignedByteChannelType extends IntChannelType {
 
     @Override
     public int getLength() {

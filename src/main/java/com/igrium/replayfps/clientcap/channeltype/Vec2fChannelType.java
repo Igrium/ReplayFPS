@@ -27,5 +27,14 @@ public class Vec2fChannelType implements ChannelType<Vector2fc> {
         out.writeFloat(val.x());
         out.writeFloat(val.y());
     }
+
+    @Override
+    public Class<? extends Vector2fc> getChannelClass() {
+        return Vector2fc.class;
+    }
     
+    @Override
+    public Vector2f lerp(Vector2fc from, Vector2fc to, float fac) {
+        return from.lerp(to, fac, new Vector2f());
+    }
 }

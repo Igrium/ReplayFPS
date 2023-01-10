@@ -19,9 +19,4 @@ public class PlayerPosChannelType extends PositionChannelType implements AnimCha
         context.localPlayer().get().setPosition(frame);
     }
 
-    @Override
-    public Class<Vec3d> getChannelClass() {
-        return Vec3d.class;
-    }
-    
 }

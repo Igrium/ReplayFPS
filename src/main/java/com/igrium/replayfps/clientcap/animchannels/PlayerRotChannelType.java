@@ -23,15 +23,10 @@ public class PlayerRotChannelType extends Vec2fChannelType implements AnimChanne
     public void apply(Vector2fc frame, ClientPlaybackContext context) {
         if (context.localPlayer().isEmpty()) return;
         AbstractClientPlayerEntity player = context.localPlayer().get();
-        player.setPitch(frame.y());
-        player.prevPitch = frame.y();
         player.setYaw(frame.x());
         player.prevYaw = frame.x();
-    }
-
-    @Override
-    public Class<Vector2fc> getChannelClass() {
-        return Vector2fc.class;
+        player.setPitch(frame.y());
+        player.prevPitch = frame.y();
     }
     
 }

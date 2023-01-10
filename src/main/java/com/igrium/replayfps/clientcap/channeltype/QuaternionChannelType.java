@@ -34,5 +34,14 @@ public class QuaternionChannelType implements ChannelType<Quaternionfc> {
         out.writeFloat(val.y());
         out.writeFloat(val.z());
     }
+
+    @Override
+    public Class<? extends Quaternionfc> getChannelClass() {
+        return Quaternionfc.class;
+    }
     
+    @Override
+    public Quaternionfc lerp(Quaternionfc from, Quaternionfc to, float fac) {
+        return from.nlerp(to, fac, new Quaternionf());
+    }
 }

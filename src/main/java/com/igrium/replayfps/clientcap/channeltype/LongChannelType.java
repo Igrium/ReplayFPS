@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class LongChannelType implements NumberChannelType<Long> {
+public class LongChannelType extends NumberChannelType<Long> {
 
     @Override
     public int getLength() {
@@ -19,6 +19,16 @@ public class LongChannelType implements NumberChannelType<Long> {
     @Override
     public void write(DataOutputStream out, Long val) throws IOException {
         out.writeLong(val);
+    }
+
+    @Override
+    public Class<? extends Long> getChannelClass() {
+        return Long.class;
+    }
+
+    @Override
+    protected Long valueOf(Number value) {
+        return value.longValue();
     }
     
 }

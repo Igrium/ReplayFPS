@@ -16,9 +16,4 @@ public class FovChannelType extends DoubleChannelType implements AnimChannelType
         
     }
 
-    @Override
-    public Class<Double> getChannelClass() {
-        return Double.class;
-    }
-    
 }

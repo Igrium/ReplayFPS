@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class DoubleChannelType implements NumberChannelType<Double> {
+public class DoubleChannelType extends NumberChannelType<Double> {
 
     @Override
     public int getLength() {
@@ -21,4 +21,13 @@ public class DoubleChannelType implements NumberChannelType<Double> {
         out.writeDouble(val);
     }
     
+    @Override
+    public Class<? extends Double> getChannelClass() {
+        return Double.class;
+    }
+
+    @Override
+    protected Double valueOf(Number value) {
+        return value.doubleValue();
+    }
 }

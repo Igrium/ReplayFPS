@@ -32,5 +32,14 @@ public class Vec3dChannelType implements ChannelType<Vector3dc> {
         out.writeDouble(val.y());
         out.writeDouble(val.z());
     }
+
+    @Override
+    public Class<? extends Vector3dc> getChannelClass() {
+        return Vector3dc.class;
+    }
     
+    @Override
+    public Vector3d lerp(Vector3dc from, Vector3dc to, float fac) {
+        return from.lerp(to, fac, new Vector3d());
+    }
 }

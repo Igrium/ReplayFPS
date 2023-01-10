@@ -32,5 +32,14 @@ public class Vec3fChannelType implements ChannelType<Vector3fc> {
         out.writeFloat(val.y());
         out.writeFloat(val.z());
     }
+
+    @Override
+    public Class<? extends Vector3fc> getChannelClass() {
+        return Vector3fc.class;
+    }
     
+    @Override
+    public Vector3f lerp(Vector3fc from, Vector3fc to, float fac) {
+        return from.lerp(to, fac, new Vector3f());
+    }
 }

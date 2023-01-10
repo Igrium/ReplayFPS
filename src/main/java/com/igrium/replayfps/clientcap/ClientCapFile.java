@@ -295,6 +295,4 @@ public class ClientCapFile {
             channel.apply(value, context);
         }
     }
-
-    
 }

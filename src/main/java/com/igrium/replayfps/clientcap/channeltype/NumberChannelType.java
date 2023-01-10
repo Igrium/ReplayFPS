@@ -1,27 +1,28 @@
 package com.igrium.replayfps.clientcap.channeltype;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
-public interface NumberChannelType<T extends Number> extends ChannelType<T> {
+public abstract class NumberChannelType<T extends Number> implements ChannelType<T> {
 
-    default int readInt(DataInputStream in) throws IOException {
+    public int readInt(DataInputStream in) throws IOException {
         return read(in).intValue();
     }
 
-    default long readLong(DataInputStream in) throws IOException {
+    public long readLong(DataInputStream in) throws IOException {
         return read(in).longValue();
     }
 
-    default float readFloat(DataInputStream in) throws IOException {
+    public float readFloat(DataInputStream in) throws IOException {
         return read(in).floatValue();
     }
 
-    default double readDouble(DataInputStream in) throws IOException {
+    public double readDouble(DataInputStream in) throws IOException {
         return read(in).doubleValue();
     }
 
-    default short readShort(DataInputStream in) throws IOException {
+    public short readShort(DataInputStream in) throws IOException {
         return read(in).shortValue();
     }
 
@@ -31,7 +32,31 @@ public interface NumberChannelType<T extends Number> extends ChannelType<T> {
      * @return Byte value.
      * @throws IOException If an IO exception occurs.
      */
-    default byte readByte(DataInputStream in) throws IOException {
+    public byte readByte(DataInputStream in) throws IOException {
         return read(in).byteValue();
+    }
+
+    /**
+     * Cast the given number to the correct type.
+     * @param number The value to cast.
+     * @return The cast value.
+     */
+    protected abstract T valueOf(Number value);
+
+    /**
+     * Write a number value to this channel.
+     * @param out Output stream to write to.
+     * @param value Value to serialize.
+     * @throws IOException If an IO exception occurs.
+     */
+    public void writeValue(DataOutputStream out, Number value) throws IOException {
+        this.write(out, valueOf(value));
+    }
+    
+    @Override
+    public T lerp(T from, T to, float fac) {
+        double a = from.doubleValue();
+        double b = to.doubleValue();
+        return valueOf(a * (1.0 - fac) + (b * fac));
     }
 }

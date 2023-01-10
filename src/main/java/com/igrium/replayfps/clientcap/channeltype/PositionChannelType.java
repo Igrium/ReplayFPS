@@ -24,5 +24,14 @@ public class PositionChannelType implements ChannelType<Vec3d> {
         out.writeDouble(val.getY());
         out.writeDouble(val.getZ());
     }
-    
+
+    @Override
+    public Class<? extends Vec3d> getChannelClass() {
+        return Vec3d.class;
+    }
+
+    @Override
+    public Vec3d lerp(Vec3d from, Vec3d to, float fac) {
+        return from.lerp(to, fac);
+    }
 }
