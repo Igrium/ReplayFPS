@@ -229,6 +229,23 @@ public class ClientCapFile {
             }
             return -1;
         }
+        
+        /**
+         * Get the first frame after a particular time in the chunk. If <code>time</code> is
+         * less than zero (before the start of the chunk), return the first frame.
+         * 
+         * @param time The time in milliseconds relative to the start of the chunk.
+         * @return The index of the first frame after that time. <code>-1</code> if the
+         *         chunk has no frames or the provided time is after the last frame.
+         */
+        public int frameAfter(int time) {
+            for (int i = 0; i < frames.size(); i++) {
+                if (frames.get(i).delta > time) {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 
     protected Frame parseFrame(DataInputStream in) throws IOException  {

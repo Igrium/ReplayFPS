@@ -17,8 +17,11 @@ import com.igrium.replayfps.clientcap.ClientCapFile;
 import com.igrium.replayfps.clientcap.ClientPlaybackContext;
 import com.igrium.replayfps.clientcap.ClientCapFile.Chunk;
 import com.igrium.replayfps.clientcap.ClientCapFile.Frame;
+import com.igrium.replayfps.clientcap.animchannels.AnimChannelType;
 import com.igrium.replayfps.util.ManagedInputStream;
 import com.igrium.replayfps.util.ManagedInputStream.InputStreamSupplier;
+
+import net.minecraft.util.math.MathHelper;
 
 public class ClientCapPlayer implements Closeable {
 
@@ -115,9 +118,49 @@ public class ClientCapPlayer implements Closeable {
         return file.readChunk(inputStream);
     }
 
+    private record FrameData(Frame frame, int chunkIndex) {};
+
     public void applyFrame(ClientPlaybackContext context, boolean interpolate) {
-        Frame frame = getFrame(context.timestamp());
-        frame.apply(context);
+        int timestamp = context.timestamp();
+        if (!interpolate) {
+            getFrame(timestamp).apply(context);
+            return;
+        }
+
+        if (timestamp < 0) throw new IllegalArgumentException("Timestamp may not be negative.");
+        int chunkIndex = file.chunkAt(timestamp);
+
+        if (chunkIndex >= chunks.size()) {
+            chunkIndex = chunks.size() - 1;
+        }
+
+        FrameData prevData = getFrame(timestamp, chunkIndex);
+        FrameData nextData = getNextFrame(timestamp, chunkIndex);
+
+        int prevTimestamp = prevData.chunkIndex * file.getChunkLength() + prevData.frame.getDelta();
+        int nextTimestamp = nextData.chunkIndex * file.getChunkLength() + nextData.frame.getDelta();
+
+        if (prevTimestamp == nextTimestamp) { // Prevent divide by zero.
+            prevData.frame.apply(context);
+            return;
+        }
+
+        float fac = MathHelper.getLerpProgress(timestamp, prevTimestamp, nextTimestamp);
+        Frame frame1 = prevData.frame;
+        Frame frame2 = nextData.frame;
+
+        for (int i = 0; i < file.getChannels().size(); i++) {
+            applyChannelInterp(file.getChannels().get(i), frame1.values[i], frame2.values[i], fac, context);
+        }
+
+    }
+
+    private <T> void applyChannelInterp(AnimChannelType<T> channel, Object obj1, Object obj2, float fac, ClientPlaybackContext context) {
+        T val1 = channel.cast(obj1);
+        T val2 = channel.cast(obj2);
+
+        T val = channel.lerp(val1, val2, fac);
+        channel.apply(val, context);
     }
 
     /**
@@ -133,10 +176,10 @@ public class ClientCapPlayer implements Closeable {
             chunkIndex = chunks.size() - 1;
         }
 
-        return getFrame(timestamp, chunkIndex);
+        return getFrame(timestamp, chunkIndex).frame();
     }
 
-    private Frame getFrame(int timestamp, int chunkIndex) {
+    private FrameData getFrame(int timestamp, int chunkIndex) {
         Chunk chunk = getChunk(chunkIndex);
         int chunkStart = file.getChunkLength() * chunkIndex;
 
@@ -147,13 +190,36 @@ public class ClientCapPlayer implements Closeable {
                 if (chunk.frames.isEmpty()) {
                     throw new IllegalStateException("This ClientCapture has no frames!");
                 }
-                return chunk.frames.get(1);
+                Frame frame = chunk.frames.get(1);
+                return new FrameData(frame, chunkIndex);
             } else {
                 return getFrame(timestamp, chunkIndex - 1);
             }
         }
+        
+        Frame frame = chunk.frames.get(frameIndex);
+        return new FrameData(frame, chunkIndex);
+    }
 
-        return chunk.frames.get(frameIndex);
+    private FrameData getNextFrame(int timestamp, int chunkIndex) {
+        Chunk chunk = getChunk(chunkIndex);
+        int chunkStart = file.getChunkLength() * chunkIndex;
+        
+        int frameIndex = chunk.frameAfter(timestamp - chunkStart);
+        if (frameIndex == -1) {
+            if (chunkIndex == chunks.size() - 1) {
+                if (chunk.frames.isEmpty()) {
+                    throw new IllegalStateException("This ClientCapture has no frames!");
+                }
+                Frame frame = chunk.frames.get(chunk.frames.size() - 1);
+                return new FrameData(frame, chunkIndex);
+            } else {
+                return getNextFrame(timestamp, chunkIndex + 1);
+            }
+        }
+
+        Frame frame = chunk.frames.get(frameIndex);
+        return new FrameData(frame, chunkIndex);
     }
     
     /**
