@@ -104,7 +104,7 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         if (client.getCameraEntity().getId() != currentPlayer.getFile().getLocalPlayerId()) return;
 
         int timestamp = currentReplay.getReplaySender().currentTimeStamp();
-        currentPlayer.applyFrame(genContext(timestamp), true);
+        currentPlayer.applyFrame(genContext(timestamp), false);
         Frame frame = currentPlayer.getFrame(timestamp);
         frame.apply(genContext(timestamp));
     }
