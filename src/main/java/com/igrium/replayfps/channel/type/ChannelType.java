@@ -1,4 +1,4 @@
-package com.igrium.replayfps.channel;
+package com.igrium.replayfps.channel.type;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,4 +37,5 @@ public abstract class ChannelType<T> {
      * @throws IOException If an IO exception occurs.
      */
     public abstract void write(OutputStream out, T val) throws IOException;
+
 }

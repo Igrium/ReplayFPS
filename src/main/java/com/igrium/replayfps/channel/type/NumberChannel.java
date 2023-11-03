@@ -1,4 +1,4 @@
-package com.igrium.replayfps.channel;
+package com.igrium.replayfps.channel.type;
 
 import java.io.IOException;
 import java.io.InputStream;
