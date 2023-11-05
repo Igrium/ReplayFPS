@@ -2,6 +2,7 @@ package com.igrium.replayfps.recording;
 
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -50,8 +51,9 @@ public class ClientCapRecorder implements Closeable {
             throw new IllegalStateException("Header has not been written!");
         }
 
+        DataOutputStream dataOut = new DataOutputStream(out);
         for (ChannelHandler<?> handler : header.getChannels()) {
-            ChannelHandler.writeChannel(out, handler);
+            ChannelHandler.writeChannel(dataOut, handler);
         }
 
         if (framesSinceLastSave >= saveInterval) {

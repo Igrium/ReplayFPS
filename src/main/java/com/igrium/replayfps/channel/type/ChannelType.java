@@ -1,8 +1,8 @@
 package com.igrium.replayfps.channel.type;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * A data channel that can exist in the replay. Each channel is serialized for
@@ -27,7 +27,7 @@ public abstract class ChannelType<T> {
      * @return Parsed value.
      * @throws IOException If an IO exception occurs.
      */
-    public abstract T read(InputStream in) throws IOException;
+    public abstract T read(DataInput in) throws IOException;
 
     /**
      * Write a frame of this channel to the specified output stream.
@@ -36,6 +36,6 @@ public abstract class ChannelType<T> {
      * @param val Value to write.
      * @throws IOException If an IO exception occurs.
      */
-    public abstract void write(OutputStream out, T val) throws IOException;
+    public abstract void write(DataOutput out, T val) throws IOException;
 
 }

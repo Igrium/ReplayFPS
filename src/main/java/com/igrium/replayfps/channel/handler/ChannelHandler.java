@@ -1,7 +1,7 @@
 package com.igrium.replayfps.channel.handler;
 
+import java.io.DataOutput;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import com.igrium.replayfps.channel.type.ChannelType;
 import com.igrium.replayfps.math.Interpolator;
@@ -27,7 +27,7 @@ public interface ChannelHandler<T> {
         return Interpolators.discrete();
     }
 
-    public static <T> void writeChannel(OutputStream out, ChannelHandler<T> handler) throws IOException {
+    public static <T> void writeChannel(DataOutput out, ChannelHandler<T> handler) throws IOException {
         T val = handler.capture();
         handler.getChannelType().write(out, val);
     }

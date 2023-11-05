@@ -1,42 +1,37 @@
 package com.igrium.replayfps.channel.type;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
-import com.igrium.replayfps.util.DataReader;
-import com.igrium.replayfps.util.DataWriter;
 
 public abstract class NumberChannel<T extends Number> extends ChannelType<T> {
 
-    public int readInt(InputStream in) throws IOException {
+    public int readInt(DataInput in) throws IOException {
         return read(in).intValue();
     }
 
-    public long readLong(InputStream in) throws IOException {
+    public long readLong(DataInput in) throws IOException {
         return read(in).longValue();
     }
 
-    public short readShort(InputStream in) throws IOException {
+    public short readShort(DataInput in) throws IOException {
         return read(in).shortValue();
     }
 
-    public byte readByte(InputStream in) throws IOException {
+    public byte readByte(DataInput in) throws IOException {
         return read(in).byteValue();
     }
 
-    public float readFloat(InputStream in) throws IOException {
+    public float readFloat(DataInput in) throws IOException {
         return read(in).floatValue();
     }
 
-    public double readDouble(InputStream in) throws IOException {
+    public double readDouble(DataInput in) throws IOException {
         return read(in).doubleValue();
     }
 
     public static class ShortChannel extends NumberChannel<Short> {
-
-        private final DataWriter writer = new DataWriter();
-        private final DataReader reader = new DataReader();
 
         @Override
         public Class<Short> getType() {
@@ -49,21 +44,18 @@ public abstract class NumberChannel<T extends Number> extends ChannelType<T> {
         }
 
         @Override
-        public Short read(InputStream in) throws IOException {
-            return reader.readShort(in);
+        public Short read(DataInput in) throws IOException {
+            return in.readShort();
         }
 
         @Override
-        public void write(OutputStream out, Short val) throws IOException {
-            writer.writeShort(out, val);
+        public void write(DataOutput out, Short val) throws IOException {
+            out.writeShort(val);
         }
 
     }
 
     public static class IntegerChannel extends NumberChannel<Integer> {
-
-        private final DataWriter writer = new DataWriter();
-        private final DataReader reader = new DataReader();
 
         @Override
         public Class<Integer> getType() {
@@ -76,21 +68,18 @@ public abstract class NumberChannel<T extends Number> extends ChannelType<T> {
         }
 
         @Override
-        public Integer read(InputStream in) throws IOException {
-            return reader.readInt(in);
+        public Integer read(DataInput in) throws IOException {
+            return in.readInt();
         }
 
         @Override
-        public void write(OutputStream out, Integer val) throws IOException {
-            writer.writeInt(out, val);
+        public void write(DataOutput out, Integer val) throws IOException {
+            out.writeInt(val);
         }
 
     }
 
     public static class LongChannel extends NumberChannel<Long> {
-
-        private final DataWriter writer = new DataWriter();
-        private final DataReader reader = new DataReader();
 
         @Override
         public Class<Long> getType() {
@@ -103,21 +92,18 @@ public abstract class NumberChannel<T extends Number> extends ChannelType<T> {
         }
 
         @Override
-        public Long read(InputStream in) throws IOException {
-            return reader.readLong(in);
+        public Long read(DataInput in) throws IOException {
+            return in.readLong();
         }
 
         @Override
-        public void write(OutputStream out, Long val) throws IOException {
-            writer.writeLong(out, val);
+        public void write(DataOutput out, Long val) throws IOException {
+            out.writeLong(val);
         }
 
     }
 
     public static class FloatChannel extends NumberChannel<Float> {
-
-        private final DataWriter writer = new DataWriter();
-        private final DataReader reader = new DataReader();
 
         @Override
         public Class<Float> getType() {
@@ -130,20 +116,18 @@ public abstract class NumberChannel<T extends Number> extends ChannelType<T> {
         }
 
         @Override
-        public Float read(InputStream in) throws IOException {
-            return reader.readFloat(in);
+        public Float read(DataInput in) throws IOException {
+            return in.readFloat();
         }
 
         @Override
-        public void write(OutputStream out, Float val) throws IOException {
-            writer.writeFloat(out, val);
+        public void write(DataOutput out, Float val) throws IOException {
+            out.writeFloat(val);
         }
 
     }
 
     public static class DoubleChannel extends NumberChannel<Double> {
-        private final DataWriter writer = new DataWriter();
-        private final DataReader reader = new DataReader();
 
         @Override
         public Class<Double> getType() {
@@ -156,14 +140,61 @@ public abstract class NumberChannel<T extends Number> extends ChannelType<T> {
         }
 
         @Override
-        public Double read(InputStream in) throws IOException {
-            return reader.readDouble(in);
+        public Double read(DataInput in) throws IOException {
+            return in.readDouble();
         }
 
         @Override
-        public void write(OutputStream out, Double val) throws IOException {
-            writer.writeDouble(out, val);
+        public void write(DataOutput out, Double val) throws IOException {
+            out.writeDouble(val);
         }
     }
 
+    public static class UnsignedShortChannel extends NumberChannel<Integer> {
+
+        @Override
+        public Class<Integer> getType() {
+            return Integer.class;
+        }
+
+        @Override
+        public int getSize() {
+            return Short.BYTES;
+        }
+
+        @Override
+        public Integer read(DataInput in) throws IOException {
+            return in.readUnsignedShort();
+        }
+
+        @Override
+        public void write(DataOutput out, Integer val) throws IOException {
+            out.writeShort(val);
+        }
+        
+    }
+    
+    public static class UnsignedByteChannel extends NumberChannel<Integer> {
+
+        @Override
+        public Class<Integer> getType() {
+            return Integer.class;
+        }
+
+        @Override
+        public int getSize() {
+            return Byte.BYTES;
+        }
+
+        @Override
+        public Integer read(DataInput in) throws IOException {
+            return in.readUnsignedByte();
+        }
+
+        @Override
+        public void write(DataOutput out, Integer val) throws IOException {
+            out.writeByte(val);
+        }
+        
+    }
 }
