@@ -5,7 +5,6 @@ import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.igrium.replayfps.channel.handler.ChannelHandlers;
 import com.igrium.replayfps.events.ChannelRegistrationCallback;
 import com.igrium.replayfps.recording.ClientRecordingModule;
 import com.igrium.replayfps.util.ReplayModHooks;
@@ -36,6 +35,8 @@ public class ReplayFPS implements ModInitializer {
             clientRecordingModule.register();
         });
 
-        ChannelRegistrationCallback.EVENT.register(consumer -> consumer.accept(ChannelHandlers.DUMMY));
+        ChannelRegistrationCallback.EVENT.register(consumer -> {
+            // consumer.accept(ChannelHandlers.VIEW_MATRIX);
+        });
     }
 }

@@ -12,7 +12,6 @@ import com.igrium.replayfps.channel.handler.ChannelHandler;
 import com.igrium.replayfps.util.AnimationUtils;
 import com.mojang.logging.LogUtils;
 
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.util.Util;
 
 /**
@@ -89,14 +88,14 @@ public class ClientCapRecorder implements Closeable {
         return framesCaptured;
     }
     
-    public void captureFrame() throws Exception {
+    public void captureFrame(ClientCaptureContext context) throws Exception {
         try {
             assertHeaderWritten();
             assertRecording();
             
             DataOutputStream dataOut = new DataOutputStream(out);
             for (ChannelHandler<?> handler : header.getChannels()) {
-                ChannelHandler.writeChannel(dataOut, handler);
+                ChannelHandler.writeChannel(context, dataOut, handler);
             }
 
             if (framesSinceLastSave >= saveInterval) {
@@ -126,7 +125,7 @@ public class ClientCapRecorder implements Closeable {
      * Called every frame while capturing.
      * @param context The render context.
      */
-    public void tick(WorldRenderContext context) {
+    public void tick(ClientCaptureContext context) {
         if (header == null || !isRecording) return;
 
         long now = Util.getMeasuringTimeMs();
@@ -146,7 +145,7 @@ public class ClientCapRecorder implements Closeable {
 
         for (int i = 0; i < framesToCapture; i++) {
             try {
-                captureFrame();
+                captureFrame(context);
             } catch (Exception e) {
                 stopRecording();
                 LogUtils.getLogger().error("Error capturing frame " + framesCaptured, e);

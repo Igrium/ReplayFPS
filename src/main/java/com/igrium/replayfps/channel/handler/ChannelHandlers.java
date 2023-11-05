@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.igrium.replayfps.channel.type.ChannelType;
 import com.igrium.replayfps.channel.type.ChannelTypes;
 import com.igrium.replayfps.channel.type.PlaceholderChannel;
+import com.igrium.replayfps.recording.ClientCaptureContext;
 
 import net.minecraft.util.Identifier;
 
@@ -13,6 +14,7 @@ public class ChannelHandlers {
     public static final BiMap<Identifier, ChannelHandler<?>> REGISTRY = HashBiMap.create();
 
     public static final ChannelHandler<?> DUMMY = register(new DummyChannelHandler(), new Identifier("replayfps:dummy"));
+    public static final ViewMatrixChannelHandler VIEW_MATRIX = register(new ViewMatrixChannelHandler(), new Identifier("replayfps:viewmatrix"));
 
     public static class PlaceholderChannelHandler implements ChannelHandler<Object> {
         private final ChannelType<Object> type;
@@ -27,7 +29,7 @@ public class ChannelHandlers {
         }
 
         @Override
-        public Object capture() {
+        public Object capture(ClientCaptureContext context) {
             return null;
         }
 
@@ -36,7 +38,14 @@ public class ChannelHandlers {
         }
     }
 
-    public static <T> ChannelHandler<T> register(ChannelHandler<T> handler, Identifier id) {
+    /**
+     * Register a channel handler.
+     * @param <T> Channel handler type.
+     * @param handler The channel handler.
+     * @param id ID to register with.
+     * @return <code>handler</code>
+     */
+    public static <T extends ChannelHandler<?>> T register(T handler, Identifier id) {
         REGISTRY.put(id, handler);
         return handler;
     }
@@ -49,8 +58,8 @@ public class ChannelHandlers {
         } 
 
         @Override
-        public Short capture() {
-            return 0xFB;
+        public Short capture(ClientCaptureContext context) {
+            return 0xFBF;
         }
 
         @Override

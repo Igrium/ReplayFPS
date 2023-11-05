@@ -1,5 +1,6 @@
 package com.igrium.replayfps.recording;
 
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
@@ -24,4 +25,6 @@ public interface ClientCaptureContext {
     GameRenderer gameRenderer();
 
     ClientWorld world();
+
+    WorldRenderContext renderContext();
 }

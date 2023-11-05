@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.igrium.replayfps.channel.type.ChannelType;
 import com.igrium.replayfps.math.Interpolator;
 import com.igrium.replayfps.math.Interpolators;
+import com.igrium.replayfps.recording.ClientCaptureContext;
 
 /**
  * Handles the application and capturing of a specific animation channel.
@@ -15,7 +16,7 @@ import com.igrium.replayfps.math.Interpolators;
 public interface ChannelHandler<T> {
     public ChannelType<T> getChannelType();
 
-    public T capture();
+    public T capture(ClientCaptureContext context);
 
     public void apply(T val);
 
@@ -27,8 +28,8 @@ public interface ChannelHandler<T> {
         return Interpolators.discrete();
     }
 
-    public static <T> void writeChannel(DataOutput out, ChannelHandler<T> handler) throws IOException {
-        T val = handler.capture();
+    public static <T> void writeChannel(ClientCaptureContext context, DataOutput out, ChannelHandler<T> handler) throws IOException {
+        T val = handler.capture(context);
         handler.getChannelType().write(out, val);
     }
 }

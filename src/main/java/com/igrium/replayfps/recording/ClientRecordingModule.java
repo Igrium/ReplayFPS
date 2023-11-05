@@ -20,6 +20,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class ClientRecordingModule extends EventRegistrations implements Module {
@@ -76,7 +82,9 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
 
     protected void onFrame(WorldRenderContext context) {
         if (activeRecording.isPresent()) {
-            activeRecording.get().tick(context);
+            ClientCaptureContext clientContext = new ClientCaptureContextImpl(context, MinecraftClient.getInstance());
+
+            activeRecording.get().tick(clientContext);
         }
     }
 
@@ -121,6 +129,58 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
             LogUtils.getLogger().error("Error closing recording stream.", e);
         }
         activeRecording = Optional.empty();
+    }
+
+    private static class ClientCaptureContextImpl implements ClientCaptureContext {
+
+        private final WorldRenderContext renderContext;
+        private final MinecraftClient client;
+
+        public ClientCaptureContextImpl(WorldRenderContext renderContext, MinecraftClient client) {
+            this.renderContext = renderContext;
+            this.client = client;
+        }
+
+        @Override
+        public MinecraftClient client() {
+            return client;
+        }
+
+        @Override
+        public float tickDelta() {
+            return renderContext.tickDelta();
+        }
+
+        @Override
+        public Entity cameraEntity() {
+            return client.cameraEntity;
+        }
+
+        @Override
+        public Camera camera() {
+            return renderContext.camera();
+        }
+
+        @Override
+        public ClientPlayerEntity localPlayer() {
+            return client.player;
+        }
+
+        @Override
+        public GameRenderer gameRenderer() {
+            return renderContext.gameRenderer();
+        }
+
+        @Override
+        public ClientWorld world() {
+            return renderContext.world();
+        }
+
+        @Override
+        public WorldRenderContext renderContext() {
+            return renderContext;
+        }
+        
     }
 }
 

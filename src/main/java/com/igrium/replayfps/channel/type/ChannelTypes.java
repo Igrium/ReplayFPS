@@ -17,6 +17,8 @@ public class ChannelTypes {
     public static final UnsignedShortChannel UNSIGNED_SHORT = new UnsignedShortChannel();
     public static final UnsignedByteChannel UNSIGNED_BYTE = new UnsignedByteChannel();
 
+    public static final Matrix4fChannelType MATRIX4F = new Matrix4fChannelType();
+
     public static PlaceholderChannel placeholder(int size) {
         return new PlaceholderChannel(size);
     }
