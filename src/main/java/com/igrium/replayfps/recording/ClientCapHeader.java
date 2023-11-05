@@ -44,7 +44,7 @@ public class ClientCapHeader {
 
 
     public ClientCapHeader(List<? extends ChannelHandler<?>> channels) {
-        channels = new ArrayList<>(channels);
+        this.channels = new ArrayList<>(channels);
     }
 
     public final List<ChannelHandler<?>> getChannels() {
@@ -60,10 +60,16 @@ public class ClientCapHeader {
     }
 
     public void setFramerate(int framerate) {
+        if (framerate < 1) {
+            throw new IllegalArgumentException("Framerate must be at least 1.");
+        }
         this.framerate = framerate;
     }
     
     public void setFramerateBase(int framerateBase) {
+        if (framerateBase < 1) {
+            throw new IllegalArgumentException("Framerate base must be at least 1.");
+        }
         this.framerateBase = framerateBase;
     }
 
@@ -74,6 +80,14 @@ public class ClientCapHeader {
 
     public float getFramerateFloat() {
         return ((float) framerate) / ((float) framerateBase);
+    }
+
+    public float getFrameInterval() {
+        return ((float) framerateBase) / ((float) framerate);
+    }
+
+    public int getFrameIntervalMillis() {
+        return (framerateBase * 1000) / framerate;
     }
 
     public NbtCompound writeNBT(NbtCompound nbt) {

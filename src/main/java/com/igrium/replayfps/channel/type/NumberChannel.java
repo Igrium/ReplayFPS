@@ -31,6 +31,30 @@ public abstract class NumberChannel<T extends Number> extends ChannelType<T> {
         return read(in).doubleValue();
     }
 
+    public static class ByteChannel extends NumberChannel<Byte> {
+
+        @Override
+        public Class<Byte> getType() {
+            return Byte.class;
+        }
+
+        @Override
+        public int getSize() {
+            return Byte.BYTES;
+        }
+
+        @Override
+        public Byte read(DataInput in) throws IOException {
+            return in.readByte();
+        }
+
+        @Override
+        public void write(DataOutput out, Byte val) throws IOException {
+            out.writeByte(val);
+        }
+        
+    }
+
     public static class ShortChannel extends NumberChannel<Short> {
 
         @Override
