@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import org.jetbrains.annotations.Nullable;
 
 import com.igrium.replayfps.channel.handler.ChannelHandler;
+import com.igrium.replayfps.util.AnimationUtils;
 import com.mojang.logging.LogUtils;
 
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
@@ -53,6 +54,17 @@ public class ClientCapRecorder implements Closeable {
         return header.getFrameIntervalMillis();
     }
 
+    private long startTime;
+    private boolean isRecording;
+
+    public final boolean isRecording() {
+        return isRecording;
+    }
+
+    public final long getStartTime() {
+        return startTime;
+    }
+
     public void writeHeader(ClientCapHeader header) throws IOException {
         if (this.header != null) {
             throw new IllegalStateException("The header has already been written!");
@@ -62,65 +74,106 @@ public class ClientCapRecorder implements Closeable {
         header.writeHeader(out);
         out.flush();
     }
+    
+    public void beginCapture() {
+        assertHeaderWritten();
+        startTime = Util.getMeasuringTimeMs();
+        isRecording = true;
+    }
 
     private int framesSinceLastSave;
 
+    private int framesCaptured;
 
+    public int getFramesCaptured() {
+        return framesCaptured;
+    }
+    
     public void captureFrame() throws Exception {
-        assertHeaderWritten();
-        
-        DataOutputStream dataOut = new DataOutputStream(out);
-        for (ChannelHandler<?> handler : header.getChannels()) {
-            ChannelHandler.writeChannel(dataOut, handler);
-        }
+        try {
+            assertHeaderWritten();
+            assertRecording();
+            
+            DataOutputStream dataOut = new DataOutputStream(out);
+            for (ChannelHandler<?> handler : header.getChannels()) {
+                ChannelHandler.writeChannel(dataOut, handler);
+            }
 
-        if (framesSinceLastSave >= saveInterval) {
-            out.flush();
-            framesSinceLastSave = 0;
-        } else {
-            framesSinceLastSave++;
+            if (framesSinceLastSave >= saveInterval) {
+                out.flush();
+                framesSinceLastSave = 0;
+            } else {
+                framesSinceLastSave++;
+            }
+        } finally {
+            framesCaptured++;
         }
     }
 
-    // TODO: Check if this method of counting frames causes drift
+    private long lastTimestamp;
+    private boolean serverWasPaused;
+    private long timePassedWhilePaused;
 
-    private long lastFrameCapture;
+    public boolean serverWasPaused() {
+        return serverWasPaused;
+    }
 
+    public void setServerWasPaused() {
+        this.serverWasPaused = true;
+    }
+    
     /**
      * Called every frame while capturing.
      * @param context The render context.
      */
     public void tick(WorldRenderContext context) {
-        if (header == null) return;
+        if (header == null || !isRecording) return;
 
         long now = Util.getMeasuringTimeMs();
-        int frameDelta = (int) (now - lastFrameCapture);
 
-        // Should never happen.
-        if (frameDelta <= 0) return;
+        // This math makes sense to me now, but don't ask me to explain it later.
+        // UPDATE: It's later and I don't understand it.
+        if (serverWasPaused) {
+            timePassedWhilePaused = now - startTime - lastTimestamp;
+            serverWasPaused = false;
+        }
+        long timestamp = now - startTime - timePassedWhilePaused;
+        lastTimestamp = timestamp;
+        
+        int currentFrame = AnimationUtils.countFrames(timestamp, header.getFramerate(), header.getFramerateBase());
+        // It doesn't matter if this is negative because we're only using it for a for loop.
+        int framesToCapture = currentFrame - framesCaptured;
 
-        // How many times should have been captured between now and 
-        int numFrames = Math.floorDiv(frameDelta, getFrameIntervalMillis());
-
-        for (int i = 0; i < numFrames; i++) {
+        for (int i = 0; i < framesToCapture; i++) {
             try {
                 captureFrame();
             } catch (Exception e) {
-                LogUtils.getLogger().error("Error capturing frame.", e);
+                stopRecording();
+                LogUtils.getLogger().error("Error capturing frame " + framesCaptured, e);
+                break;
             }
         }
-        lastFrameCapture = now;
     }
 
+    public void stopRecording() {
+        isRecording = false;
+    }
 
     @Override
     public void close() throws IOException {
+        stopRecording();
         out.close();
     }
     
     private void assertHeaderWritten() {
         if (header == null) {
             throw new IllegalStateException("Header has not been initialized!");
+        }
+    }
+
+    private void assertRecording() {
+        if (!isRecording) {
+            throw new IllegalStateException("Not currently recording!");
         }
     }
 }

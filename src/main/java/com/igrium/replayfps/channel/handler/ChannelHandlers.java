@@ -12,7 +12,7 @@ public class ChannelHandlers {
     
     public static final BiMap<Identifier, ChannelHandler<?>> REGISTRY = HashBiMap.create();
 
-    public static final ChannelHandler<Byte> DUMMY = register(new DummyChannelHandler(), new Identifier("replayfps:dummy"));
+    public static final ChannelHandler<?> DUMMY = register(new DummyChannelHandler(), new Identifier("replayfps:dummy"));
 
     public static class PlaceholderChannelHandler implements ChannelHandler<Object> {
         private final ChannelType<Object> type;
@@ -41,20 +41,20 @@ public class ChannelHandlers {
         return handler;
     }
 
-    private static class DummyChannelHandler implements ChannelHandler<Byte> {
+    private static class DummyChannelHandler implements ChannelHandler<Short> {
 
         @Override
-        public ChannelType<Byte> getChannelType() {
-            return ChannelTypes.BYTE;
+        public ChannelType<Short> getChannelType() {
+            return ChannelTypes.SHORT;
+        } 
+
+        @Override
+        public Short capture() {
+            return 0xFB;
         }
 
         @Override
-        public Byte capture() {
-            return 'N';
-        }
-
-        @Override
-        public void apply(Byte val) {
+        public void apply(Short val) {
         }
         
     }

@@ -102,6 +102,7 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
 
         ClientCapRecorder recorder = new ClientCapRecorder(out);
         recorder.writeHeader(header);
+        recorder.beginCapture();
         activeRecording = Optional.of(recorder);
     }
     
