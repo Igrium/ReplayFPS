@@ -1,5 +1,6 @@
 package com.igrium.replayfps.channel.handler;
 
+import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
@@ -31,5 +32,10 @@ public interface ChannelHandler<T> {
     public static <T> void writeChannel(ClientCaptureContext context, DataOutput out, ChannelHandler<T> handler) throws IOException {
         T val = handler.capture(context);
         handler.getChannelType().write(out, val);
+    }
+
+    public static <T> void readChannel(DataInput in, ChannelHandler<T> handler) throws IOException {
+        T val = handler.getChannelType().read(in);
+        handler.apply(val);
     }
 }

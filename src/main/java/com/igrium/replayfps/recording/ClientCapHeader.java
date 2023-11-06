@@ -47,6 +47,10 @@ public class ClientCapHeader {
         this.channels = new ArrayList<>(channels);
     }
 
+    public ClientCapHeader() {
+        this.channels = new ArrayList<>();
+    }
+
     public final List<ChannelHandler<?>> getChannels() {
         return channels;
     }
@@ -167,5 +171,17 @@ public class ClientCapHeader {
     public void readHeader(InputStream in) throws IOException {
         NbtCompound nbt = NbtIo.read(new DataInputStream(in));
         readNBT(nbt);
+    }
+    
+    /**
+     * Calculate the length of one frame.
+     * @return Number of bytes in a frame.
+     */
+    public int calculateFrameLength() {
+        int length = 0;
+        for (ChannelHandler<?> handler : channels) {
+            length += handler.getChannelType().getSize();
+        }
+        return length;
     }
 }
