@@ -1,5 +1,6 @@
 package com.igrium.replayfps.playback;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -9,7 +10,7 @@ import com.igrium.replayfps.playback.ClientCapReader.ParsedChannelFrame;
 import com.igrium.replayfps.util.AnimationUtils;
 import com.mojang.logging.LogUtils;
 
-public class ClientCapPlayer {
+public class ClientCapPlayer implements Closeable {
     private final ClientCapReader reader;
 
     private int lastFrameRead = -1;
@@ -42,6 +43,10 @@ public class ClientCapPlayer {
         return error.isPresent();
     }
 
+    /**
+     * Read and apply the cliencap animation on the current frame.
+     * @param context Playback context.
+     */
     public void tickPlayer(ClientPlaybackContext context) {
         if (hasErrored())
             return;
@@ -77,5 +82,14 @@ public class ClientCapPlayer {
         for (var channel : frame) {
             channel.apply(context);
         }
+    }
+
+    @Override
+    /**
+     * Close this player and its reader.
+     * @throws IOException If an IO exception occurs closing the reader.
+     */
+    public void close() throws IOException {
+        reader.close();
     }
 }

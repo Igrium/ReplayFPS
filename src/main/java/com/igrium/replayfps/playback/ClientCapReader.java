@@ -1,6 +1,5 @@
 package com.igrium.replayfps.playback;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.DataInput;
@@ -49,9 +48,8 @@ public class ClientCapReader implements Closeable {
      */
     public ClientCapReader(InputStream stream) throws IOException {
         File tempFile = File.createTempFile("client", ".ccap");
-        BufferedInputStream buffered = new BufferedInputStream(stream);
         OutputStream out = new BufferedOutputStream(new FileOutputStream(tempFile));
-        buffered.transferTo(out);
+        stream.transferTo(out);
 
         tempFile.deleteOnExit();
         this.file = new RandomAccessFile(tempFile, "r");

@@ -41,7 +41,7 @@ public class ClientCapHeader {
     
     private int framerate = 60;
     private int framerateBase = 1;
-
+    private int localPlayerID;
 
     public ClientCapHeader(List<? extends ChannelHandler<?>> channels) {
         this.channels = new ArrayList<>(channels);
@@ -57,6 +57,14 @@ public class ClientCapHeader {
 
     public int numChannels() {
         return channels.size();
+    }
+
+    public final int getLocalPlayerID() {
+        return localPlayerID;
+    }
+
+    public void setLocalPlayerID(int localPlayerID) {
+        this.localPlayerID = localPlayerID;
     }
 
     public final int getFramerate() {
@@ -101,6 +109,7 @@ public class ClientCapHeader {
     public NbtCompound writeNBT(NbtCompound nbt) {
         nbt.putInt("framerate", framerate);
         nbt.putInt("framerateBase", framerateBase);
+        nbt.putInt("localPlayerID", localPlayerID);
 
         NbtList channels = new NbtList();
         for (ChannelHandler<?> handler : this.channels) {
@@ -132,11 +141,17 @@ public class ClientCapHeader {
         if (!nbt.contains("channels", NbtElement.LIST_TYPE)) {
             throw new HeaderFormatException("No channel declaration found.");
         }
+        
         NbtList channels = nbt.getList("channels", NbtElement.COMPOUND_TYPE);
 
         for (NbtElement element : channels) {
             this.channels.add(readChannelDeclaration((NbtCompound) element));
         }
+
+        if (!nbt.contains("localPlayerID", NbtElement.INT_TYPE)) {
+            throw new HeaderFormatException("No local player ID found.");
+        }
+        localPlayerID = nbt.getInt("localPlayerID");
     }
 
     private ChannelHandler<?> readChannelDeclaration(NbtCompound nbt) throws HeaderFormatException {
