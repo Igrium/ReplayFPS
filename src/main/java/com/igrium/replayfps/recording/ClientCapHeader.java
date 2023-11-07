@@ -55,6 +55,10 @@ public class ClientCapHeader {
         return channels;
     }
 
+    public int numChannels() {
+        return channels.size();
+    }
+
     public final int getFramerate() {
         return framerate;
     }

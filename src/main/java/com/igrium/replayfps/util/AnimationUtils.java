@@ -25,8 +25,9 @@ public final class AnimationUtils {
 
     /**
      * Count the number of frames that have elapsed in a given amount of time.
-     * @param time Time in milliseconds.
-     * @param framerate Framerate numerator.
+     * 
+     * @param time          Time in milliseconds.
+     * @param framerate     Framerate numerator.
      * @param framerateBase Framerate denominator.
      * @return Number of frames.
      */
@@ -34,6 +35,20 @@ public final class AnimationUtils {
         // Technically the equation is (time / 1000) * (framerate / framerateBase), but
         // this form is equivalent and it avoids needing to use floats.
         return (int) ((time * framerate) / (framerateBase * 1000));
+    }
+
+    /**
+     * Count the number of frames that have elapsed in a given amount of time.
+     * 
+     * @param time          Time in milliseconds.
+     * @param framerate     Framerate numerator.
+     * @param framerateBase Framerate denominator.
+     * @return Number of frames.
+     */
+    public static int countFrames(int time, int framerate, int framerateBase) {
+        // Technically the equation is (time / 1000) * (framerate / framerateBase), but
+        // this form is equivalent and it avoids needing to use floats.
+        return (time * framerate) / (framerateBase * 1000);
     }
 
     /**

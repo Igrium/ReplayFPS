@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.igrium.replayfps.channel.type.ChannelType;
 import com.igrium.replayfps.channel.type.ChannelTypes;
 import com.igrium.replayfps.channel.type.PlaceholderChannel;
+import com.igrium.replayfps.playback.ClientPlaybackContext;
 import com.igrium.replayfps.recording.ClientCaptureContext;
 
 import net.minecraft.util.Identifier;
@@ -34,7 +35,7 @@ public class ChannelHandlers {
         }
 
         @Override
-        public void apply(Object val) {
+        public void apply(Object val, ClientPlaybackContext context) {
         }
     }
 
@@ -63,7 +64,7 @@ public class ChannelHandlers {
         }
 
         @Override
-        public void apply(Short val) {
+        public void apply(Short val, ClientPlaybackContext context) {
         }
         
     }

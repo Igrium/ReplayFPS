@@ -4,6 +4,7 @@ import org.joml.Matrix4fc;
 
 import com.igrium.replayfps.channel.type.ChannelType;
 import com.igrium.replayfps.channel.type.ChannelTypes;
+import com.igrium.replayfps.playback.ClientPlaybackContext;
 import com.igrium.replayfps.recording.ClientCaptureContext;
 
 public class ViewMatrixChannelHandler implements ChannelHandler<Matrix4fc> {
@@ -19,7 +20,7 @@ public class ViewMatrixChannelHandler implements ChannelHandler<Matrix4fc> {
     }
 
     @Override
-    public void apply(Matrix4fc val) {
+    public void apply(Matrix4fc val, ClientPlaybackContext context) {
         
     }
     

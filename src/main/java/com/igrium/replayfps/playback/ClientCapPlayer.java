@@ -1,106 +1,81 @@
 package com.igrium.replayfps.playback;
 
-import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.io.CountingInputStream;
-import com.igrium.replayfps.channel.handler.ChannelHandler;
-import com.igrium.replayfps.recording.ClientCapHeader;
-import com.igrium.replayfps.util.SeekableInputStream;
-import com.igrium.replayfps.util.SeekableInputStream.InputStreamSupplier;
+import com.igrium.replayfps.playback.ClientCapReader.ParsedChannelFrame;
+import com.igrium.replayfps.util.AnimationUtils;
+import com.mojang.logging.LogUtils;
 
 public class ClientCapPlayer {
-    @Nullable 
-    private ClientCapHeader header;
-    private SeekableInputStream stream;
+    private final ClientCapReader reader;
 
-    private int maxCache = 0x100000;
-    private int headerLength;
-    private int frameLength;
-
-    public long getMaxCache() {
-        return maxCache;
-    }
-
-    public void setMaxCache(int maxCache) {
-        this.maxCache = maxCache;
-    }
-
-    /**
-     * Create a clientcap player.
-     * @param streamSupplier Input stream supplier (sometimes needs to be re-created for seeking).
-     * @throws IOException If there's an error creating the input stream.
-     */
-    public ClientCapPlayer(InputStreamSupplier streamSupplier) throws IOException {
-        this.stream = new SeekableInputStream(streamSupplier, maxCache);
-    }
-
+    private int lastFrameRead = -1;
     @Nullable
-    public ClientCapHeader getHeader() {
-        return header;
-    }
+    private ParsedChannelFrame<?>[] lastFrame;
 
     /**
-     * The frame that was most recently read.
+     * Create a ClientCap player.
+     * @param reader Reader to use.
+     * @throws IOException If an IO exception occurs reading the file header.
      */
-    private int currentFrame = -1;
-
-    /**
-     * Get the index of the frame that was most recently read.
-     * @return Frame index. <code>-1</code> if no frames have been read.
-     */
-    public int getCurrentFrame() {
-        return currentFrame;
+    public ClientCapPlayer(ClientCapReader reader) throws IOException {
+        this.reader = reader;
+        if (reader.getHeader() == null) {
+            reader.readHeader();
+        }
     }
 
-    private boolean endOfFile;
+    public ClientCapReader getReader() {
+        return reader;
+    }
 
-    public void readFrame() throws Exception {
-        assertHeaderRead();
-        if (endOfFile) return;
-        
+    private Optional<Exception> error = Optional.empty();
+
+    public final Optional<Exception> getError() {
+        return error;
+    }
+
+    public boolean hasErrored() {
+        return error.isPresent();
+    }
+
+    public void tickPlayer(ClientPlaybackContext context) {
+        if (hasErrored())
+            return;
+        int frameNumber = -1;
         try {
-            DataInputStream dataIn = new DataInputStream(stream);
-            for (ChannelHandler<?> handler : header.getChannels()) {
-                ChannelHandler.readChannel(dataIn, handler);
+            int timestamp = context.timestamp();
+            frameNumber = AnimationUtils.countFrames(timestamp, reader.getHeader().getFramerate(),
+                    reader.getHeader().getFramerateBase());
+
+            if (frameNumber == lastFrameRead && lastFrame != null) {
+                applyFrame(context, lastFrame);
+                return;
             }
-        } catch (EOFException e) {
-            endOfFile = true;
-        } finally {
-            currentFrame++;
+
+            if (frameNumber != reader.getPlayhead()) {
+                reader.seek(frameNumber);
+            }
+
+            lastFrame = reader.readFrame();
+            lastFrameRead = frameNumber;
+
+            applyFrame(context, lastFrame);
+
+        } catch (Exception e) {
+            LogUtils.getLogger().error("An error occured while reading animation frame " + frameNumber, e);
+            error = Optional.of(e);
+            return;
         }
+
     }
 
-    public void readHeader() throws IOException, IllegalStateException {
-        if (header != null) {
-            throw new IllegalStateException("Header has already been read!");
-        }
-
-        header = new ClientCapHeader();
-        CountingInputStream counter = new CountingInputStream(stream);
-        header.readHeader(stream);
-        frameLength = header.calculateFrameLength();
-        headerLength = (int) counter.getCount();
-
-        this.stream.mark(maxCache);
-    }
-
-    /**
-     * Get the byte offset in the file of a given frame.
-     * @param frame Frame number.
-     * @return Byte offset of the start of the frame.
-     */
-    public long getFrameOffset(int frame) {
-        assertHeaderRead();
-        return ((long) frame) * frameLength + headerLength;
-    }
-
-    private void assertHeaderRead() {
-        if (header == null) {
-            throw new IllegalStateException("The header has not been read!");
+    protected void applyFrame(ClientPlaybackContext context, ParsedChannelFrame<?>[] frame) {
+        for (var channel : frame) {
+            channel.apply(context);
         }
     }
 }
