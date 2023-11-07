@@ -25,6 +25,10 @@ public class ClientCapRecorder implements Closeable {
 
     @Nullable
     private ClientCapHeader header;
+
+    public ClientCapHeader getHeader() {
+        return header;
+    }
     
     public void setSaveInterval(int saveInterval) {
         this.saveInterval = saveInterval;

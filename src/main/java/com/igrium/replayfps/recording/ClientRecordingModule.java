@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.igrium.replayfps.channel.handler.ChannelHandler;
+import com.igrium.replayfps.channel.handler.ChannelHandlers;
 import com.igrium.replayfps.events.ChannelRegistrationCallback;
 import com.igrium.replayfps.events.RecordingEvents;
 import com.mojang.logging.LogUtils;
@@ -61,15 +62,26 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
         WorldRenderEvents.END.register(this::onFrame);
     }
 
+    private ClientCapHeader queuedHeader;
+
     { on(RecordingEvents.STARTED_RECORDING, this::onStartedRecording); }
     protected void onStartedRecording(PacketListener listener, ReplayFile file) {
         List<ChannelHandler<?>> channels = new LinkedList<>();
-        ChannelRegistrationCallback.EVENT.invoker().createChannels(channels::add);
+        
+        ChannelRegistrationCallback.EVENT.invoker().createChannels(handler -> {
+            if (!ChannelHandlers.REGISTRY.inverse().containsKey(handler)) {
+                throw new IllegalArgumentException("The supplied channel handler has not been registered!");
+            }
+            channels.add(handler);
+        });
 
         ClientCapHeader header = new ClientCapHeader(channels);
         try {
             OutputStream out = file.write(ENTRY);
-            startRecording(header, out);
+            ClientCapRecorder recorder = new ClientCapRecorder(out);
+            activeRecording = Optional.of(recorder);
+            queuedHeader = header;
+
         } catch (Exception e) {
             LogUtils.getLogger().error("Unable to initialize client-cap recording.", e);
         }
@@ -84,6 +96,15 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
         if (activeRecording.isPresent()) {
             ClientCaptureContext clientContext = new ClientCaptureContextImpl(context, MinecraftClient.getInstance());
 
+            if (activeRecording.get().getHeader() == null) {
+                queuedHeader.setLocalPlayerID(clientContext.localPlayer().getId());
+                try {
+                    activeRecording.get().writeHeader(queuedHeader);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                activeRecording.get().beginCapture();
+            }
             activeRecording.get().tick(clientContext);
         }
     }

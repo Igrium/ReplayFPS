@@ -9,16 +9,16 @@ import java.io.IOException;
  * each frame, and must be the same size in each frame. The size of each channel
  * will deternmine the size of the frame.
  */
-public abstract class ChannelType<T> {
+public interface ChannelType<T> {
 
-    public abstract Class<T> getType();
+    public Class<T> getType();
 
     /**
      * The size of the serialized data in this channel.
      * 
      * @return Size of the frame in bytes.
      */
-    public abstract int getSize();
+    public int getSize();
 
     /**
      * Read a frame of this channel from the specified input stream.
@@ -27,7 +27,7 @@ public abstract class ChannelType<T> {
      * @return Parsed value.
      * @throws IOException If an IO exception occurs.
      */
-    public abstract T read(DataInput in) throws IOException;
+    public T read(DataInput in) throws IOException;
 
     /**
      * Write a frame of this channel to the specified output stream.
@@ -36,6 +36,6 @@ public abstract class ChannelType<T> {
      * @param val Value to write.
      * @throws IOException If an IO exception occurs.
      */
-    public abstract void write(DataOutput out, T val) throws IOException;
+    public void write(DataOutput out, T val) throws IOException;
 
 }

@@ -41,7 +41,7 @@ public class ClientCapHeader {
     
     private int framerate = 60;
     private int framerateBase = 1;
-    private int localPlayerID;
+    private int localPlayerID = -1;
 
     public ClientCapHeader(List<? extends ChannelHandler<?>> channels) {
         this.channels = new ArrayList<>(channels);
@@ -107,6 +107,9 @@ public class ClientCapHeader {
     }
 
     public NbtCompound writeNBT(NbtCompound nbt) {
+        if (localPlayerID == -1) {
+            throw new IllegalStateException("Local player ID has not been set!");
+        }
         nbt.putInt("framerate", framerate);
         nbt.putInt("framerateBase", framerateBase);
         nbt.putInt("localPlayerID", localPlayerID);

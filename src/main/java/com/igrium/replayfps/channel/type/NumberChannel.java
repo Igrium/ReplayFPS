@@ -5,7 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 
-public abstract class NumberChannel<T extends Number> extends ChannelType<T> {
+public abstract class NumberChannel<T extends Number> implements ChannelType<T> {
 
     public int readInt(DataInput in) throws IOException {
         return read(in).intValue();

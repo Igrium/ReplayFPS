@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 
-public class Matrix4fChannelType extends ChannelType<Matrix4fc> {
+public class Matrix4fChannelType implements ChannelType<Matrix4fc> {
 
     private static final int BUFFER_SIZE = 4 * 4;
     private float[] buffer = new float[BUFFER_SIZE];

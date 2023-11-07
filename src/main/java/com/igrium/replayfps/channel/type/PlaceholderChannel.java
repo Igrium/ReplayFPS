@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * A channel type designed to be used as a placeholder when a channel type was not found.
  */
-public class PlaceholderChannel extends ChannelType<Object> {
+public class PlaceholderChannel implements ChannelType<Object> {
 
     private final int size;
     private final byte[] buffer;
