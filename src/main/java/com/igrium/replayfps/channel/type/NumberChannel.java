@@ -52,6 +52,11 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
         public void write(DataOutput out, Byte val) throws IOException {
             out.writeByte(val);
         }
+
+        @Override
+        public Byte defaultValue() {
+            return 0;
+        }
         
     }
 
@@ -75,6 +80,11 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
         @Override
         public void write(DataOutput out, Short val) throws IOException {
             out.writeShort(val);
+        }
+
+        @Override
+        public Short defaultValue() {
+            return 0;
         }
 
     }
@@ -101,6 +111,11 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
             out.writeInt(val);
         }
 
+        @Override
+        public Integer defaultValue() {
+            return 0;
+        }
+
     }
 
     public static class LongChannel extends NumberChannel<Long> {
@@ -123,6 +138,11 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
         @Override
         public void write(DataOutput out, Long val) throws IOException {
             out.writeLong(val);
+        }
+
+        @Override
+        public Long defaultValue() {
+            return 0l;
         }
 
     }
@@ -149,6 +169,11 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
             out.writeFloat(val);
         }
 
+        @Override
+        public Float defaultValue() {
+            return 0f;
+        }
+
     }
 
     public static class DoubleChannel extends NumberChannel<Double> {
@@ -171,6 +196,11 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
         @Override
         public void write(DataOutput out, Double val) throws IOException {
             out.writeDouble(val);
+        }
+
+        @Override
+        public Double defaultValue() {
+            return 0d;
         }
     }
 
@@ -195,6 +225,11 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
         public void write(DataOutput out, Integer val) throws IOException {
             out.writeShort(val);
         }
+
+        @Override
+        public Integer defaultValue() {
+            return 0;
+        }
         
     }
     
@@ -218,6 +253,11 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
         @Override
         public void write(DataOutput out, Integer val) throws IOException {
             out.writeByte(val);
+        }
+
+        @Override
+        public Integer defaultValue() {
+            return 0;
         }
         
     }

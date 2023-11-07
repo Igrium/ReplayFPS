@@ -40,5 +40,10 @@ public class PlaceholderChannel implements ChannelType<Object> {
         }
         out.write(buffer);
     }
+
+    @Override
+    public Object defaultValue() {
+        return null;
+    }
     
 }

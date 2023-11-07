@@ -38,4 +38,10 @@ public interface ChannelType<T> {
      */
     public void write(DataOutput out, T val) throws IOException;
 
+    /**
+     * Get a "default" value for this channel. Used primarily for testing.
+     * @return Channel's default value.
+     */
+    public T defaultValue();
+
 }

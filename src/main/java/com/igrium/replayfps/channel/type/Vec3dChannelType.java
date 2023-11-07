@@ -32,5 +32,10 @@ public class Vec3dChannelType implements ChannelType<Vec3d> {
         out.writeDouble(val.getY());
         out.writeDouble(val.getZ());
     }
+
+    @Override
+    public Vec3d defaultValue() {
+        return new Vec3d(0, 0, 0);
+    }
     
 }

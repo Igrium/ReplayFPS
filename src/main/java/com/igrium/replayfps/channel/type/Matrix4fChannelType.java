@@ -38,4 +38,8 @@ public class Matrix4fChannelType implements ChannelType<Matrix4fc> {
         }
     }
     
+    @Override
+    public Matrix4fc defaultValue() {
+        return new Matrix4f();
+    }
 }
