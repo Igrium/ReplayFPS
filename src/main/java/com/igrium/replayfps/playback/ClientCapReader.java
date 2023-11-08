@@ -2,7 +2,6 @@ package com.igrium.replayfps.playback;
 
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
-import java.io.DataInput;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -122,30 +121,24 @@ public class ClientCapReader implements Closeable {
      * @throws IOException       If an IO exception occurs while reading the file.
      * @throws NoHeaderException If the header has not been read.
      */
-    public ParsedChannelFrame<?>[] readFrame() throws IOException, NoHeaderException {
+    public UnserializedFrame readFrame() throws IOException, NoHeaderException {
         assertHeaderRead();
-        if (endOfFile) return new ParsedChannelFrame[0];
+        if (endOfFile) return new UnserializedFrame(header);
 
-        var channels = new ParsedChannelFrame<?>[header.numChannels()];
+        var channels = new Object[header.numChannels()];
         try {
             int i = 0;
             for (ChannelHandler<?> handler : header.getChannels()) {
-                channels[i] = parseChannel(handler, file);
+                channels[i] = handler.getChannelType().read(file);
                 i++;
             }
         } catch (EOFException e) {
             endOfFile = true;
-            return new ParsedChannelFrame[0];
-        } finally {
-            playhead++;
+            return new UnserializedFrame(header);
         }
 
-        return channels;
-    }
+        return new UnserializedFrame(header, channels);
 
-    private <T> ParsedChannelFrame<T> parseChannel(ChannelHandler<T> handler, DataInput input) throws IOException {
-        T val = handler.getChannelType().read(input);
-        return new ParsedChannelFrame<T>(handler, val);
     }
 
     /**

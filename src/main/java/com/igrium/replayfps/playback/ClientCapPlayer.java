@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.igrium.replayfps.playback.ClientCapReader.ParsedChannelFrame;
+import com.igrium.replayfps.channel.handler.ChannelHandler;
 import com.igrium.replayfps.util.AnimationUtils;
 import com.mojang.logging.LogUtils;
 
@@ -15,7 +15,7 @@ public class ClientCapPlayer implements Closeable {
 
     private int lastFrameRead = -1;
     @Nullable
-    private ParsedChannelFrame<?>[] lastFrame;
+    private UnserializedFrame lastFrame;
 
     /**
      * Create a ClientCap player.
@@ -27,6 +27,19 @@ public class ClientCapPlayer implements Closeable {
         if (reader.getHeader() == null) {
             reader.readHeader();
         }
+    }
+    
+    /**
+     * The amount of frames that can be buffered at a time.
+     */
+    private int bufferLength = 1024;
+
+    public int getBufferLength() {
+        return bufferLength;
+    }
+
+    public void setBufferLength(int bufferLength) {
+        this.bufferLength = bufferLength;
     }
 
     public ClientCapReader getReader() {
@@ -78,10 +91,17 @@ public class ClientCapPlayer implements Closeable {
 
     }
 
-    protected void applyFrame(ClientPlaybackContext context, ParsedChannelFrame<?>[] frame) {
-        for (var channel : frame) {
-            channel.apply(context);
-        }
+    protected void applyFrame(ClientPlaybackContext context, UnserializedFrame frame) {
+        frame.getValues().forEach((handler, value) -> applyChannel(handler, value, context));
+    }
+
+    // Seperate function to handle generic
+    private <T> void applyChannel(ChannelHandler<T> handler, Object value, ClientPlaybackContext context)
+            throws ClassCastException {
+        if (value == null)
+            return;
+        T casted = handler.getType().cast(value);
+        handler.apply(casted, context);
     }
 
     @Override
