@@ -13,7 +13,9 @@ import com.igrium.replayfps.events.RecordingEvents;
 import com.mojang.logging.LogUtils;
 import com.replaymod.core.Module;
 import com.replaymod.core.ReplayMod;
+import com.replaymod.core.events.PreRenderCallback;
 import com.replaymod.lib.de.johni0702.minecraft.gui.utils.EventRegistrations;
+import com.replaymod.recording.mixin.IntegratedServerAccessor;
 import com.replaymod.recording.packet.PacketListener;
 import com.replaymod.replaystudio.replay.ReplayFile;
 
@@ -27,6 +29,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.integrated.IntegratedServer;
 
 @Environment(EnvType.CLIENT)
 public class ClientRecordingModule extends EventRegistrations implements Module {
@@ -90,6 +93,17 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
     { on(RecordingEvents.STOP_RECORDING, this::onStoppingRecording); }
     protected void onStoppingRecording(PacketListener listener, ReplayFile file) {
         if (isRecording()) stopRecording();
+    }
+
+    { on(PreRenderCallback.EVENT, this::checkForGamePaused); }
+    protected void checkForGamePaused() {
+        MinecraftClient client = replayMod.getMinecraft();
+        if (activeRecording.isPresent() && client.isIntegratedServerRunning()) {
+            IntegratedServer server = client.getServer();
+            if (((IntegratedServerAccessor) server).isGamePaused()) {
+                activeRecording.get().setServerWasPaused();
+            }
+        }
     }
 
     protected void onFrame(WorldRenderContext context) {
