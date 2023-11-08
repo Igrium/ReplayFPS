@@ -24,12 +24,6 @@ import com.mojang.logging.LogUtils;
  * Reads a ClientCap file.
  */
 public class ClientCapReader implements Closeable {
-    
-    public static record ParsedChannelFrame<T>(ChannelHandler<T> channel, T value) {
-        public void apply(ClientPlaybackContext context) {
-            channel.apply(value(), context);
-        }
-    }
 
     private int headerLength;
     private int frameLength;

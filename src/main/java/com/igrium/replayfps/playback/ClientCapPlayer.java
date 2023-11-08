@@ -91,13 +91,14 @@ public class ClientCapPlayer implements Closeable {
 
     }
 
-    protected void applyFrame(ClientPlaybackContext context, UnserializedFrame frame) {
-        frame.getValues().forEach((handler, value) -> applyChannel(handler, value, context));
+    protected void applyFrame(ClientPlaybackContext context, UnserializedFrame frame) throws Exception {
+        for (var entry : frame.getValues().entrySet()) {
+            applyChannel(entry.getKey(), entry.getValue(), context);
+        }
     }
 
     // Seperate function to handle generic
-    private <T> void applyChannel(ChannelHandler<T> handler, Object value, ClientPlaybackContext context)
-            throws ClassCastException {
+    private <T> void applyChannel(ChannelHandler<T> handler, Object value, ClientPlaybackContext context) throws Exception, ClassCastException {
         if (value == null)
             return;
         T casted = handler.getType().cast(value);

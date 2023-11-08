@@ -108,19 +108,20 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
 
     protected void onFrame(WorldRenderContext context) {
         if (activeRecording.isPresent()) {
+            ClientCapRecorder recording = activeRecording.get();
             ClientCaptureContext clientContext = new ClientCaptureContextImpl(context, MinecraftClient.getInstance());
 
-            if (activeRecording.get().getHeader() == null) {
-                queuedHeader.setLocalPlayerID(clientContext.localPlayer().getId());
-                try {
-                    activeRecording.get().writeHeader(queuedHeader);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                activeRecording.get().beginCapture();
+            if (!recording.isRecording()) {
+                initRecording(recording, clientContext.localPlayer().getId());
             }
-            activeRecording.get().tick(clientContext);
+            recording.tick(clientContext);
         }
+    }
+
+    private void initRecording(ClientCapRecorder recording, int localPlayerId) {
+        queuedHeader.setLocalPlayerID(localPlayerId);
+        recording.writeHeader(queuedHeader);
+        recording.startRecording();
     }
 
     public Optional<ClientCapRecorder> getActiveRecording() {
@@ -129,24 +130,6 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
 
     public boolean isRecording() {
         return activeRecording.isPresent();
-    }
-
-    /**
-     * Start recording a client-cap.
-     * @param header Client-cap header.
-     * @param out Output stream to write to.
-     * @throws IOException If an IO exception occurs while writing the header.
-     * @throws IllegalStateException If we're already recording.
-     */
-    public void startRecording(ClientCapHeader header, OutputStream out) throws IOException, IllegalStateException {
-        if (isRecording()) {
-            throw new IllegalStateException("We are already recording.");
-        }
-
-        ClientCapRecorder recorder = new ClientCapRecorder(out);
-        recorder.writeHeader(header);
-        recorder.beginCapture();
-        activeRecording = Optional.of(recorder);
     }
     
     /**
