@@ -20,6 +20,7 @@ public class ChannelTypes {
     public static final UnsignedByteChannel UNSIGNED_BYTE = new UnsignedByteChannel();
 
     public static final Matrix4fChannelType MATRIX4F = new Matrix4fChannelType();
+    public static final Vector2fChannelType VECTOR2F = new Vector2fChannelType();
     
     public static final Vec3dChannelType VEC3D = new Vec3dChannelType();
 

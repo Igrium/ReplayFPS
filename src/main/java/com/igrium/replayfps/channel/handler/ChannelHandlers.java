@@ -17,6 +17,7 @@ public class ChannelHandlers {
     public static final ChannelHandler<?> DUMMY = register(new DummyChannelHandler(), new Identifier("replayfps:dummy"));
     public static final ViewMatrixChannelHandler VIEW_MATRIX = register(new ViewMatrixChannelHandler(), new Identifier("replayfps:viewmatrix"));
     public static final PlayerPosChannelHandler PLAYER_POS = register(new PlayerPosChannelHandler(), new Identifier("replayfps:player_pos"));
+    public static final PlayerRotChannelHandler PLAYER_ROT = register(new PlayerRotChannelHandler(), new Identifier("replayfps:player_rot"));
 
     public static class PlaceholderChannelHandler implements ChannelHandler<Object> {
         private final ChannelType<Object> type;
