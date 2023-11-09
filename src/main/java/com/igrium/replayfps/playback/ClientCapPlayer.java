@@ -20,6 +20,8 @@ public class ClientCapPlayer implements Closeable {
     @Nullable
     private UnserializedFrame lastFrame;
 
+    private ClientCapBuffer buffer;
+
     /**
      * Create a ClientCap player.
      * @param reader Reader to use.
@@ -30,19 +32,7 @@ public class ClientCapPlayer implements Closeable {
         if (reader.getHeader() == null) {
             reader.readHeader();
         }
-    }
-    
-    /**
-     * The amount of frames that can be buffered at a time.
-     */
-    private int bufferLength = 1024;
-
-    public int getBufferLength() {
-        return bufferLength;
-    }
-
-    public void setBufferLength(int bufferLength) {
-        this.bufferLength = bufferLength;
+        this.buffer = ClientCapBuffer.create(reader);
     }
 
     public ClientCapReader getReader() {
@@ -78,10 +68,10 @@ public class ClientCapPlayer implements Closeable {
             }
 
             if (frameNumber != reader.getPlayhead()) {
-                reader.seek(frameNumber);
+                buffer.seek(frameNumber);
             }
 
-            lastFrame = reader.readFrame();
+            lastFrame = buffer.poll();
             lastFrameRead = frameNumber;
 
             applyFrame(context, lastFrame);
@@ -115,6 +105,7 @@ public class ClientCapPlayer implements Closeable {
      */
     public void close() throws IOException {
         reader.close();
+        buffer.close();
     }
 
     public static class ClientCapBuffer extends ConcurrentBuffer<UnserializedFrame> implements Closeable {
