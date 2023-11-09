@@ -3,11 +3,14 @@ package com.igrium.replayfps.playback;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.igrium.replayfps.channel.handler.ChannelHandler;
 import com.igrium.replayfps.util.AnimationUtils;
+import com.igrium.replayfps.util.ConcurrentBuffer;
 import com.mojang.logging.LogUtils;
 
 public class ClientCapPlayer implements Closeable {
@@ -112,5 +115,39 @@ public class ClientCapPlayer implements Closeable {
      */
     public void close() throws IOException {
         reader.close();
+    }
+
+    public static class ClientCapBuffer extends ConcurrentBuffer<UnserializedFrame> implements Closeable {
+
+        private ExecutorService executor = Executors.newSingleThreadExecutor();
+        private final ClientCapReader reader;
+
+        public ClientCapBuffer(ExecutorService executor, ClientCapReader reader) {
+            super(executor);
+            this.executor = executor;
+            this.reader = reader;
+        }
+
+        @Override
+        public ExecutorService getExecutor() {
+            return executor;
+        }
+
+        @Override
+        protected UnserializedFrame load(int index) throws Exception {
+            if (index != reader.getPlayhead()) {
+                reader.seek(index);
+            }
+            return reader.readFrame();
+        }
+
+        @Override
+        public void close() {
+            executor.shutdown();
+        }
+
+        public static ClientCapBuffer create(ClientCapReader reader) {
+            return new ClientCapBuffer(Executors.newSingleThreadExecutor(r -> new Thread(r, "ClientCap Buffer")), reader);
+        }
     }
 }
