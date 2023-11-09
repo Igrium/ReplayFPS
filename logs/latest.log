@@ -1,8 +1,0 @@
-[16:30:10] [BufferThread/ERROR]: Error loading buffer item 69. Buffer will shutdown.
-java.lang.Exception: Test Exception
-	at com.igrium.replayfps.test.ConcurrentBufferTest$DemoBuffer.load(ConcurrentBufferTest.java:26) ~[test/:?]
-	at com.igrium.replayfps.test.ConcurrentBufferTest$DemoBuffer.load(ConcurrentBufferTest.java:12) ~[test/:?]
-	at com.igrium.replayfps.util.ConcurrentBuffer.tryLoad(ConcurrentBuffer.java:74) ~[main/:?]
-	at com.igrium.replayfps.util.ConcurrentBuffer.doBuffer(ConcurrentBuffer.java:158) ~[main/:?]
-	at com.igrium.replayfps.test.SimpleSingleThreadExecutor.runThread(SimpleSingleThreadExecutor.java:30) ~[test/:?]
-	at java.lang.Thread.run(Thread.java:833) ~[?:?]
