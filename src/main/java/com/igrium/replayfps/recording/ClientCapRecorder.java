@@ -42,6 +42,7 @@ public class ClientCapRecorder implements Closeable {
     public ClientCapRecorder(OutputStream out) {
         this.out = new BufferedOutputStream(out);
         this.writer = new ClientCapWriter(out);
+        startTime = System.currentTimeMillis();
     }
 
     @Nullable
@@ -125,13 +126,13 @@ public class ClientCapRecorder implements Closeable {
         return startTime;
     }
 
-    public void startRecording() throws IllegalStateException {
-        if (isRecording) throw new IllegalStateException("We are already recording.");
-        isRecording = true;
-        startTime = Util.getMeasuringTimeMs();
-    }
+    // public void startRecording() throws IllegalStateException {
+    //     if (isRecording) throw new IllegalStateException("We are already recording.");
+    //     isRecording = true;
+    //     startTime = Util.getMeasuringTimeMs();
+    // }
 
-    private boolean serverWasPaused;
+    private volatile boolean serverWasPaused;
     public void setServerWasPaused() {
         this.serverWasPaused = true;
     }
@@ -169,7 +170,7 @@ public class ClientCapRecorder implements Closeable {
         long timestamp = timeRecording - timePassedWhilePaused;
         lastTimestamp = timestamp;
 
-        int currentFrame = AnimationUtils.countFrames(timestamp, header.getFramerate(), header.getFramerateBase());
+        int currentFrame = AnimationUtils.countFrames((int) timestamp, header.getFramerate(), header.getFramerateBase());
         // It doesn't matter if this is negative because we're only using it for a for loop.
         int framesToCapture = currentFrame - writer.getWrittenFrames();
         if (framesToCapture < 0) {

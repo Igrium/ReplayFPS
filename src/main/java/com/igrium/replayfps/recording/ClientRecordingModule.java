@@ -111,7 +111,7 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
             ClientCapRecorder recording = activeRecording.get();
             ClientCaptureContext clientContext = new ClientCaptureContextImpl(context, MinecraftClient.getInstance());
 
-            if (!recording.isRecording()) {
+            if (recording.getHeader() == null) {
                 initRecording(recording, clientContext.localPlayer().getId());
             }
             recording.tick(clientContext);
@@ -121,7 +121,7 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
     private void initRecording(ClientCapRecorder recording, int localPlayerId) {
         queuedHeader.setLocalPlayerID(localPlayerId);
         recording.writeHeader(queuedHeader);
-        recording.startRecording();
+        // recording.startRecording();
     }
 
     public Optional<ClientCapRecorder> getActiveRecording() {

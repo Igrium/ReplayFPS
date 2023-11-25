@@ -55,7 +55,9 @@ public abstract class ConcurrentBuffer<T> {
 
     
     private final Queue<T> buffer = new ConcurrentLinkedDeque<>();
-    // The global index of the start of the buffer.
+    /*
+     * The global index of the start of the buffer.
+     */
     private volatile int startIndex;
 
     /**
@@ -242,6 +244,13 @@ public abstract class ConcurrentBuffer<T> {
         }
 
         buffer();
+    }
+
+    /**
+     * The index of the next item that will be returned.
+     */
+    public int getIndex() {
+        return startIndex;
     }
 
     /**

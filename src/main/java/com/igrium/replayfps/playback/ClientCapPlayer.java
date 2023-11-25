@@ -67,8 +67,9 @@ public class ClientCapPlayer implements Closeable {
                 return;
             }
 
-            if (frameNumber != reader.getPlayhead()) {
+            if (frameNumber != buffer.getIndex()) {
                 buffer.seek(frameNumber);
+                LogUtils.getLogger().info("Seeking %d".formatted(frameNumber));
             }
 
             lastFrame = buffer.poll();
