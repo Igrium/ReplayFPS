@@ -25,11 +25,11 @@ public class PrevPosChannelHandler implements ChannelHandler<Vec3d> {
 
     @Override
     public void apply(Vec3d val, ClientPlaybackContext context) throws Exception {
-        context.localPlayer().ifPresent(player -> {
-            player.prevX = val.x;
-            player.prevY = val.y;
-            player.prevZ = val.z;
-        });
+        // context.localPlayer().ifPresent(player -> {
+        //     player.prevX = val.x;
+        //     player.prevY = val.y;
+        //     player.prevZ = val.z;
+        // });
     }
     
 }

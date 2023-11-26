@@ -13,9 +13,9 @@ import com.igrium.replayfps.channel.handler.ChannelHandler;
 import com.igrium.replayfps.playback.UnserializedFrame;
 import com.igrium.replayfps.util.AnimationUtils;
 import com.igrium.replayfps.util.NoHeaderException;
+import com.igrium.replayfps.util.TimecodeProvider;
 import com.mojang.logging.LogUtils;
-
-import net.minecraft.util.Util;
+import com.replaymod.recording.packet.PacketListener;
 
 /**
  * Captures and saves frames to a file.
@@ -25,6 +25,8 @@ public class ClientCapRecorder implements Closeable {
 
     private final BufferedOutputStream out;
     private final ClientCapWriter writer;
+
+    private final PacketListener packetListener;
 
     @Nullable
     private ClientCapHeader header;
@@ -39,10 +41,14 @@ public class ClientCapRecorder implements Closeable {
         this.saveInterval = saveInterval;
     }
 
-    public ClientCapRecorder(OutputStream out) {
+    public ClientCapRecorder(OutputStream out, PacketListener packetListener) {
         this.out = new BufferedOutputStream(out);
         this.writer = new ClientCapWriter(out);
-        startTime = System.currentTimeMillis();
+        this.packetListener = packetListener;
+    }
+
+    public PacketListener getPacketListener() {
+        return packetListener;
     }
 
     @Nullable
@@ -121,24 +127,10 @@ public class ClientCapRecorder implements Closeable {
         return isRecording;
     }
 
-    private long startTime;
-    public final long getStartTime() {
-        return startTime;
-    }
-
     public void startRecording() throws IllegalStateException {
         if (isRecording) throw new IllegalStateException("We are already recording.");
         isRecording = true;
-        startTime = Util.getMeasuringTimeMs();
     }
-
-    private volatile boolean serverWasPaused;
-    public void setServerWasPaused() {
-        this.serverWasPaused = true;
-    }
-    
-    private long lastTimestamp;
-    private long timePassedWhilePaused;
 
     private Optional<Exception> error = Optional.empty();
     public Optional<Exception> getError() {
@@ -157,22 +149,35 @@ public class ClientCapRecorder implements Closeable {
         if (header == null || !isRecording) return;
         if (hasErrored()) return;
 
-        long now = Util.getMeasuringTimeMs();
-        // Real time since recording started.
-        long timeRecording = now - startTime;
+        // long now = Util.getMeasuringTimeMs();
+        // // Real time since recording started.
+        // long timeRecording = now - startTime;
 
-        // This math makes sense to me now, but don't ask me to explain it later.
-        // UPDATE: It's later and I don't understand it.
-        if (serverWasPaused) {
-            timePassedWhilePaused = timeRecording - lastTimestamp;
-            serverWasPaused = false;
+        // // This math makes sense to me now, but don't ask me to explain it later.
+        // // UPDATE: It's later and I don't understand it.
+        // if (serverWasPaused) {
+        //     timePassedWhilePaused = timeRecording - lastTimestamp;
+        //     serverWasPaused = false;
+        // }
+        // long timestamp = timeRecording - timePassedWhilePaused;
+        // lastTimestamp = timestamp;
+        
+        // We can't use Util.getMeasuringTimeMillis because packetListener.getStartTime returns in terms of global unix time.
+        if (((TimecodeProvider) packetListener).getServerWasPaused()) {
+            return;
         }
-        long timestamp = timeRecording - timePassedWhilePaused;
-        lastTimestamp = timestamp;
+
+        long timeRecording = System.currentTimeMillis() - ((TimecodeProvider) packetListener).getStartTime();
+        long timestamp = timeRecording - ((TimecodeProvider) packetListener).getTimePassedWhilePaused();
 
         int currentFrame = AnimationUtils.countFrames((int) timestamp, header.getFramerate(), header.getFramerateBase());
         // It doesn't matter if this is negative because we're only using it for a for loop.
         int framesToCapture = currentFrame - writer.getWrittenFrames();
+        
+        if (framesToCapture > 100) {
+            LOGGER.warn("%d frames have been captured on this tick. This might be a mistake.".formatted(framesToCapture));
+        }
+
         if (framesToCapture < 0) {
             LOGGER.warn(String.format("More frames have been captured than the current timestamp suggests. (%d > %d)",
                     writer.getWrittenFrames(), currentFrame));

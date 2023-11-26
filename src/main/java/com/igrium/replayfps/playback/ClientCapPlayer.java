@@ -64,7 +64,7 @@ public class ClientCapPlayer implements Closeable {
         int frameNumber = -1;
         try {
             // TODO: figure out why replay appears half a second behind instead of this cheeky workaround.
-            int timestamp = context.timestamp() - 500;
+            int timestamp = context.timestamp(); 
             int framerate = reader.getHeader().getFramerate();
             int framerateBase = reader.getHeader().getFramerateBase();
 
