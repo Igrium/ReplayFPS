@@ -20,6 +20,7 @@
         ]
     },
     "mixins": [
+        "replayfps_viewer.mixins.json"
     ],
     "depends": {
         "fabricloader": ">=0.14.24",
