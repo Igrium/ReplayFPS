@@ -69,6 +69,8 @@ public class ClientCapPlayer implements Closeable {
             int framerateBase = reader.getHeader().getFramerateBase();
 
             frameNumber = AnimationUtils.countFrames(timestamp, framerate, framerateBase);
+
+            if (frameNumber < 0) return;
             
             long prevFrameTime = AnimationUtils.getDuration(frameNumber, framerate, framerateBase);
             long nextFrameTime = AnimationUtils.getDuration(frameNumber + 1, framerate, framerateBase);
