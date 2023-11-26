@@ -16,7 +16,12 @@ import com.mojang.logging.LogUtils;
 public class ClientCapPlayer implements Closeable {
     private final ClientCapReader reader;
 
-    private int lastFrameRead = -1;
+    private int lastFrameAIndex = -1;
+    private int lastFrameBIndex = -1;
+
+    private UnserializedFrame lastFrameA;
+    private UnserializedFrame lastFrameB;
+
     @Nullable
     private UnserializedFrame lastFrame;
 
@@ -60,23 +65,36 @@ public class ClientCapPlayer implements Closeable {
         try {
             // TODO: figure out why replay appears half a second behind instead of this cheeky workaround.
             int timestamp = context.timestamp() - 500;
-            frameNumber = AnimationUtils.countFrames(timestamp, reader.getHeader().getFramerate(),
-                    reader.getHeader().getFramerateBase());
+            int framerate = reader.getHeader().getFramerate();
+            int framerateBase = reader.getHeader().getFramerateBase();
 
-            if (frameNumber == lastFrameRead && lastFrame != null) {
-                applyFrame(context, lastFrame);
-                return;
+            frameNumber = AnimationUtils.countFrames(timestamp, framerate, framerateBase);
+            
+            long prevFrameTime = AnimationUtils.getDuration(frameNumber, framerate, framerateBase);
+            long nextFrameTime = AnimationUtils.getDuration(frameNumber + 1, framerate, framerateBase);
+            
+            float delta;
+            if (nextFrameTime == prevFrameTime) {
+                delta = 0;
+            } else {
+                delta = (timestamp - prevFrameTime) / (float) (nextFrameTime - prevFrameTime);
             }
 
-            if (frameNumber != buffer.getIndex()) {
-                buffer.seek(frameNumber);
-                LogUtils.getLogger().info("Seeking %d".formatted(frameNumber));
+            UnserializedFrame prevFrame = getFrame(frameNumber, true);
+            UnserializedFrame nextFrame = getFrame(frameNumber + 1, true);
+
+            // Storing these prevents unneeded polls of the buffer.
+            lastFrameAIndex = frameNumber;
+            lastFrameA = prevFrame;
+
+            lastFrameBIndex = frameNumber + 1;
+            lastFrameB = nextFrame;
+
+            for (var entry : prevFrame.getValues().entrySet()) {
+                Object other = nextFrame != null ? nextFrame.getValue(entry.getKey()) : null;
+                interpolateAndApply(entry.getKey(), entry.getValue(), other, delta, context);
             }
 
-            lastFrame = buffer.poll();
-            lastFrameRead = frameNumber;
-
-            applyFrame(context, lastFrame);
 
         } catch (Exception e) {
             LogUtils.getLogger().error("An error occured while reading animation frame " + frameNumber, e);
@@ -86,18 +104,36 @@ public class ClientCapPlayer implements Closeable {
 
     }
 
-    protected void applyFrame(ClientPlaybackContext context, UnserializedFrame frame) throws Exception {
-        for (var entry : frame.getValues().entrySet()) {
-            applyChannel(entry.getKey(), entry.getValue(), context);
+    private UnserializedFrame getFrame(int index, boolean poll) {
+        if (index == lastFrameAIndex && lastFrameA != null)
+            return lastFrameA;
+        if (index == lastFrameBIndex && lastFrameB != null)
+            return lastFrameB;
+        
+        if (index != buffer.getIndex()) {
+            buffer.seek(index);
+            LogUtils.getLogger().info("Seeking frame " + index);
         }
+
+        return poll ? buffer.poll() : buffer.peek();
     }
 
-    // Seperate function to handle generic
-    private <T> void applyChannel(ChannelHandler<T> handler, Object value, ClientPlaybackContext context) throws Exception, ClassCastException {
+
+    private <T> void interpolateAndApply(ChannelHandler<T> handler, Object value, @Nullable Object value2, float delta, ClientPlaybackContext context) throws Exception, ClassCastException {
         if (value == null)
             return;
         T casted = handler.getType().cast(value);
-        handler.apply(casted, context);
+
+        if (delta < 0) delta = 0;
+        if (delta > 1) delta = 1;
+        
+        if (handler.shouldInterpolate() && value2 != null) {
+            T casted2 = handler.getType().cast(value2);
+            handler.apply(handler.getChannelType().interpolate(casted, casted2, delta), context);
+
+        } else {
+            handler.apply(casted, context);
+        }
     }
 
     @Override

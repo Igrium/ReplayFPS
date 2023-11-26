@@ -44,4 +44,18 @@ public interface ChannelType<T> {
      */
     public T defaultValue();
 
+    /**
+     * Interpolate linearly between two values of this type.
+     * 
+     * @param from  Value A.
+     * @param to    Value B.
+     * @param delta A float from 0 - 1 determinating the progress of the
+     *              interpolation. <code>0</code> will return <code>from</code>, and
+     *              <code>1</code> will return <code>to</code>. Behavior for values
+     *              outside this range is undefined.
+     * @return The interpolated value.
+     */
+    public default T interpolate(T from, T to, float delta) {
+        return from;
+    }
 }

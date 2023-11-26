@@ -81,4 +81,35 @@ public final class AnimationUtils {
     public static int countFrames(float time, float framerate) {
         return (int) (time * framerate);
     }
+
+    /**
+     * Calculate the amount of time it should take for a given amount of frames to run.
+     * @param numFrames Number of frames.
+     * @param framerate Framerate numerator.
+     * @param framerateBase Framerate denominator.
+     * @return Time in milliseconds.
+     */
+    public static long getDuration(int numFrames, int framerate, int framerateBase) {
+        return (numFrames * framerateBase * 1000) / framerate;
+    }
+
+    /**
+     * Calculate the amount of time it should take for a given amount of frames to run.
+     * @param numFrames Number of frames.
+     * @param framerate Framerate.
+     * @return Time in milliseconds.
+     */
+    public static long getDuration(int numFrames, float framerate) {
+        return (long) ((1000 * numFrames) / framerate);
+    }
+
+    /**
+     * Calculate the amount of time it should take for a given amount of frames to run.
+     * @param numFrames Number of frames.
+     * @param framerate Framerate.
+     * @return Time in seconds.
+     */
+    public static float getDurationSeconds(int numFrames, float framerate) {
+        return numFrames / framerate;
+    }
 }

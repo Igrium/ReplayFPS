@@ -26,4 +26,8 @@ public class PlayerPosChannelHandler implements ChannelHandler<Vec3d> {
         }
     }
     
+    @Override
+    public boolean shouldInterpolate() {
+        return true;
+    }
 }

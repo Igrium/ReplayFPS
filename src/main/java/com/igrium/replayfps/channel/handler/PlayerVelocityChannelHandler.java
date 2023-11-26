@@ -24,4 +24,8 @@ public class PlayerVelocityChannelHandler implements ChannelHandler<Vec3d> {
         context.localPlayer().ifPresent(player -> player.setVelocity(val));
     }
     
+    @Override
+    public boolean shouldInterpolate() {
+        return true;
+    }
 }

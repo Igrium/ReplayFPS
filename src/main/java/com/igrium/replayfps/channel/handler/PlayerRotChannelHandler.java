@@ -31,4 +31,8 @@ public class PlayerRotChannelHandler implements ChannelHandler<Vector2fc> {
         });
     }
     
+    @Override
+    public boolean shouldInterpolate() {
+        return true;
+    }
 }

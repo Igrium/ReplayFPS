@@ -87,6 +87,10 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
             return 0;
         }
 
+        @Override
+        public Short interpolate(Short from, Short to, float delta) {
+            return (short) (delta * (to - from) + from);
+        }
     }
 
     public static class IntegerChannel extends NumberChannel<Integer> {
@@ -116,6 +120,10 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
             return 0;
         }
 
+        @Override
+        public Integer interpolate(Integer from, Integer to, float delta) {
+            return (int) (delta * (to - from) + from);
+        }
     }
 
     public static class LongChannel extends NumberChannel<Long> {
@@ -145,6 +153,10 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
             return 0l;
         }
 
+        @Override
+        public Long interpolate(Long from, Long to, float delta) {
+            return (long) (delta * (to - from) + from);
+        }
     }
 
     public static class FloatChannel extends NumberChannel<Float> {
@@ -174,6 +186,10 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
             return 0f;
         }
 
+        @Override
+        public Float interpolate(Float from, Float to, float delta) {
+            return delta * (to - from) + from;
+        }
     }
 
     public static class DoubleChannel extends NumberChannel<Double> {
@@ -201,6 +217,11 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
         @Override
         public Double defaultValue() {
             return 0d;
+        }
+        
+        @Override
+        public Double interpolate(Double from, Double to, float delta) {
+            return delta * (to - from) + from;
         }
     }
 
