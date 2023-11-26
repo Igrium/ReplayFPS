@@ -126,11 +126,11 @@ public class ClientCapRecorder implements Closeable {
         return startTime;
     }
 
-    // public void startRecording() throws IllegalStateException {
-    //     if (isRecording) throw new IllegalStateException("We are already recording.");
-    //     isRecording = true;
-    //     startTime = Util.getMeasuringTimeMs();
-    // }
+    public void startRecording() throws IllegalStateException {
+        if (isRecording) throw new IllegalStateException("We are already recording.");
+        isRecording = true;
+        startTime = Util.getMeasuringTimeMs();
+    }
 
     private volatile boolean serverWasPaused;
     public void setServerWasPaused() {

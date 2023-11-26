@@ -121,7 +121,7 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
     private void initRecording(ClientCapRecorder recording, int localPlayerId) {
         queuedHeader.setLocalPlayerID(localPlayerId);
         recording.writeHeader(queuedHeader);
-        // recording.startRecording();
+        recording.startRecording();
     }
 
     public Optional<ClientCapRecorder> getActiveRecording() {
