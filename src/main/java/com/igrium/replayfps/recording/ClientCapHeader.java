@@ -180,7 +180,7 @@ public class ClientCapHeader {
 
         if (handler.getChannelType().getSize() != size) {
             throw new HeaderFormatException(String.format("Improper channel size for handler type '%s'! (%d != %d)",
-                    size, handler.getChannelType().getSize()));
+                    id, size, handler.getChannelType().getSize()));
         }
 
         return handler;
