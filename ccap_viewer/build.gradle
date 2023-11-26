@@ -1,0 +1,57 @@
+plugins {
+    id 'fabric-loom' version '1.4-SNAPSHOT'
+    id 'maven-publish'
+}
+
+version = rootProject.mod_version
+group = project.maven_group
+
+repositories {
+    ivy {
+        setName("ReplayMod")
+        setUrl("https://minio.replaymod.com/replaymod/")
+        patternLayout { artifact("[artifact]-[revision](-[classifier])(.[ext])") }
+        metadataSources { artifact() }
+        content { includeGroup("com.replaymod") }
+    }
+}
+
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
+    // modImplementation "com.replaymod:replaymod-${rootProject.replaymod_version}"
+
+    implementation project(path: ":", configuration: "namedElements")
+    modImplementation "com.replaymod:replaymod-${project.replaymod_version}"
+    
+    // Uncomment the following line to enable the deprecated Fabric API modules. 
+    // These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
+
+    // modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": rootProject.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
+	it.options.release = 17
+}
+
+java {
+	withSourcesJar()
+}

@@ -1,8 +1,8 @@
 {
     "schemaVersion": 1,
-    "id": "replayfps",
+    "id": "replayfps_viewer",
     "version": "${version}",
-    "name": "ReplayFPS",
+    "name": "ReplayFPS Debugger",
     "description": "This is an example description! Tell everyone what your mod is about!",
     "authors": [
         "Me!"
@@ -15,18 +15,18 @@
     "icon": "assets/replayfps/icon.png",
     "environment": "*",
     "entrypoints": {
-        "main": [
-            "com.igrium.replayfps.ReplayFPS"
+        "client": [
+            "com.igrium.replayfps_viewer.ReplayFPSViewer"
         ]
     },
     "mixins": [
-        "replayfps.mixins.json"
     ],
     "depends": {
         "fabricloader": ">=0.14.24",
         "minecraft": "~1.20.1",
         "java": ">=17",
-        "fabric-api": "*"
+        "fabric-api": "*",
+        "replayfps": "${version}"
     },
     "suggests": {
         "another-mod": "*"
