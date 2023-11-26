@@ -26,7 +26,8 @@
         "minecraft": "~1.20.1",
         "java": ">=17",
         "fabric-api": "*",
-        "replayfps": "${version}"
+        "replayfps": "${version}",
+        "craftfx": "~0.2.0+1.20.1"
     },
     "suggests": {
         "another-mod": "*"
