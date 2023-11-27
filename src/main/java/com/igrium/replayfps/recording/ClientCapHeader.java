@@ -179,8 +179,8 @@ public class ClientCapHeader {
         }
 
         if (handler.getChannelType().getSize() != size) {
-            throw new HeaderFormatException(String.format("Improper channel size for handler type '%s'! (%d != %d)",
-                    id, size, handler.getChannelType().getSize()));
+            logger.error("Improper channel size for handler type '%s'! (%d != %d)".formatted(id, size, handler.getChannelType().getSize()));
+            handler = new PlaceholderChannelHandler(size);
         }
 
         return handler;

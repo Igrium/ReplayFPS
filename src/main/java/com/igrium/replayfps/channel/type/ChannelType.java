@@ -58,4 +58,12 @@ public interface ChannelType<T> {
     public default T interpolate(T from, T to, float delta) {
         return from;
     }
+
+    /**
+     * Get a simple name that identifies this channel type in the debugger.
+     * @return Channel name.
+     */
+    public default String getName() {
+        return getType().getSimpleName();
+    }
 }

@@ -41,4 +41,9 @@ public class Vector2fChannelType implements ChannelType<Vector2fc> {
     public Vector2fc interpolate(Vector2fc from, Vector2fc to, float delta) {
         return from.lerp(to, delta, new Vector2f());
     }
+
+    @Override
+    public String getName() {
+        return "Vector2f";
+    }
 }

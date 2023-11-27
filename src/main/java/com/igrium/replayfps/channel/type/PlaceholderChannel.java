@@ -46,4 +46,8 @@ public class PlaceholderChannel implements ChannelType<Object> {
         return null;
     }
     
+    @Override
+    public String getName() {
+        return "[unknown]";
+    }
 }

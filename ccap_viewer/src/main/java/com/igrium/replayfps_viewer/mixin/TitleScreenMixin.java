@@ -6,7 +6,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.igrium.replayfps_viewer.ReplayFPSViewer;
-import com.mojang.logging.LogUtils;
 
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -25,7 +24,6 @@ public class TitleScreenMixin extends Screen {
         this.addDrawableChild(ButtonWidget.builder(Text.literal("Debug replays"), (button) -> {
             ReplayFPSViewer.launchViewer();
         }).build());
-        LogUtils.getLogger().info("Hello from the title screen mixin!");
     }
     
 }
