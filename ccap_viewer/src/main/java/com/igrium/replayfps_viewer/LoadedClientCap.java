@@ -30,6 +30,10 @@ public class LoadedClientCap implements Closeable {
         return reader.getHeader();
     }
 
+    public ClientCapReader getReader() {
+        return reader;
+    }
+
     @Override
     public void close() throws IOException {
         reader.close();

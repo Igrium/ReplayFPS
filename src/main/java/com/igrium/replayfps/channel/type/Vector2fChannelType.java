@@ -46,4 +46,9 @@ public class Vector2fChannelType implements ChannelType<Vector2fc> {
     public String getName() {
         return "Vector2f";
     }
+
+    @Override
+    public float[] getRawValues(Vector2fc value) {
+        return new float[] { value.x(), value.y() };
+    }
 }

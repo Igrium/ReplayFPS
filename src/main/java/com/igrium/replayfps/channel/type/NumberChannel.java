@@ -31,6 +31,11 @@ public abstract class NumberChannel<T extends Number> implements ChannelType<T> 
         return read(in).doubleValue();
     }
 
+    @Override
+    public float[] getRawValues(T value) {
+        return new float[] { value.floatValue() };
+    }
+
     public static class ByteChannel extends NumberChannel<Byte> {
 
         @Override

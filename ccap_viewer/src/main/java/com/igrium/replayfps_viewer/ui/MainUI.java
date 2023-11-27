@@ -1,13 +1,18 @@
 package com.igrium.replayfps_viewer.ui;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.igrium.replayfps.util.NoHeaderException;
 import com.igrium.replayfps_viewer.ClientCapViewer;
 import com.igrium.replayfps_viewer.LoadedClientCap;
+import com.igrium.replayfps_viewer.util.GraphedChannel;
+import com.mojang.logging.LogUtils;
 
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.SplitPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -30,6 +35,11 @@ public class MainUI {
         return headerViewController;
     }
 
+    @FXML
+    private LineChart<Number, Number> channelGraph;
+    @FXML
+    private ChannelGraph channelGraphController;
+
     private LoadedClientCap loadedFile;
 
     public LoadedClientCap getLoadedFile() {
@@ -42,8 +52,21 @@ public class MainUI {
 
         if (loadedFile != null) {
             headerViewController.loadHeader(loadedFile.getHeader());
+            loadChannelGraph(loadedFile);
         } else {
             headerViewController.clear();
+            channelGraph.getData().clear();
+        }
+    }
+
+    private void loadChannelGraph(LoadedClientCap loadedFile) {
+        for (var channel : loadedFile.getHeader().getChannels()) {
+            try {
+                var serieses = GraphedChannel.create(loadedFile.getReader(), channel);
+                channelGraph.getData().addAll(serieses);
+            } catch (NoHeaderException | IOException e) {
+                LogUtils.getLogger().error("Error loading channel path.", e);
+            }
         }
     }
 

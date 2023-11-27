@@ -66,4 +66,15 @@ public interface ChannelType<T> {
     public default String getName() {
         return getType().getSimpleName();
     }
+
+    /**
+     * Get raw scalar values that to represent this channel in the debugger graph.
+     * 
+     * @param value Value to extract.
+     * @return An array of all relevent values as floats. Must return the same
+     *         number of values each call.
+     */
+    public default float[] getRawValues(T value) {
+        return new float[0];
+    }
 }

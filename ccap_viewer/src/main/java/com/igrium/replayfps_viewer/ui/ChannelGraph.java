@@ -11,7 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
 public class ChannelGraph {
-
+    
     private final DoubleProperty xScale = new SimpleDoubleProperty(5);
     
     public double getXScale() {
@@ -110,14 +110,14 @@ public class ChannelGraph {
         });
 
         // BOGUS TESTING DATA
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        addData(series, 1970, 15);
-        addData(series, 1980, 30);
-        addData(series, 1990, 60);
-        addData(series, 2000, 120);
-        addData(series, 2014, 300);
-        addData(series, 2013, 240);
-        chart.getData().add(series);
+        // XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        // addData(series, 1970, 15);
+        // addData(series, 1980, 30);
+        // addData(series, 1990, 60);
+        // addData(series, 2000, 120);
+        // addData(series, 2014, 300);
+        // addData(series, 2013, 240);
+        // chart.getData().add(series);
 
     }
 

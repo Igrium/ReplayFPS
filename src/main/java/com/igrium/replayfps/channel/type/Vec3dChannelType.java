@@ -42,4 +42,9 @@ public class Vec3dChannelType implements ChannelType<Vec3d> {
     public Vec3d interpolate(Vec3d from, Vec3d to, float delta) {
         return from.lerp(to, delta);
     }
+
+    @Override
+    public float[] getRawValues(Vec3d value) {
+        return new float[] { (float) value.x, (float) value.y, (float) value.z };
+    }
 }
