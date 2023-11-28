@@ -11,7 +11,10 @@ import org.jetbrains.annotations.Nullable;
 import com.igrium.replayfps.channel.handler.ChannelHandler;
 import com.igrium.replayfps.util.AnimationUtils;
 import com.igrium.replayfps.util.ConcurrentBuffer;
+import com.igrium.replayfps.util.GlobalReplayContext;
 import com.mojang.logging.LogUtils;
+
+import net.minecraft.client.MinecraftClient;
 
 public class ClientCapPlayer implements Closeable {
     private final ClientCapReader reader;
@@ -92,11 +95,15 @@ public class ClientCapPlayer implements Closeable {
             lastFrameBIndex = frameNumber + 1;
             lastFrameB = nextFrame;
 
-            for (var entry : prevFrame.getValues().entrySet()) {
-                Object other = nextFrame != null ? nextFrame.getValue(entry.getKey()) : null;
-                interpolateAndApply(entry.getKey(), entry.getValue(), other, delta, context);
+            if (context.localPlayer().isPresent()
+                    && context.localPlayer().get().equals(MinecraftClient.getInstance().cameraEntity)) {
+                for (var entry : prevFrame.getValues().entrySet()) {
+                    Object other = nextFrame != null ? nextFrame.getValue(entry.getKey()) : null;
+                    interpolateAndApply(entry.getKey(), entry.getValue(), other, delta, context);
+                }
+            } else {
+                GlobalReplayContext.ENTITY_POS_OVERRIDES.clear();
             }
-
 
         } catch (Exception e) {
             LogUtils.getLogger().error("An error occured while reading animation frame " + frameNumber, e);
