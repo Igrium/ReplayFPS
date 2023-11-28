@@ -2,20 +2,25 @@ package com.igrium.replayfps_viewer.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.igrium.replayfps.util.NoHeaderException;
 import com.igrium.replayfps_viewer.ClientCapViewer;
 import com.igrium.replayfps_viewer.LoadedClientCap;
 import com.igrium.replayfps_viewer.util.GraphedChannel;
 import com.mojang.logging.LogUtils;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.SplitPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+import net.minecraft.util.Util;
 
 public class MainUI {
     public static final String FXML_PATH = "/assets/replayfps_viewer/ui/main.fxml";
@@ -46,8 +51,10 @@ public class MainUI {
         return loadedFile;
     }
 
+    private Stage loadingPopup;
+
     @FXML
-    protected void initialize() {
+    protected void initialize() throws Exception {
         headerViewController.getChannelsTable().getSelectionModel().selectedItemProperty().addListener((prop, oldVal, newVal) -> {
             if (newVal == null) {
                 channelGraph.getData().clear();
@@ -59,6 +66,7 @@ public class MainUI {
                 channelGraphController.fitGraph();
             }
         });
+
     }
     
     public void setLoadedFile(@Nullable LoadedClientCap loadedFile) {
@@ -78,14 +86,31 @@ public class MainUI {
 
     private void loadChannelGraph(int index) {
         var channel = loadedFile.getHeader().getChannels().get(index);
-        try {
-            var seriesList = GraphedChannel.create(loadedFile.getReader(), channel);
-            channelGraph.getData().clear();
-            channelGraph.getData().addAll(seriesList);
-        } catch (NoHeaderException | IOException e) {
-            LogUtils.getLogger().error("Error loading channel path.", e);
+        if (loadingPopup == null) {
+            loadingPopup = LoadingPopup.createLoadingPopup(mainPanel.getScene().getWindow());
         }
 
+        loadingPopup.show();
+        CompletableFuture.supplyAsync(() -> {
+            try {
+                return GraphedChannel.create(loadedFile.getReader(), channel);
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to load channel", e);
+            }
+        }, Util.getMainWorkerExecutor()).handleAsync(this::onChannelLoaded, Platform::runLater);
+        
+    }
+
+    private Object onChannelLoaded(List<Series<Number, Number>> seriesList, Throwable e) {
+        if (seriesList != null) {
+            channelGraph.getData().clear();
+            channelGraph.getData().addAll(seriesList);
+        }
+        if (e != null) {
+            LogUtils.getLogger().error("Error loading channel graph.", e);
+        }
+        loadingPopup.hide();
+        return null;
     }
 
     public void setAppInstance(ClientCapViewer appInstance) {

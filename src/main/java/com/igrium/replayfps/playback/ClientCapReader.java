@@ -76,7 +76,7 @@ public class ClientCapReader implements Closeable {
      * @throws IOException           If an IO exception occurs.
      * @throws IllegalStateException If the header has already been read.
      */
-    public void readHeader() throws IOException, IllegalStateException {
+    public synchronized void readHeader() throws IOException, IllegalStateException {
         if (header != null) {
             throw new IllegalStateException("The header has already been read!");
         }
@@ -115,7 +115,7 @@ public class ClientCapReader implements Closeable {
      * @throws IOException       If an IO exception occurs while reading the file.
      * @throws NoHeaderException If the header has not been read.
      */
-    public UnserializedFrame readFrame() throws IOException, NoHeaderException {
+    public synchronized UnserializedFrame readFrame() throws IOException, NoHeaderException {
         assertHeaderRead();
         if (endOfFile) return new UnserializedFrame(header);
 
@@ -157,7 +157,7 @@ public class ClientCapReader implements Closeable {
      * @throws NoHeaderException If the header has not been read (required for
      *                           frame length.)
      */
-    public int countFrames() throws NoHeaderException {
+    public synchronized int countFrames() throws NoHeaderException {
         assertHeaderRead();
         try {
             return (int) ((file.length() - headerLength) / frameLength);
@@ -176,7 +176,7 @@ public class ClientCapReader implements Closeable {
      * @throws IOException               If an IO exception occurs seeking within
      *                                   the file.
      */
-    public void seek(int frame) throws NoHeaderException, IndexOutOfBoundsException, IOException {
+    public synchronized void seek(int frame) throws NoHeaderException, IndexOutOfBoundsException, IOException {
         assertHeaderRead();
         if (frame == playhead) return;
         if (frame < 0) {
@@ -202,7 +202,7 @@ public class ClientCapReader implements Closeable {
      * @throws IOException If an IO exception is thrown when closing the file.
      */
     @Override
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         file.close();
     }
 }
