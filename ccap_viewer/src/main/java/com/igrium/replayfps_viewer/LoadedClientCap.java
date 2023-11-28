@@ -10,20 +10,24 @@ import com.igrium.replayfps.recording.ClientCapHeader;
 
 public class LoadedClientCap implements Closeable {
     private final ClientCapReader reader;
+    private int length;
 
     public LoadedClientCap(ClientCapReader reader) throws IOException {
         this.reader = reader;
         reader.readHeader();
+        length = reader.countFramesOrThrow();
     }
 
     public LoadedClientCap(File file) throws IOException {
         this.reader = new ClientCapReader(file);
         reader.readHeader();
+        length = reader.countFramesOrThrow();
     }
 
     public LoadedClientCap(RandomAccessFile file) throws IOException {
         this.reader = new ClientCapReader(file);
         reader.readHeader();
+        length = reader.countFramesOrThrow();
     }
 
     public final ClientCapHeader getHeader() {
@@ -32,6 +36,14 @@ public class LoadedClientCap implements Closeable {
 
     public ClientCapReader getReader() {
         return reader;
+    }
+
+    /**
+     * Get the length of this client-capture.
+     * @return Number of frames.
+     */
+    public int getLength() {
+        return length;
     }
 
     @Override

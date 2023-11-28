@@ -157,14 +157,26 @@ public class ClientCapReader implements Closeable {
      * @throws NoHeaderException If the header has not been read (required for
      *                           frame length.)
      */
-    public synchronized int countFrames() throws NoHeaderException {
-        assertHeaderRead();
+    public int countFrames() throws NoHeaderException {
         try {
-            return (int) ((file.length() - headerLength) / frameLength);
+            return countFramesOrThrow();
         } catch (IOException e) {
             LogUtils.getLogger().error("Error getting length of file.", e);
             return -1;
         }
+    }
+    
+    /**
+     * Count the number of frames within the file.
+     * 
+     * @return Number of frames.
+     * @throws NoHeaderException If the header has not been read (required for frame
+     *                           length.)
+     * @throws IOException       If an IO exception occurs reading the file.
+     */
+    public synchronized int countFramesOrThrow() throws NoHeaderException, IOException {
+        assertHeaderRead();
+        return (int) ((file.length() - headerLength) / frameLength);
     }
 
     /**

@@ -25,6 +25,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <Label text="Frame Rate">
@@ -34,11 +35,13 @@
                   </Label>
                   <Label text="Frame Rate Base" GridPane.rowIndex="1" />
                   <Label text="Aggregate Frame Rate" GridPane.rowIndex="2" />
-                  <Label text="Local Player ID" GridPane.rowIndex="3" />
+                  <Label text="Length (Seconds)" GridPane.rowIndex="3" />
+                  <Label text="Local Player ID" GridPane.rowIndex="4" />
                   <TextField fx:id="framerateField" editable="false" GridPane.columnIndex="1" />
                   <TextField fx:id="framerateBaseField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <TextField fx:id="finalFramerateField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <TextField fx:id="playerIDField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <TextField fx:id="lengthField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <TextField fx:id="playerIDField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                </children>
             </GridPane>
             <TitledPane fx:id="channelsPane" animated="false" collapsible="false" focusTraversable="false" maxHeight="1.7976931348623157E308" text="Channels" VBox.vgrow="ALWAYS">

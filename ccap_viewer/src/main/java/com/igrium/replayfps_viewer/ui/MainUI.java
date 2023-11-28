@@ -84,7 +84,7 @@ public class MainUI {
 
 
         if (loadedFile != null) {
-            headerViewController.loadHeader(loadedFile.getHeader());
+            headerViewController.loadHeader(loadedFile.getHeader(), loadedFile.getLength());
         } else {
             headerViewController.clear();
         }

@@ -3,6 +3,7 @@ package com.igrium.replayfps_viewer.ui;
 import com.igrium.replayfps.channel.handler.ChannelHandler;
 import com.igrium.replayfps.channel.handler.ChannelHandlers;
 import com.igrium.replayfps.recording.ClientCapHeader;
+import com.igrium.replayfps.util.AnimationUtils;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
@@ -22,6 +23,9 @@ public class HeaderUI {
 
     @FXML
     private TextField finalFramerateField;
+
+    @FXML
+    private TextField lengthField;
 
     @FXML
     private TextField playerIDField;
@@ -50,7 +54,7 @@ public class HeaderUI {
         channelsTable.getColumns().get(index).setCellValueFactory(new PropertyValueFactory<>(name));
     }
 
-    public void loadHeader(ClientCapHeader header) {
+    public void loadHeader(ClientCapHeader header, int numFrames) {
         if (header == null) {
             clear();
             return;
@@ -59,6 +63,10 @@ public class HeaderUI {
         framerateField.setText(Integer.toString(header.getFramerate()));
         framerateBaseField.setText(Integer.toString(header.getFramerateBase()));
         finalFramerateField.setText(Float.toString(header.getFramerateFloat()));
+        
+        float length = AnimationUtils.getDurationSeconds(numFrames, header.getFramerateFloat());
+        lengthField.setText(String.format("%.1f", length));
+
         playerIDField.setText(Integer.toString(header.getLocalPlayerID()));
 
         channelsPane.setText("Channels (%d)".formatted(header.numChannels()));
