@@ -19,7 +19,6 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.SplitPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Stage;
 import net.minecraft.util.Util;
 
 public class MainUI {
@@ -51,7 +50,14 @@ public class MainUI {
         return loadedFile;
     }
 
-    private Stage loadingPopup;
+    private LoadingPopup loadingPopup;
+
+    public LoadingPopup getLoadingPopup() {
+        if (loadingPopup == null) {
+            loadingPopup = LoadingPopup.createLoadingPopup(mainPanel.getScene().getWindow());
+        }
+        return loadingPopup;
+    }
 
     @FXML
     protected void initialize() throws Exception {
@@ -86,11 +92,10 @@ public class MainUI {
 
     private void loadChannelGraph(int index) {
         var channel = loadedFile.getHeader().getChannels().get(index);
-        if (loadingPopup == null) {
-            loadingPopup = LoadingPopup.createLoadingPopup(mainPanel.getScene().getWindow());
-        }
+        LoadingPopup loadingPopup = getLoadingPopup();
 
-        loadingPopup.show();
+        loadingPopup.getLabel().setText("Loading channel...");
+        loadingPopup.getStage().show();
         CompletableFuture.supplyAsync(() -> {
             try {
                 return GraphedChannel.create(loadedFile.getReader(), channel);
@@ -109,7 +114,7 @@ public class MainUI {
         if (e != null) {
             LogUtils.getLogger().error("Error loading channel graph.", e);
         }
-        loadingPopup.hide();
+        loadingPopup.getStage().hide();
         return null;
     }
 
