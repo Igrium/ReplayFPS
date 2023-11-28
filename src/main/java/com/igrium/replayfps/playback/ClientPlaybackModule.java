@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.igrium.replayfps.recording.ClientRecordingModule;
+import com.igrium.replayfps.util.GlobalReplayContext;
 import com.mojang.logging.LogUtils;
 import com.replaymod.core.Module;
 import com.replaymod.core.events.PreRenderCallback;
@@ -14,11 +15,13 @@ import com.replaymod.replay.events.ReplayClosingCallback;
 import com.replaymod.replay.events.ReplayOpenedCallback;
 import com.replaymod.replaystudio.replay.ReplayFile;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Vec3d;
 
 public class ClientPlaybackModule extends EventRegistrations implements Module {
     private static ClientPlaybackModule instance;
@@ -43,6 +46,12 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
 
     public ClientCapPlayer getCurrentPlayer() {
         return currentPlayer;
+    }
+
+    @Override
+    public void register() {
+        super.register();
+        ClientTickEvents.END_WORLD_TICK.register(this::tickClient);
     }
 
     { on(ReplayOpenedCallback.EVENT, this::onReplayOpened); }
@@ -82,12 +91,24 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         }
     }
 
-    { on(PreRenderCallback.EVENT, this::tick); }
-    private void tick() {
+    { on(PreRenderCallback.EVENT, this::tickRender); }
+    private void tickRender() {
         if (currentPlayer == null || client.world == null || client.getCameraEntity() == null) return;
 
         int timestamp = currentReplay.getReplaySender().currentTimeStamp();
         currentPlayer.tickPlayer(genContext(timestamp));
+    }
+    
+    private void tickClient(ClientWorld world) {
+        if (currentPlayer == null) {
+            GlobalReplayContext.ENTITY_POS_OVERRIDES.clear();
+            return;
+        }
+
+        for (Entity entity : world.getEntities()) {
+            Vec3d override = GlobalReplayContext.ENTITY_POS_OVERRIDES.get(entity);
+            if (override != null) entity.setPosition(override);
+        }
     }
 
     private ClientPlaybackContext genContext(int timestamp) {
