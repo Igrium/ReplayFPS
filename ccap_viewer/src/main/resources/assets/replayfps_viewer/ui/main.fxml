@@ -24,7 +24,7 @@
     </MenuBar>
       <SplitPane fx:id="mainPanel" dividerPositions="1.0" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <items>
-            <fx:include source="channel_graph.fxml" />
+            <fx:include fx:id="channelGraph" source="channel_graph.fxml" />
             <fx:include fx:id="headerView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" source="header.fxml" />
          </items>
       </SplitPane>

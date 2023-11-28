@@ -22,11 +22,13 @@ public class GraphedChannel {
 
         UnserializedFrame first = reader.readFrame();
         T firstVal = first.getValue(channel);
+        if (firstVal == null) return data;
 
         // Initialize series objects using first frame.
         for (float val : channel.getChannelType().getRawValues(firstVal)) {
             Series<Number, Number> series = new Series<>();
             series.getData().add(new XYChart.Data<>(0, val));
+            data.add(series);
         }
         
         if (data.isEmpty()) return data;

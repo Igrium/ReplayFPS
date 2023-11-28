@@ -55,7 +55,7 @@ public class MainUI {
             loadChannelGraph(loadedFile);
         } else {
             headerViewController.clear();
-            channelGraph.getData().clear();
+            channelGraphController.getChart().getData().clear();
         }
     }
 
@@ -63,7 +63,7 @@ public class MainUI {
         for (var channel : loadedFile.getHeader().getChannels()) {
             try {
                 var serieses = GraphedChannel.create(loadedFile.getReader(), channel);
-                channelGraph.getData().addAll(serieses);
+                channelGraphController.getChart().getData().addAll(serieses);
             } catch (NoHeaderException | IOException e) {
                 LogUtils.getLogger().error("Error loading channel path.", e);
             }
