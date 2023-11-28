@@ -55,6 +55,9 @@ public class MainUI {
             }
 
             loadChannelGraph(newVal.getIndex());
+            if (oldVal == null) {
+                channelGraphController.fitGraph();
+            }
         });
     }
     

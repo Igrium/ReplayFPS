@@ -43,7 +43,7 @@ public class HeaderUI {
         setColumnName(2, "type");
         setColumnName(3, "length");
 
-        channelsTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        channelsTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
     private void setColumnName(int index, String name) {

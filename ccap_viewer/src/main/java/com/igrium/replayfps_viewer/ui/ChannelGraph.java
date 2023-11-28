@@ -11,7 +11,7 @@ import javafx.scene.input.ScrollEvent;
 
 public class ChannelGraph {
     
-    private final DoubleProperty xScale = new SimpleDoubleProperty(5);
+    private final DoubleProperty xScale = new SimpleDoubleProperty(20);
     
     public double getXScale() {
         return xScale.get();
@@ -99,17 +99,51 @@ public class ChannelGraph {
         });
 
         chart.addEventFilter(ScrollEvent.SCROLL, e -> {
+            double factor =  Math.pow(2, -e.getDeltaY() / 500d);
             if (e.isAltDown()) {
-                setXScale(getXScale() * Math.pow(2, -e.getDeltaY() / 1000));
+                zoom(factor, 1, e.getX(), e.getY());
+            } else if (e.isControlDown()) {
+                zoom(1, factor, e.getX(), e.getY());
             } else {
-                setXScale(getXScale() * Math.pow(2, -e.getDeltaX() / 1000));
-                setYScale(getYScale() * Math.pow(2, -e.getDeltaY() / 1000));
+                zoom(factor, factor, e.getX(), e.getY());
             }
             e.consume();
         });
 
     }
 
+    public void zoom(double xFactor, double yFactor, double centerX, double centerY) {
+        if (xFactor <= 0) throw new IllegalArgumentException("X factor must be greater than 0.");
+        if (yFactor <= 0) throw new IllegalArgumentException("Y factor must be greater than 0.");
+        
+
+        // These calculations happen in arbitrary variables away from the actual values
+        // to avoid graph interval recalculation.
+        if (xFactor != 1) {
+            double oldScale = getXScale();
+            double newScale = oldScale * xFactor;
+            double xRoot = xAxis.getLowerBound();
+
+            xRoot += centerX * oldScale;
+            xRoot -= centerX * newScale;
+
+            xAxis.setLowerBound(xRoot);
+            setXScale(newScale);
+        }
+
+        if (yFactor != 1) {
+            centerY = chart.getHeight() - centerY;
+            double oldScale = getYScale();
+            double newScale = oldScale * yFactor;
+            double yRoot = yAxis.getLowerBound();
+            
+            yRoot += centerY * oldScale;
+            yRoot -= centerY * newScale;
+
+            yAxis.setLowerBound(yRoot);
+            setYScale(newScale);
+        }
+    }
     
     private void translateX(double amount) {
         if (amount == 0) return;
@@ -122,17 +156,26 @@ public class ChannelGraph {
     }
 
     private void recalculateX() {
-        xAxis.setUpperBound(chart.getWidth() * getXScale() + xAxis.getLowerBound());
+        xAxis.setUpperBound(getChartX(chart.getWidth()));
     }
 
     private void recalculateY() {
-        yAxis.setUpperBound(chart.getHeight() * getYScale() + yAxis.getLowerBound());
+        yAxis.setUpperBound(getChartY(chart.getHeight()));
     }
-    private void setMaxX(double maxX) {
+
+    public double getChartX(double screenX) {
+        return screenX * getXScale() + xAxis.getLowerBound();
+    }
+
+    public double getChartY(double screenY) {
+        return screenY * getYScale() + yAxis.getLowerBound();
+    }
+
+    public void setMaxX(double maxX) {
         setXScale((maxX - xAxis.getLowerBound()) / chart.getWidth());
     }
 
-    private void setMaxY(double maxY) {
+    public void setMaxY(double maxY) {
         setYScale((maxY - yAxis.getLowerBound()) / chart.getHeight());
     }
 
