@@ -126,7 +126,7 @@ public class HeaderUI {
             this.index = index;
             
             Identifier id = ChannelHandlers.REGISTRY.inverse().get(handler);
-            this.id = id != null ? id.toString() : "";
+            this.id = id != null ? id.toString() : "[unknown]";
 
             this.type = handler.getChannelType().getName();
             this.length = handler.getChannelType().getSize();
