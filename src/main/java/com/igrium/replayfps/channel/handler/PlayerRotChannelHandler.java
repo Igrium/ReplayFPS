@@ -20,7 +20,7 @@ public class PlayerRotChannelHandler implements ChannelHandler<Vector2fc> {
     @Override
     public Vector2fc capture(ClientCaptureContext context) {
         ClientPlayerEntity player = context.localPlayer();
-        return new Vector2f(player.getPitch(context.tickDelta()), player.getYaw(context.tickDelta()));
+        return new Vector2f(player.getPitch(), player.getYaw());
     }
 
     @Override
