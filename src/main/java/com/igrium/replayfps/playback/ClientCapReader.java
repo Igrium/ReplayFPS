@@ -131,6 +131,7 @@ public class ClientCapReader implements Closeable {
             return new UnserializedFrame(header);
         }
 
+        playhead += 1;
         return new UnserializedFrame(header, channels);
 
     }

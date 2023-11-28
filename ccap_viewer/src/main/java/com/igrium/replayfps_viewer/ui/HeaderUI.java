@@ -5,6 +5,7 @@ import com.igrium.replayfps.channel.handler.ChannelHandlers;
 import com.igrium.replayfps.recording.ClientCapHeader;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -31,12 +32,18 @@ public class HeaderUI {
     @FXML
     private TableView<ChannelEntry> channelsTable;
 
+    public TableView<ChannelEntry> getChannelsTable() {
+        return channelsTable;
+    }
+
     @FXML
     public void initialize() {
         setColumnName(0, "index");
         setColumnName(1, "id");
         setColumnName(2, "type");
         setColumnName(3, "length");
+
+        channelsTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     private void setColumnName(int index, String name) {
@@ -75,13 +82,13 @@ public class HeaderUI {
     }
 
     public static class ChannelEntry {
-        private String index;
+        private int index;
         
-        public String getIndex() {
+        public int getIndex() {
             return index;
         }
 
-        public void setIndex(String index) {
+        public void setIndex(int index) {
             this.index = index;
         }
 
@@ -105,24 +112,24 @@ public class HeaderUI {
             this.type = type;
         }
 
-        private String length;
+        private int length;
 
-        public String getLength() {
+        public int getLength() {
             return length;
         }
 
-        public void setLength(String length) {
+        public void setLength(int length) {
             this.length = length;
         }
 
         public ChannelEntry apply(ChannelHandler<?> handler, int index) {
-            this.index = Integer.toString(index);
+            this.index = index;
             
             Identifier id = ChannelHandlers.REGISTRY.inverse().get(handler);
             this.id = id != null ? id.toString() : "";
 
             this.type = handler.getChannelType().getName();
-            this.length = Integer.toString(handler.getChannelType().getSize());
+            this.length = handler.getChannelType().getSize();
 
             return this;
         }

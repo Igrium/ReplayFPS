@@ -45,29 +45,44 @@ public class MainUI {
     public LoadedClientCap getLoadedFile() {
         return loadedFile;
     }
+
+    @FXML
+    protected void initialize() {
+        headerViewController.getChannelsTable().getSelectionModel().selectedItemProperty().addListener((prop, oldVal, newVal) -> {
+            if (newVal == null) {
+                channelGraph.getData().clear();
+                return;
+            }
+
+            loadChannelGraph(newVal.getIndex());
+        });
+    }
     
     public void setLoadedFile(@Nullable LoadedClientCap loadedFile) {
         if (this.loadedFile == loadedFile) return;
         this.loadedFile = loadedFile;
 
+        headerViewController.getChannelsTable().getSelectionModel().clearSelection();
+        channelGraph.getData().clear();
+
+
         if (loadedFile != null) {
             headerViewController.loadHeader(loadedFile.getHeader());
-            loadChannelGraph(loadedFile);
         } else {
             headerViewController.clear();
-            channelGraph.getData().clear();
         }
     }
 
-    private void loadChannelGraph(LoadedClientCap loadedFile) {
-        for (var channel : loadedFile.getHeader().getChannels()) {
-            try {
-                var serieses = GraphedChannel.create(loadedFile.getReader(), channel);
-                channelGraph.getData().addAll(serieses);
-            } catch (NoHeaderException | IOException e) {
-                LogUtils.getLogger().error("Error loading channel path.", e);
-            }
+    private void loadChannelGraph(int index) {
+        var channel = loadedFile.getHeader().getChannels().get(index);
+        try {
+            var seriesList = GraphedChannel.create(loadedFile.getReader(), channel);
+            channelGraph.getData().clear();
+            channelGraph.getData().addAll(seriesList);
+        } catch (NoHeaderException | IOException e) {
+            LogUtils.getLogger().error("Error loading channel path.", e);
         }
+
     }
 
     public void setAppInstance(ClientCapViewer appInstance) {
