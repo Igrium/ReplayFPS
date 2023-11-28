@@ -13,32 +13,66 @@ public class ChannelGraph {
     
     private final DoubleProperty xScale = new SimpleDoubleProperty(20);
     
+    /**
+     * The number of chart units per pixel on the X axis.
+     */
     public double getXScale() {
         return xScale.get();
     }
 
+    /**
+     * Set the number of chart units per pixel on the X axis.
+     * @param xScale New X scale.
+     */
     public void setXScale(double xScale) {
         this.xScale.set(xScale);
     }
 
+    /**
+     * The number of chart units per pixel on the X axis.
+     */
     public DoubleProperty xScaleProperty() {
         return xScale;
     }
 
     private final DoubleProperty yScale = new SimpleDoubleProperty(2);
 
+    /**
+     * The number of chart units per pixel on the Y axis.
+     */
     public double getYScale() {
         return yScale.get();
     }
 
+    /**
+     * Set the number of chart units per pixel on the Y axis.
+     * @param yScale New Y scale.
+     */
     public void setYScale(double yScale) {
         this.yScale.set(yScale);
     }
 
+    /**
+     * The number of chart units per pixel on the Y axis.
+     */
     public DoubleProperty yScaleProperty() {
         return yScale;
     }
 
+    private final DoubleProperty desiredTickInterval = new SimpleDoubleProperty(48);
+
+    public double getDesiredTickInterval() {
+        return desiredTickInterval.get();
+    }
+
+    public void setDesiredTickInterval(double tickInterval) {
+        desiredTickInterval.set(tickInterval);
+    }
+
+    public DoubleProperty desiredTickIntervalProperty() {
+        return desiredTickInterval;
+    }
+ 
     @FXML
     private LineChart<Number, Number> chart;
 
@@ -67,9 +101,13 @@ public class ChannelGraph {
     private void initialize() {
         xScale.addListener((prop, oldVal, newVal) -> recalculateX());
         yScale.addListener((prop, oldVal, newVal) -> recalculateY());
+        desiredTickInterval.addListener((prop, oldVal, newVal) -> recalculateX());
 
         xAxis.lowerBoundProperty().addListener((prop, oldVal, newVal) -> recalculateX());
         yAxis.lowerBoundProperty().addListener((prop, xAxis, yAxis) -> recalculateY());
+
+        chart.widthProperty().addListener((prop, oldVal, newVal) -> recalculateX());
+        chart.heightProperty().addListener((prop, oldVal, newVal) -> recalculateY());
 
         recalculateX();
         recalculateY();
@@ -157,6 +195,11 @@ public class ChannelGraph {
 
     private void recalculateX() {
         xAxis.setUpperBound(getChartX(chart.getWidth()));
+        xAxis.setTickUnit(getTickSize());
+    }
+
+    private double getTickSize() {
+        return Math.max(Math.round(getDesiredTickInterval() * getXScale() / 5) * 5, 1);
     }
 
     private void recalculateY() {
