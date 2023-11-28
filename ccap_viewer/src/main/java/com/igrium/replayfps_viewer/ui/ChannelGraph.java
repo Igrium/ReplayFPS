@@ -5,7 +5,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -109,21 +108,8 @@ public class ChannelGraph {
             e.consume();
         });
 
-        // BOGUS TESTING DATA
-        // XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        // addData(series, 1970, 15);
-        // addData(series, 1980, 30);
-        // addData(series, 1990, 60);
-        // addData(series, 2000, 120);
-        // addData(series, 2014, 300);
-        // addData(series, 2013, 240);
-        // chart.getData().add(series);
-
     }
 
-    private void addData(XYChart.Series<Number, Number> series, Number first, Number second) {
-        series.getData().add(new XYChart.Data<>(first, second));
-    }
     
     private void translateX(double amount) {
         if (amount == 0) return;
@@ -141,5 +127,52 @@ public class ChannelGraph {
 
     private void recalculateY() {
         yAxis.setUpperBound(chart.getHeight() * getYScale() + yAxis.getLowerBound());
+    }
+    private void setMaxX(double maxX) {
+        setXScale((maxX - xAxis.getLowerBound()) / chart.getWidth());
+    }
+
+    private void setMaxY(double maxY) {
+        setYScale((maxY - yAxis.getLowerBound()) / chart.getHeight());
+    }
+
+    public void fitGraph() {
+        BoundsFinder bounds = new BoundsFinder().execute();
+        if (!bounds.didInit) return;
+
+        xAxis.setLowerBound(bounds.minX);
+        yAxis.setLowerBound(bounds.minY);
+        setMaxX(bounds.maxX);
+        setMaxY(bounds.maxY);
+    }
+
+    // The fact that this needs to be a dedicated object is dumb, but the use of the
+    // forEach loop won't let minX (etc) be local variables.
+    private class BoundsFinder {
+        boolean didInit = false;
+        double minX;
+        double maxX;
+        double minY;
+        double maxY;
+
+        public BoundsFinder execute() {
+            chart.getData().stream().flatMap(s -> s.getData().stream()).forEach(v -> {
+                double xVal = v.getXValue().doubleValue();
+                double yVal = v.getYValue().doubleValue();
+                if (didInit) {
+                    if (xVal < minX) minX = xVal;
+                    if (xVal > maxX) maxX = xVal;
+                    if (yVal < minY) minY = yVal;
+                    if (yVal > maxY) maxY = yVal;
+                } else {
+                    minX = xVal;
+                    maxX = xVal;
+                    minY = yVal;
+                    maxY = yVal;
+                    didInit = true;
+                }
+            });
+            return this;
+        }
     }
 }
