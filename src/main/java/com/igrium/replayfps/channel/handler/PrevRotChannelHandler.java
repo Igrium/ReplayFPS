@@ -31,4 +31,8 @@ public class PrevRotChannelHandler implements ChannelHandler<Vector2fc> {
         });
     }
     
+    @Override
+    public boolean shouldInterpolate() {
+        return true;
+    }
 }

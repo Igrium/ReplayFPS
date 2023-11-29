@@ -53,7 +53,8 @@ public class ReplayFPS implements ModInitializer {
             consumer.accept(ChannelHandlers.PLAYER_ROT);
             consumer.accept(ChannelHandlers.PREV_ROT);
             consumer.accept(ChannelHandlers.PLAYER_VELOCITY);
-            // consumer.accept(ChannelHandlers.PLAYER_STRIDE);
+            consumer.accept(ChannelHandlers.PLAYER_STRIDE);
+            consumer.accept(ChannelHandlers.HORIZONTAL_SPEED);
         });
     }
 }

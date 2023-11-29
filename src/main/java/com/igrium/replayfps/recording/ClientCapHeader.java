@@ -39,7 +39,7 @@ public class ClientCapHeader {
 
     private List<ChannelHandler<?>> channels;
     
-    private int framerate = 60;
+    private int framerate = 40;
     private int framerateBase = 1;
     private int localPlayerID = -1;
 

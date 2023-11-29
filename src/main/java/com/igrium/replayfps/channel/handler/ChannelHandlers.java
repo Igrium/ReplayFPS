@@ -21,6 +21,7 @@ public class ChannelHandlers {
     public static final PrevRotChannelHandler PREV_ROT = register(new PrevRotChannelHandler(), new Identifier("replayfps:prev_rot"));
     public static final PlayerVelocityChannelHandler PLAYER_VELOCITY = register(new PlayerVelocityChannelHandler(), new Identifier("replayfps:player_velocity"));
     public static final PlayerStrideChannelHandler PLAYER_STRIDE = register(new PlayerStrideChannelHandler(), new Identifier("replayfps:player_stride"));
+    public static final HorizontalSpeedHandler HORIZONTAL_SPEED = register(new HorizontalSpeedHandler(), new Identifier("replayfps:horizontal_speed"));
 
     public static class PlaceholderChannelHandler implements ChannelHandler<Object> {
         private final ChannelType<Object> type;
