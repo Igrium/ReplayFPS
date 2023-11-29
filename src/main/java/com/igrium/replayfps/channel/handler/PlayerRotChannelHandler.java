@@ -28,6 +28,13 @@ public class PlayerRotChannelHandler implements ChannelHandler<Vector2fc> {
         context.localPlayer().ifPresent(player -> {
             player.setPitch(val.x());
             player.setYaw(val.y());
+
+            player.prevPitch = val.x();
+            player.prevYaw = val.y();
+
+            // For some reason, yaw doesn't render properly if we don't do this.
+            player.setHeadYaw(val.y());
+            player.prevHeadYaw = val.y();
         });
     }
     

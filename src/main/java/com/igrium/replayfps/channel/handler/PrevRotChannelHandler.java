@@ -8,6 +8,7 @@ import com.igrium.replayfps.channel.type.ChannelTypes;
 import com.igrium.replayfps.playback.ClientPlaybackContext;
 import com.igrium.replayfps.recording.ClientCaptureContext;
 
+@Deprecated
 public class PrevRotChannelHandler implements ChannelHandler<Vector2fc> {
 
     @Override
@@ -25,10 +26,10 @@ public class PrevRotChannelHandler implements ChannelHandler<Vector2fc> {
 
     @Override
     public void apply(Vector2fc val, ClientPlaybackContext context) throws Exception {
-        context.localPlayer().ifPresent(player -> {
-            player.prevPitch = val.x();
-            player.prevYaw = val.y();
-        });
+        // context.localPlayer().ifPresent(player -> {
+        //     player.prevPitch = val.x();
+        //     player.prevYaw = val.y();
+        // });
     }
     
     @Override

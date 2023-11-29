@@ -7,6 +7,7 @@ import com.igrium.replayfps.recording.ClientCaptureContext;
 
 import net.minecraft.util.math.Vec3d;
 
+@Deprecated
 public class PrevPosChannelHandler implements ChannelHandler<Vec3d> {
 
     @Override

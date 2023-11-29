@@ -10,6 +10,7 @@ import com.igrium.replayfps.recording.ClientCaptureContext;
 
 import net.minecraft.util.Identifier;
 
+@SuppressWarnings("deprecation")
 public class ChannelHandlers {
     
     public static final BiMap<Identifier, ChannelHandler<?>> REGISTRY = HashBiMap.create();
