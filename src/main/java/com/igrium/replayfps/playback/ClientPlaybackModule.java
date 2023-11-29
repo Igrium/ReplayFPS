@@ -3,6 +3,7 @@ package com.igrium.replayfps.playback;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import com.igrium.replayfps.recording.ClientRecordingModule;
 import com.igrium.replayfps.util.GlobalReplayContext;
@@ -95,6 +96,9 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         if (currentPlayer == null || client.world == null || client.getCameraEntity() == null) return;
 
         int timestamp = currentReplay.getReplaySender().currentTimeStamp();
+        ClientPlaybackContext context = genContext(timestamp);
+
+        if (!Objects.equals(client.getCameraEntity(), context.localPlayer().orElse(null))) return;
         currentPlayer.tickPlayer(genContext(timestamp));
     }
     

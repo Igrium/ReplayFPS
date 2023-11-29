@@ -13,7 +13,7 @@ import com.igrium.replayfps.recording.ClientRecordingModule;
 import com.igrium.replayfps.util.ReplayModHooks;
 
 public class ReplayFPS implements ModInitializer {
-    public static final Logger LOGGER = LoggerFactory.getLogger("replayfps");
+    public static final Logger LOGGER = LoggerFactory.getLogger("ReplayFPS");
 
     private static ReplayFPS instance;
 

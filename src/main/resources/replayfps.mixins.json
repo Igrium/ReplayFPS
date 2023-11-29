@@ -6,7 +6,8 @@
         "ReplayModMixin",
         "PacketListenerAccessor",
         "ConnectionEventHandlerMixin",
-        "PacketListenerMixin"
+        "PacketListenerMixin",
+        "GameRendererMixin"
     ],
     "injectors": {
         "defaultRequire": 1

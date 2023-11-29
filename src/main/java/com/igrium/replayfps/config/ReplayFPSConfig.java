@@ -26,7 +26,7 @@ public final class ReplayFPSConfig {
     /**
      * Whether the HUD will be rendered in first-person replays.
      */
-    public boolean getDrawHud() {
+    public boolean shouldDrawHud() {
         return drawHud;
     }
 

@@ -41,8 +41,9 @@ public class ClientCapReader implements Closeable {
      */
     public ClientCapReader(InputStream stream) throws IOException {
         File tempFile = File.createTempFile("client", ".ccap");
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(tempFile));
-        stream.transferTo(out);
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(tempFile))) {
+            stream.transferTo(out);
+        };
 
         tempFile.deleteOnExit();
         this.file = new RandomAccessFile(tempFile, "r");
