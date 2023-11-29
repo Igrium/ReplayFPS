@@ -27,6 +27,13 @@ public interface ChannelHandler<T> {
         return false;
     }
 
+    /**
+     * If true, this channel applies every client tick instead of every frame.
+     */
+    public default boolean applyPerTick() {
+        return false;
+    }
+
     public static <T> void writeChannel(ClientCaptureContext context, DataOutput out, ChannelHandler<T> handler) throws Exception {
         T val = handler.capture(context);
         handler.getChannelType().write(out, val);

@@ -57,6 +57,8 @@ public class ClientCapPlayer implements Closeable {
         return error.isPresent();
     }
 
+    private ChannelValueCache valueCache = new ChannelValueCache();
+
     /**
      * Read and apply the cliencap animation on the current frame.
      * @param context Playback context.
@@ -112,6 +114,28 @@ public class ClientCapPlayer implements Closeable {
         }
 
     }
+    
+
+    /**
+     * Called every time the client ticks (instead of every frame).
+     */
+    public void tickClient(ClientPlaybackContext context) {
+        try {
+            for (var entry : valueCache.map().entrySet()) {
+                castAndApplyChannel(entry.getKey(), entry.getValue(), context);
+            }
+        } catch (Exception e) {
+            LogUtils.getLogger().error("An error occured while applying a cached channel value.", e);
+            error = Optional.of(e);
+        } finally {
+            valueCache.clear();
+        }
+    }
+
+    // Seperate method needed for generic.
+    private <T> void castAndApplyChannel(ChannelHandler<T> handler, Object value, ClientPlaybackContext context) throws Exception {
+        handler.apply(handler.getType().cast(value), context);
+    }
 
     private UnserializedFrame getFrame(int index, boolean poll) {
         if (index == lastFrameAIndex && lastFrameA != null)
@@ -138,10 +162,18 @@ public class ClientCapPlayer implements Closeable {
         
         if (handler.shouldInterpolate() && value2 != null) {
             T casted2 = handler.getType().cast(value2);
-            handler.apply(handler.getChannelType().interpolate(casted, casted2, delta), context);
+            applyChannelOrCache(handler, handler.getChannelType().interpolate(casted, casted2, delta), context);
 
         } else {
-            handler.apply(casted, context);
+            applyChannelOrCache(handler, casted, context);
+        }
+    }
+
+    private <T> void applyChannelOrCache(ChannelHandler<T> handler, T value, ClientPlaybackContext context) throws Exception {
+        if (handler.applyPerTick()) {
+            valueCache.put(handler, value);
+        } else {
+            handler.apply(value, context);
         }
     }
 

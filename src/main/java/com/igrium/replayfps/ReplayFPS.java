@@ -50,10 +50,10 @@ public class ReplayFPS implements ModInitializer {
 
         ChannelRegistrationCallback.EVENT.register(consumer -> {
             consumer.accept(ChannelHandlers.PLAYER_POS);
-            // consumer.accept(ChannelHandlers.PREV_POS);
             consumer.accept(ChannelHandlers.PLAYER_ROT);
             consumer.accept(ChannelHandlers.PREV_ROT);
             consumer.accept(ChannelHandlers.PLAYER_VELOCITY);
+            // consumer.accept(ChannelHandlers.PLAYER_STRIDE);
         });
     }
 }

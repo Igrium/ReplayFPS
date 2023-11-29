@@ -21,7 +21,6 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
 
 public class ClientPlaybackModule extends EventRegistrations implements Module {
     private static ClientPlaybackModule instance;
@@ -105,11 +104,14 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
             return;
         }
 
-        for (Entity entity : world.getEntities()) {
-            Vec3d override = GlobalReplayContext.ENTITY_POS_OVERRIDES.get(entity);
-            if (override != null) entity.setPosition(override);
-        }
+        currentPlayer.tickClient(genContext(currentReplay.getReplaySender().currentTimeStamp()));
+
+        // for (Entity entity : world.getEntities()) {
+        //     Vec3d override = GlobalReplayContext.ENTITY_POS_OVERRIDES.get(entity);
+        //     if (override != null) entity.setPosition(override);
+        // }
     }
+    
 
     private ClientPlaybackContext genContext(int timestamp) {
         return new ClientPlaybackContextImpl(client, currentReplay, timestamp, currentPlayer.getReader().getHeader().getLocalPlayerID());
