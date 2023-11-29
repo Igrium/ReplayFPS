@@ -2,16 +2,16 @@
     "schemaVersion": 1,
     "id": "replayfps",
     "version": "${version}",
-    "name": "ReplayFPS",
-    "description": "This is an example description! Tell everyone what your mod is about!",
+    "name": "Replay FPS",
+    "description": "An addon to the Replay Mod that improves how first-person views are handled.",
     "authors": [
-        "Me!"
+        "Igrium"
     ],
     "contact": {
-        "homepage": "https://fabricmc.net/",
-        "sources": "https://github.com/FabricMC/fabric-example-mod"
+        "homepage": "https://github.com/Igrium/ReplayFPS",
+        "sources": "https://github.com/Igrium/ReplayFPS"
     },
-    "license": "CC0-1.0",
+    "license": "MIT",
     "icon": "assets/replayfps/icon.png",
     "environment": "*",
     "entrypoints": {
@@ -26,7 +26,8 @@
         "fabricloader": ">=0.14.24",
         "minecraft": "~1.20.1",
         "java": ">=17",
-        "fabric-api": "*"
+        "fabric-api": "*",
+        "replaymod": ">=1.20.1-2.6.13"
     },
     "suggests": {
         "another-mod": "*"
