@@ -17,6 +17,9 @@
     "entrypoints": {
         "main": [
             "com.igrium.replayfps.ReplayFPS"
+        ],
+        "modmenu": [
+            "com.igrium.replayfps.ReplayFPSModMenu"
         ]
     },
     "mixins": [
@@ -27,7 +30,8 @@
         "minecraft": "~1.20.1",
         "java": ">=17",
         "fabric-api": "*",
-        "replaymod": ">=1.20.1-2.6.13"
+        "replaymod": ">=1.20.1-2.6.13",
+        "cloth-config": ">=12.0.111"
     },
     "suggests": {
         "another-mod": "*"

@@ -18,6 +18,9 @@ repositories {
         metadataSources { artifact() }
         content { includeGroup("com.replaymod") }
     }
+
+    maven { url "https://maven.shedaniel.me/" }
+    maven { url "https://maven.terraformersmc.com/releases/" }
 }
 dependencies {
     // To change the versions see the gradle.properties file
@@ -28,6 +31,9 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "com.replaymod:replaymod-${project.replaymod_version}"
+
+    modImplementation "me.shedaniel.cloth:cloth-config-fabric:12.0.111"
+    modApi "com.terraformersmc:modmenu:7.1.0"
     
     // Uncomment the following line to enable the deprecated Fabric API modules. 
     // These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.

@@ -1,0 +1,6 @@
+{
+    "title.replayfps.config": "Replay FPS Config",
+    "category.replayfps.general": "General",
+    "option.replayfps.drawhud": "Render HUD",
+    "option.replayfps.drawhud.tooltip": "Whether to render the HUD (hotbar, etc) in replay renderings."
+}

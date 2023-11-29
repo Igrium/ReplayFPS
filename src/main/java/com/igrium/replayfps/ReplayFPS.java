@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.igrium.replayfps.channel.handler.ChannelHandlers;
+import com.igrium.replayfps.config.ReplayFPSConfig;
 import com.igrium.replayfps.events.ChannelRegistrationCallback;
 import com.igrium.replayfps.playback.ClientPlaybackModule;
 import com.igrium.replayfps.recording.ClientRecordingModule;
@@ -18,6 +19,12 @@ public class ReplayFPS implements ModInitializer {
 
     public static ReplayFPS getInstance() {
         return instance;
+    }
+
+    private ReplayFPSConfig config;
+
+    public ReplayFPSConfig getConfig() {
+        return config;
     }
 
     private ClientRecordingModule clientRecordingModule;
@@ -35,6 +42,7 @@ public class ReplayFPS implements ModInitializer {
     @Override
     public void onInitialize() {
         instance = this;
+        config = ReplayFPSConfig.load();
 
         ReplayModHooks.onReplayModInit(mod -> {
             clientRecordingModule = new ClientRecordingModule(mod);
