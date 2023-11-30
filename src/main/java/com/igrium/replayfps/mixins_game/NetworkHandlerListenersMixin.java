@@ -13,7 +13,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 
 @Mixin(ClientPlayNetworkHandler.class)
-public class NetworkHandlerListeners {
+public class NetworkHandlerListenersMixin {
 
     @Shadow
     private MinecraftClient client;

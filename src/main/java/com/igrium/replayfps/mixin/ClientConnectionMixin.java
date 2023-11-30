@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.igrium.replayfps.networking.PacketReceivedEvent;
+import com.igrium.replayfps.networking.event.PacketReceivedEvent;
 
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.PacketListener;

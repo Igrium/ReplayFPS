@@ -3,7 +3,8 @@
     "package": "com.igrium.replayfps.mixins_game",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "NetworkHandlerListeners"
+        "NetworkHandlerListenersMixin",
+        "ClientPlayerEntityListenersMixin"
     ],
     "injectors": {
         "defaultRequire": 1
