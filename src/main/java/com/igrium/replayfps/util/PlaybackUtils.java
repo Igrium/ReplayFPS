@@ -3,6 +3,7 @@ package com.igrium.replayfps.util;
 import com.igrium.replayfps.playback.ClientCapPlayer;
 import com.igrium.replayfps.playback.ClientPlaybackContext;
 import com.igrium.replayfps.playback.ClientPlaybackModule;
+import com.replaymod.simplepathing.ReplayModSimplePathing;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -64,4 +65,14 @@ public final class PlaybackUtils {
         return Integer.valueOf(camera.getId()).equals(getCurrentPlaybackPlayerID());
     }
     
+    /**
+     * If we're currently in the replay editor.
+     * 
+     * @return <code>true</code> if we're in the replay editor or rendering.
+     *         <code>false</code> if we're in the main menu or in a regular game.
+     */
+    public static boolean isPlayingReplay() {
+        // TODO: Determine if there's something more reliable than this hack.
+        return ReplayModSimplePathing.instance.getGuiPathing() != null;
+    }
 }

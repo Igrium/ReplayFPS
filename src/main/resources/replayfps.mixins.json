@@ -12,7 +12,8 @@
         "SkipOverlayDuringRenderMixin",
         "ShowHotbarDuringRenderMixin",
         "ClientPacketListenerMixin",
-        "ClientConnectionAccessor"
+        "ClientConnectionAccessor",
+        "ClientConnectionMixin"
     ],
     "injectors": {
         "defaultRequire": 1

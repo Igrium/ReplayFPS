@@ -102,6 +102,11 @@ public class CustomReplayPacketManager {
             throw new IllegalStateException("Replay packets can only be sent while a game is active.");
         }
 
+        if (PlaybackUtils.isPlayingReplay()) {
+            LogUtils.getLogger().warn("Tried to send a fake packet from the replay editor.");
+            return;
+        }
+
         Channel channel = ((ClientConnectionAccessor) netHandler.getConnection()).replayfps$getChannel();
         if (channel.eventLoop().inEventLoop()) {
             sendFakePacketInternal(channel, packet);

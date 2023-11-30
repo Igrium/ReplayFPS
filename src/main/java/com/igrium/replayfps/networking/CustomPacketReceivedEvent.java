@@ -9,13 +9,13 @@ import net.minecraft.util.Identifier;
 /**
  * Called when a custom packet of any kind is recieved on the client.
  */
-public interface ClientPacketReceivedEvent {
+public interface CustomPacketReceivedEvent {
 
-    public static final Event<ClientPacketReceivedEvent> EVENT = EventFactory.createArrayBacked(
-            ClientPacketReceivedEvent.class,
+    public static final Event<CustomPacketReceivedEvent> EVENT = EventFactory.createArrayBacked(
+            CustomPacketReceivedEvent.class,
             listeners -> (channel, payload) -> {
 
-                for (ClientPacketReceivedEvent listener : listeners) {
+                for (CustomPacketReceivedEvent listener : listeners) {
                     if (listener.onPacketReceived(channel, PacketByteBufs.slice(payload)))
                         return true;
                 }

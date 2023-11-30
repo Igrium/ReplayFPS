@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.igrium.replayfps.networking.ClientPacketReceivedEvent;
+import com.igrium.replayfps.networking.CustomPacketReceivedEvent;
 
 import net.fabricmc.fabric.impl.networking.AbstractChanneledNetworkAddon;
 import net.minecraft.network.PacketByteBuf;
@@ -20,7 +20,7 @@ public class ClientPacketListenerMixin {
             remap = false,
             cancellable = true)
     protected void replayfps$handle(Identifier channelName, PacketByteBuf originalBuf, CallbackInfoReturnable<Boolean> ci) {
-        if (ClientPacketReceivedEvent.EVENT.invoker().onPacketReceived(channelName, originalBuf)) {
+        if (CustomPacketReceivedEvent.EVENT.invoker().onPacketReceived(channelName, originalBuf)) {
             ci.setReturnValue(true);
         }
     }
