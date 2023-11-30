@@ -7,7 +7,9 @@
         "PacketListenerAccessor",
         "ConnectionEventHandlerMixin",
         "PacketListenerMixin",
-        "GameRendererMixin"
+        "GameRendererMixin",
+        "SkipHudDuringRenderMixinSquared",
+        "SkipOverlayDuringRenderMixin"
     ],
     "injectors": {
         "defaultRequire": 1
