@@ -23,7 +23,8 @@
         ]
     },
     "mixins": [
-        "replayfps.mixins.json"
+        "replayfps.mixins.json",
+        "replayfps.mixins.gameplay.json"
     ],
     "depends": {
         "fabricloader": ">=0.14.24",
