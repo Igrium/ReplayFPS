@@ -1,6 +1,8 @@
 package com.igrium.replayfps;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.minecraft.item.Items;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,8 +10,11 @@ import org.slf4j.LoggerFactory;
 import com.igrium.replayfps.channel.handler.ChannelHandlers;
 import com.igrium.replayfps.config.ReplayFPSConfig;
 import com.igrium.replayfps.events.ChannelRegistrationCallback;
+import com.igrium.replayfps.networking.ClientPacketReceivedEvent;
+import com.igrium.replayfps.networking.CustomReplayPacketManager;
 import com.igrium.replayfps.playback.ClientPlaybackModule;
 import com.igrium.replayfps.recording.ClientRecordingModule;
+import com.igrium.replayfps.test.FakePacketTest;
 import com.igrium.replayfps.util.ReplayModHooks;
 
 public class ReplayFPS implements ModInitializer {
@@ -63,5 +68,9 @@ public class ReplayFPS implements ModInitializer {
             consumer.accept(ChannelHandlers.PLAYER_STRIDE);
             consumer.accept(ChannelHandlers.HORIZONTAL_SPEED);
         });
+
+        ClientPacketReceivedEvent.EVENT.register(CustomReplayPacketManager::onPacketReceived);
+
+        FakePacketTest.register();        
     }
 }

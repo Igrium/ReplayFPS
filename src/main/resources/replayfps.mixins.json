@@ -10,7 +10,9 @@
         "GameRendererMixin",
         "SkipHudDuringRenderMixinSquared",
         "SkipOverlayDuringRenderMixin",
-        "ShowHotbarDuringRenderMixin"
+        "ShowHotbarDuringRenderMixin",
+        "ClientPacketListenerMixin",
+        "ClientConnectionAccessor"
     ],
     "injectors": {
         "defaultRequire": 1
