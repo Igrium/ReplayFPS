@@ -9,7 +9,8 @@
         "PacketListenerMixin",
         "GameRendererMixin",
         "SkipHudDuringRenderMixinSquared",
-        "SkipOverlayDuringRenderMixin"
+        "SkipOverlayDuringRenderMixin",
+        "ShowHotbarDuringRenderMixin"
     ],
     "injectors": {
         "defaultRequire": 1
