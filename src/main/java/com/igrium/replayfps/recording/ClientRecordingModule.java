@@ -74,13 +74,14 @@ public class ClientRecordingModule extends EventRegistrations implements Module 
             }
             channels.add(handler);
         });
-
+        LogUtils.getLogger().info("Starting client-cap recording!");
         ClientCapHeader header = new ClientCapHeader(channels);
         try {
             OutputStream out = file.write(ENTRY);
             ClientCapRecorder recorder = new ClientCapRecorder(out, listener);
             activeRecording = Optional.of(recorder);
             queuedHeader = header;
+            LogUtils.getLogger().info("Header has %d channels".formatted(channels.size()));
 
         } catch (Exception e) {
             LogUtils.getLogger().error("Unable to initialize client-cap recording.", e);
