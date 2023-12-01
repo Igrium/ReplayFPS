@@ -17,7 +17,7 @@ public class ClientPacketListenerMixin {
     @Inject(method = "handle",
             at = @At(value = "INVOKE",
                 target = "Lnet/fabricmc/fabric/impl/networking/AbstractChanneledNetworkAddon;getHandler(Lnet/minecraft/util/Identifier;)Ljava/lang/Object;"),
-            remap = false,
+            // remap = false,
             cancellable = true)
     protected void replayfps$handle(Identifier channelName, PacketByteBuf originalBuf, CallbackInfoReturnable<Boolean> ci) {
         if (CustomPacketReceivedEvent.EVENT.invoker().onPacketReceived(channelName, originalBuf)) {
