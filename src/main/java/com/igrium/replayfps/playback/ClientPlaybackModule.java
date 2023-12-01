@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+import com.igrium.replayfps.events.ReplayEvents;
+import com.igrium.replayfps.networking.CustomReplayPacketManager;
+import com.igrium.replayfps.networking.FakePacketHandlers;
+import com.igrium.replayfps.networking.event.CustomPacketReceivedEvent;
 import com.igrium.replayfps.recording.ClientRecordingModule;
 import com.igrium.replayfps.util.GlobalReplayContext;
 import com.mojang.logging.LogUtils;
@@ -22,12 +26,15 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 
 public class ClientPlaybackModule extends EventRegistrations implements Module {
     private static ClientPlaybackModule instance;
 
     private ReplayHandler currentReplay;
     private ClientCapPlayer currentPlayer;
+    private CustomReplayPacketManager customPacketManager;
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 
@@ -48,10 +55,8 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         return currentPlayer;
     }
 
-    @Override
-    public void register() {
-        super.register();
-        ClientTickEvents.END_WORLD_TICK.register(this::tickClient);
+    public CustomReplayPacketManager getCustomPacketManager() {
+        return customPacketManager;
     }
 
     { on(ReplayOpenedCallback.EVENT, this::onReplayOpened); }
@@ -69,6 +74,19 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
             stream.close();
         } catch (IOException e) {
             LogUtils.getLogger().error("Error loading client capture.", e);
+        }
+        
+        customPacketManager = new CustomReplayPacketManager();
+        for (var h : FakePacketHandlers.REGISTRY.values()) {
+            customPacketManager.registerReceiver(h.getId(), h);
+        }
+    }
+
+    { on(ReplayEvents.REPLAY_SETUP, this::onReplaySetup); }
+    private void onReplaySetup(ReplayHandler handler) {
+        // Upon rewinding the replay, we need to clear any queued fake packets.
+        if (customPacketManager != null) {
+            customPacketManager.clearQueue();
         }
     }
 
@@ -89,6 +107,8 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
             }
             currentPlayer = null;
         }
+
+        customPacketManager = null;
     }
 
     { on(PreRenderCallback.EVENT, this::tickRender); }
@@ -102,20 +122,29 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         currentPlayer.tickPlayer(genContext(timestamp));
     }
     
+    { ClientTickEvents.END_WORLD_TICK.register(this::tickClient); }
     private void tickClient(ClientWorld world) {
         if (currentPlayer == null) {
             GlobalReplayContext.ENTITY_POS_OVERRIDES.clear();
             return;
         }
 
-        currentPlayer.tickClient(genContext(currentReplay.getReplaySender().currentTimeStamp()));
+        ClientPlaybackContext context = genContext(currentReplay.getReplaySender().currentTimeStamp());
+        currentPlayer.tickClient(context);
 
-        // for (Entity entity : world.getEntities()) {
-        //     Vec3d override = GlobalReplayContext.ENTITY_POS_OVERRIDES.get(entity);
-        //     if (override != null) entity.setPosition(override);
-        // }
+        // If we're viewing from the camera, attempt to flush the packet queue.
+        if (client.cameraEntity.equals(context.localPlayer().orElse(null)) && customPacketManager != null) {
+            customPacketManager.flushQueue(client, context.localPlayer().get());
+        }
     }
     
+    { CustomPacketReceivedEvent.EVENT.register(this::onCustomPacketReceived); }
+    private boolean onCustomPacketReceived(Identifier channel, PacketByteBuf payload) {
+        if (customPacketManager != null) {
+            return customPacketManager.onPacketReceived(channel, payload);
+        }
+        return false;
+    }
 
     private ClientPlaybackContext genContext(int timestamp) {
         return new ClientPlaybackContextImpl(client, currentReplay, timestamp, currentPlayer.getReader().getHeader().getLocalPlayerID());

@@ -13,7 +13,8 @@
         "ShowHotbarDuringRenderMixin",
         "ClientPacketListenerMixin",
         "ClientConnectionAccessor",
-        "ClientConnectionMixin"
+        "ClientConnectionMixin",
+        "ReplayHandlerMixin"
     ],
     "injectors": {
         "defaultRequire": 1

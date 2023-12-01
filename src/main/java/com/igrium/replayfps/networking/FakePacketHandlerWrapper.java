@@ -19,6 +19,10 @@ public class FakePacketHandlerWrapper<T> implements ReplayPacketConsumer {
         handler.registerListener(this::sendPacket);
     }
 
+    public Identifier getId() {
+        return id;
+    }
+
     @Override
     public void onPacket(MinecraftClient client, PacketByteBuf packet, PlayerEntity localPlayer) throws Exception {
         T val = handler.parse(packet);

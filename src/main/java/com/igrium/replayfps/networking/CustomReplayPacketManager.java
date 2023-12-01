@@ -2,6 +2,8 @@ package com.igrium.replayfps.networking;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.igrium.replayfps.mixin.ClientConnectionAccessor;
 import com.igrium.replayfps.util.PlaybackUtils;
@@ -31,9 +33,21 @@ public class CustomReplayPacketManager {
 
     public static interface ReplayPacketConsumer {
         public void onPacket(MinecraftClient client, PacketByteBuf packet, PlayerEntity localPlayer) throws Exception;
+
+        /**
+         * Don't apply this packet until we're in first-person. If <code>true</code>,
+         * will delay until we enter first-person mode, at which time all queued packets
+         * will play in order.
+         */
+        default boolean waitForFirstPerson() {
+            return false;
+        }
     }
 
-    private static Map<Identifier, ReplayPacketConsumer> listeners = new HashMap<>();
+    protected static record CachedValue(FakePacketHandler<?> handler, Object val) {};
+
+    protected final Map<Identifier, ReplayPacketConsumer> listeners = new HashMap<>();
+    protected final Queue<CachedValue> queue = new ConcurrentLinkedDeque<>();
 
     /**
      * Called whenever a custom packet of any kind is recieved on the client.
@@ -43,12 +57,12 @@ public class CustomReplayPacketManager {
      * @return If this packet should be "consumed". If <code>true</code> no other
      *         recievers (including the registered one) will recieve the packet.
      */
-    public static boolean onPacketReceived(Identifier channel, PacketByteBuf payload) {
+    public boolean onPacketReceived(Identifier channel, PacketByteBuf payload) {
         if (!channel.getNamespace().startsWith(PREFIX)) return false;
 
         MinecraftClient client = MinecraftClient.getInstance();
         PlayerEntity localPlayer = PlaybackUtils.getCurrentPlaybackPlayer();
-        if (localPlayer == null || !localPlayer.equals(client.getCameraEntity())) {
+        if (localPlayer == null) {
             return true;
         }
 
@@ -61,16 +75,42 @@ public class CustomReplayPacketManager {
             return true;
         }
         
-        try {
-            receiver.onPacket(client, payload, localPlayer);
-        } catch (Exception e) {
-            LogUtils.getLogger().error("Error parsing custom replay packet.", e);
+        if (receiver instanceof FakePacketHandler handler) {
+            boolean shouldRun = localPlayer.equals(client.cameraEntity) || !handler.waitForFirstPerson();
+
+            if (shouldRun) {
+                handler.onPacket(client, payload, localPlayer);
+            } else {
+                Object val = handler.parse(payload);
+                queue.add(new CachedValue(handler, val));
+            }
+
+        } else {
+            try {
+                receiver.onPacket(client, payload, localPlayer);
+            } catch (Exception e) {
+                LogUtils.getLogger().error("Error parsing custom replay packet.", e);
+            }
         }
 
         return true;
     }
 
-    public static void registerReceiver(Identifier id, ReplayPacketConsumer receiver) {
+
+    public void clearQueue() {
+        queue.clear();
+    }
+
+    public void flushQueue(MinecraftClient client, PlayerEntity localPlayer) {
+        MinecraftClient.getInstance().execute(() -> {
+            CachedValue cached;
+            while ((cached = queue.poll()) != null) {
+                cached.handler.castAndApply(cached.val, client, localPlayer);
+            }
+        });
+    }
+
+    public void registerReceiver(Identifier id, ReplayPacketConsumer receiver) {
         listeners.put(id, receiver);
     }
 

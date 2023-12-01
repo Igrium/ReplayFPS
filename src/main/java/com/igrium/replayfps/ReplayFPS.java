@@ -8,9 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.igrium.replayfps.channel.handler.ChannelHandlers;
 import com.igrium.replayfps.config.ReplayFPSConfig;
 import com.igrium.replayfps.events.ChannelRegistrationCallback;
-import com.igrium.replayfps.networking.CustomReplayPacketManager;
 import com.igrium.replayfps.networking.FakePacketHandlers;
-import com.igrium.replayfps.networking.event.CustomPacketReceivedEvent;
 import com.igrium.replayfps.playback.ClientPlaybackModule;
 import com.igrium.replayfps.recording.ClientRecordingModule;
 import com.igrium.replayfps.util.ReplayModHooks;
@@ -67,7 +65,7 @@ public class ReplayFPS implements ModInitializer {
             consumer.accept(ChannelHandlers.HORIZONTAL_SPEED);
         });
 
-        CustomPacketReceivedEvent.EVENT.register(CustomReplayPacketManager::onPacketReceived);
-        FakePacketHandlers.register();
+        // CustomPacketReceivedEvent.EVENT.register(CustomReplayPacketManager::onPacketReceived);
+        FakePacketHandlers.registerDefaults();
     }
 }

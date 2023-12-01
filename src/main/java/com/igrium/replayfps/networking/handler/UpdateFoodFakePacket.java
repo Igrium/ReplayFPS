@@ -8,8 +8,18 @@ import com.igrium.replayfps.networking.FakePacketHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 
-public class UpdateFoodFakePacket implements FakePacketHandler<UpdateFoodValue> {
+public class UpdateFoodFakePacket extends FakePacketHandler<UpdateFoodValue> {
+
+    public UpdateFoodFakePacket(Identifier id) {
+        super(id);
+    }
+
+    @Override
+    public Class<UpdateFoodValue> getType() {
+        return UpdateFoodValue.class;
+    }
 
     @Override
     public void registerListener(Consumer<UpdateFoodValue> consumer) {
@@ -37,7 +47,10 @@ public class UpdateFoodFakePacket implements FakePacketHandler<UpdateFoodValue> 
         player.getHungerManager().setSaturationLevel(value.saturationLevel());
     }
 
-
+    @Override
+    public boolean waitForFirstPerson() {
+        return false;
+    }
 }
 
 record UpdateFoodValue(int foodLevel, float saturationLevel) {}
