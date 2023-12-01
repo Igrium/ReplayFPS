@@ -1,5 +1,6 @@
 package com.igrium.replayfps.networking;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.igrium.replayfps.networking.CustomReplayPacketManager.ReplayPacketConsumer;
@@ -10,6 +11,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
+/**
+ * A fake packet allows the client to add an "instruction" during recording that
+ * gets executed during playback.
+ */
 public abstract class FakePacketHandler<T> implements ReplayPacketConsumer {
     private final Identifier id;
 
@@ -38,25 +43,69 @@ public abstract class FakePacketHandler<T> implements ReplayPacketConsumer {
         QUEUE
     }
 
+    /**
+     * Create a fake packet handler.
+     * @param id ID to register under.
+     */
     public FakePacketHandler(Identifier id) {
-        this.id = id;
+        this.id = Objects.requireNonNull(id);
         registerListener(this::sendPacket);
     }
 
+    /**
+     * Get the ID of this packet handler.
+     */
     public Identifier getId() {
         return id;
     }
 
+    /**
+     * Get the unserialized data type that this packet handler will use.
+     */
     public abstract Class<T> getType();
 
+    /**
+     * Use fabric events and whatnot to hook into the game to register this fake
+     * packet to be sent at the appropriate time.
+     * 
+     * @param consumer This consumer shall be called with the packet data when it's
+     *                 time to send it.
+     */
     public abstract void registerListener(Consumer<T> consumer);
 
+    /**
+     * Serialize an instance of this packet's data.
+     * @param value Value to write.
+     * @param buf Buffer to write to.
+     */
     public abstract void write(T value, PacketByteBuf buf);
 
+    /**
+     * Deserialize an instance of this packet's data from a buffer.
+     * @param buf Buffer to read from.
+     * @return Deserialized value.
+     */
     public abstract T parse(PacketByteBuf buf);
 
+    /**
+     * Called during replay playback to apply this packet to the game.
+     * 
+     * @param value  Packet value.
+     * @param client The local client.
+     * @param player The entity representing the player that recorded the replay.
+     *               This is the player executing the client-cap file.
+     */
     public abstract void apply(T value, MinecraftClient client, PlayerEntity player);
 
+    /**
+     * Called during replay playback to apply this packet to the game.
+     * 
+     * @param value  Packet value.
+     * @param client The local client.
+     * @param player The entity representing the player that recorded the replay.
+     *               This is the player executing the client-cap file.
+     * @throws ClassCastException If the supplied data is of the wrong type.
+     */
     public final void castAndApply(Object value, MinecraftClient client, PlayerEntity player) throws ClassCastException {
         apply(getType().cast(value), client, player);
     }
@@ -73,5 +122,9 @@ public abstract class FakePacketHandler<T> implements ReplayPacketConsumer {
         CustomReplayPacketManager.sendReplayPacket(id, buffer);
     }
 
+    /**
+     * Declare what this packet should do if it is recieved during a replay and
+     * we're <em>not</em> spectating the local player.
+     */
     public abstract SpectatorBehavior getSpectatorBehavior();
 }
