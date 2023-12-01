@@ -14,7 +14,8 @@
         "ClientPacketListenerMixin",
         "ClientConnectionAccessor",
         "ClientConnectionMixin",
-        "ReplayHandlerMixin"
+        "ReplayHandlerMixin",
+        "FullReplaySenderMixin"
     ],
     "injectors": {
         "defaultRequire": 1

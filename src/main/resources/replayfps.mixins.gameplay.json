@@ -4,7 +4,8 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "NetworkHandlerListenersMixin",
-        "ClientPlayerEntityListenersMixin"
+        "ClientPlayerEntityMixin",
+        "LivingEntityAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

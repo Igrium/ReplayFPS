@@ -5,7 +5,6 @@ import java.util.function.Function;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.igrium.replayfps.networking.handler.ExperienceFakePacket;
-import com.igrium.replayfps.networking.handler.UpdateFoodFakePacket;
 
 import net.minecraft.util.Identifier;
 
@@ -19,7 +18,6 @@ public class FakePacketHandlers {
     }
 
     public static void registerDefaults() {
-        register(new Identifier("replayfps:update_food"), UpdateFoodFakePacket::new);
         register(new Identifier("replayfps:experience"), ExperienceFakePacket::new);
     }
 }

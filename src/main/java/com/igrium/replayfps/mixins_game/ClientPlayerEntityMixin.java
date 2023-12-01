@@ -11,7 +11,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 @Mixin(ClientPlayerEntity.class)
-public class ClientPlayerEntityListenersMixin {
+public class ClientPlayerEntityMixin {
 
     @Inject(method = "setExperience", at = @At("RETURN"))
     void replayfps$onSetExperience(float progress, int total, int level, CallbackInfo ci) {

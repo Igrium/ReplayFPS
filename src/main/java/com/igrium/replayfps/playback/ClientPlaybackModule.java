@@ -8,7 +8,9 @@ import java.util.Objects;
 import com.igrium.replayfps.events.ReplayEvents;
 import com.igrium.replayfps.networking.CustomReplayPacketManager;
 import com.igrium.replayfps.networking.FakePacketHandlers;
+import com.igrium.replayfps.networking.PacketRedirectors;
 import com.igrium.replayfps.networking.event.CustomPacketReceivedEvent;
+import com.igrium.replayfps.networking.event.PacketReceivedEvent;
 import com.igrium.replayfps.recording.ClientRecordingModule;
 import com.igrium.replayfps.util.GlobalReplayContext;
 import com.mojang.logging.LogUtils;
@@ -26,7 +28,10 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.listener.PacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.util.Identifier;
 
 public class ClientPlaybackModule extends EventRegistrations implements Module {
@@ -142,6 +147,19 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
     private boolean onCustomPacketReceived(Identifier channel, PacketByteBuf payload) {
         if (customPacketManager != null) {
             return customPacketManager.onPacketReceived(channel, payload);
+        }
+        return false;
+    }
+
+    { PacketReceivedEvent.EVENT.register(this::onPacketReceived); }
+    private boolean onPacketReceived(Packet<?> packet, PacketListener l) {
+        if (currentPlayer == null || client.world == null) return false;
+        PlayerEntity localPlayer = (PlayerEntity) client.world.getEntityById(currentPlayer.getReader().getHeader().getLocalPlayerID());
+        if (localPlayer == null) return false;
+
+        if (PacketRedirectors.REDIRECT_QUEUED.contains(packet)) {
+            PacketRedirectors.applyRedirect(packet, localPlayer, client);
+            return true;
         }
         return false;
     }
