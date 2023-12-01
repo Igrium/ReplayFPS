@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.igrium.replayfps.networking.redirector.ExperienceUpdateRedirector;
 import com.igrium.replayfps.networking.redirector.HealthHungerRedirector;
 import com.igrium.replayfps.util.PlaybackUtils;
 
@@ -52,6 +53,7 @@ public class PacketRedirectors {
 
     public static void registerDefaults() {
         register(new HealthHungerRedirector());
+        register(new ExperienceUpdateRedirector());
     }
 
     public static void register(PacketRedirector<?> redirector) {
