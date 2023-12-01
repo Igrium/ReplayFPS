@@ -6,6 +6,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.igrium.replayfps.mixin.ClientConnectionAccessor;
+import com.igrium.replayfps.networking.FakePacketHandler.SpectatorBehavior;
 import com.igrium.replayfps.util.PlaybackUtils;
 import com.mojang.logging.LogUtils;
 
@@ -34,14 +35,6 @@ public class CustomReplayPacketManager {
     public static interface ReplayPacketConsumer {
         public void onPacket(MinecraftClient client, PacketByteBuf packet, PlayerEntity localPlayer) throws Exception;
 
-        /**
-         * Don't apply this packet until we're in first-person. If <code>true</code>,
-         * will delay until we enter first-person mode, at which time all queued packets
-         * will play in order.
-         */
-        default boolean waitForFirstPerson() {
-            return false;
-        }
     }
 
     protected static record CachedValue(FakePacketHandler<?> handler, Object val) {};
@@ -76,11 +69,13 @@ public class CustomReplayPacketManager {
         }
         
         if (receiver instanceof FakePacketHandler handler) {
-            boolean shouldRun = localPlayer.equals(client.cameraEntity) || !handler.waitForFirstPerson();
+            SpectatorBehavior spectatorBehavior = handler.getSpectatorBehavior();
 
+            boolean shouldRun = localPlayer.equals(client.cameraEntity) || spectatorBehavior == SpectatorBehavior.APPLY;
             if (shouldRun) {
                 handler.onPacket(client, payload, localPlayer);
-            } else {
+                
+            } else if (spectatorBehavior == SpectatorBehavior.QUEUE) {
                 Object val = handler.parse(payload);
                 queue.add(new CachedValue(handler, val));
             }

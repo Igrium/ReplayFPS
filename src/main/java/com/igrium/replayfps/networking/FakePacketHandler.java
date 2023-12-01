@@ -13,6 +13,31 @@ import net.minecraft.util.Identifier;
 public abstract class FakePacketHandler<T> implements ReplayPacketConsumer {
     private final Identifier id;
 
+    /**
+     * Defines the behavior a packet should take if it's encountered while the
+     * camera is <em>not</code> spectating them.
+     */
+    public static enum SpectatorBehavior {
+        /**
+         * Apply the packet anyway. Useful for non-destructive packets such as health, which
+         * you wouldn't be able to see anyway as another player.
+         */
+        APPLY,
+
+        /**
+         * Skip handling this packet all-together. Useful for packets that must only be
+         * applied only for the local player, but do not have a lasting effect (sound
+         * effects, etc.) <b> Do not use for packets that could cause desyncs if missed!</code>
+         */
+        SKIP,
+
+        /**
+         * Queue this packet to be executed as soon as the camera begins spectating the
+         * player. Try to avoid if possible because it can be buggy.
+         */
+        QUEUE
+    }
+
     public FakePacketHandler(Identifier id) {
         this.id = id;
         registerListener(this::sendPacket);
@@ -48,5 +73,5 @@ public abstract class FakePacketHandler<T> implements ReplayPacketConsumer {
         CustomReplayPacketManager.sendReplayPacket(id, buffer);
     }
 
-    public abstract boolean waitForFirstPerson();
+    public abstract SpectatorBehavior getSpectatorBehavior();
 }

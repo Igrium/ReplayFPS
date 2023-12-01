@@ -48,8 +48,8 @@ public class UpdateFoodFakePacket extends FakePacketHandler<UpdateFoodValue> {
     }
 
     @Override
-    public boolean waitForFirstPerson() {
-        return false;
+    public SpectatorBehavior getSpectatorBehavior() {
+        return SpectatorBehavior.APPLY;
     }
 }
 
