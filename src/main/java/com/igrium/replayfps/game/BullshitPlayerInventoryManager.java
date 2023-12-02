@@ -9,6 +9,7 @@ import com.igrium.replayfps.game.events.HotbarModifiedEvent;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -20,9 +21,9 @@ public class BullshitPlayerInventoryManager {
         ClientJoinedWorldEvent.EVENT.register((client, world) -> reset());
     }
 
-    public static final int HOTBAR_SLOT_OFFSET = 36;
-
     private static ItemStack[] prevInventory = new ItemStack[9];
+    
+    private static int lastChangeCount;
 
     private static void onEndTick(MinecraftClient client) {
         PlayerEntity player = client.player;
@@ -30,17 +31,13 @@ public class BullshitPlayerInventoryManager {
 
         Map<Integer, ItemStack> updated = new HashMap<>();
 
-        for (int i = 0; i < prevInventory.length; i++) {
-            ItemStack stack = player.getInventory().getStack(i + HOTBAR_SLOT_OFFSET);
+        PlayerInventory inventory = player.getInventory();
+        if (inventory.getChangeCount() > lastChangeCount)
+                    HotbarModifiedEvent.EVENT.invoker().onInventoryModified(player.getInventory(), updated);
 
-            if (!stackEquals(stack, prevInventory[i])) {
-                updated.put(i + HOTBAR_SLOT_OFFSET, stack);
-                prevInventory[i] = stack;
-            }
-        }
+        lastChangeCount = inventory.getChangeCount();
 
         if (updated.isEmpty()) return;
-        HotbarModifiedEvent.EVENT.invoker().onInventoryModified(player.getInventory(), updated);
 
     }
 
@@ -48,6 +45,7 @@ public class BullshitPlayerInventoryManager {
         for (int i = 0; i < prevInventory.length; i++) {
             prevInventory[i] = null;
         }
+        lastChangeCount = 0;
     }
 
     private static boolean stackEquals(ItemStack first, ItemStack second) {

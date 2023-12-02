@@ -29,7 +29,11 @@ public class UpdateHotbarFakePacket extends FakePacketHandler<UpdateHotbarValue>
     public void registerListener(Consumer<UpdateHotbarValue> consumer) {
         HotbarModifiedEvent.EVENT.register((inv, map) -> {
             if (!inv.player.getWorld().isClient) return;
-            consumer.accept(new UpdateHotbarValue(map));
+            Map<Integer, ItemStack> changed = new HashMap<>();
+            for (int i = 0; i < inv.main.size(); i++) {
+                changed.put(i, inv.main.get(i));
+            }
+            consumer.accept(new UpdateHotbarValue(changed));
         });
     }
 
