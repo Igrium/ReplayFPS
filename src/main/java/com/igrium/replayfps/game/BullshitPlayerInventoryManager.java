@@ -48,11 +48,11 @@ public class BullshitPlayerInventoryManager {
         lastChangeCount = 0;
     }
 
-    private static boolean stackEquals(ItemStack first, ItemStack second) {
-        if (first == null || second == null) {
-            return first == second;
-        }
-        return (ItemStack.canCombine(first, second)) && (first.getCount() == second.getCount());
+    // private static boolean stackEquals(ItemStack first, ItemStack second) {
+    //     if (first == null || second == null) {
+    //         return first == second;
+    //     }
+    //     return (ItemStack.canCombine(first, second)) && (first.getCount() == second.getCount());
         
-    }
+    // }
 }
