@@ -138,7 +138,6 @@ public class CustomReplayPacketManager {
         }
 
         if (PlaybackUtils.isPlayingReplay()) {
-            LogUtils.getLogger().warn("Tried to send a fake packet from the replay editor.");
             return;
         }
 

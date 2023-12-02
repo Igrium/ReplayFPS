@@ -6,7 +6,8 @@
         "NetworkHandlerListenersMixin",
         "ClientPlayerEntityMixin",
         "LivingEntityAccessor",
-        "PlayerInventoryMixin"
+        "PlayerInventoryMixin",
+        "MinecraftClientMixin"
     ],
     "injectors": {
         "defaultRequire": 1

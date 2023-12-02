@@ -6,8 +6,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.igrium.replayfps.game.game_events.InventoryModifiedEvent;
-
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 
@@ -19,7 +17,7 @@ public abstract class PlayerInventoryMixin {
     
     @Inject(method = "setStack", at = @At("HEAD"))
     void replayfps$onSetStack(int slot, ItemStack stack, CallbackInfo ci) {
-        InventoryModifiedEvent.EVENT.invoker().onInventoryModified(
-            (PlayerInventory) (Object) this, slot, getStack(slot), stack);
+        // HotbarModifiedEvent.EVENT.invoker().onInventoryModified(
+        //     (PlayerInventory) (Object) this, Map.of(slot, stack));
     }
 }

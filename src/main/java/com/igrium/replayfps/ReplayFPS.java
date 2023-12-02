@@ -7,7 +7,9 @@ import com.igrium.replayfps.config.ReplayFPSConfig;
 import com.igrium.replayfps.core.playback.ClientPlaybackModule;
 import com.igrium.replayfps.core.recording.ClientRecordingModule;
 import com.igrium.replayfps.core.util.ReplayModHooks;
+import com.igrium.replayfps.game.BullshitPlayerInventoryManager;
 import com.igrium.replayfps.game.channel.DefaultChannelHandlers;
+import com.igrium.replayfps.game.networking.DefaultFakePackets;
 import com.igrium.replayfps.game.networking.DefaultPacketRedirectors;
 
 import net.fabricmc.api.ModInitializer;
@@ -58,5 +60,8 @@ public class ReplayFPS implements ModInitializer {
 
         DefaultChannelHandlers.registerDefaults();
         DefaultPacketRedirectors.registerDefaults();
+        DefaultFakePackets.registerDefaults();
+
+        BullshitPlayerInventoryManager.register();
     }
 }

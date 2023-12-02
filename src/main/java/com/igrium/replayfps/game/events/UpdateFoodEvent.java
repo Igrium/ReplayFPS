@@ -1,4 +1,4 @@
-package com.igrium.replayfps.game.game_events;
+package com.igrium.replayfps.game.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
