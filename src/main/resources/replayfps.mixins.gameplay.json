@@ -5,7 +5,8 @@
     "mixins": [
         "NetworkHandlerListenersMixin",
         "ClientPlayerEntityMixin",
-        "LivingEntityAccessor"
+        "LivingEntityAccessor",
+        "PlayerInventoryMixin"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.igrium.replayfps.networking.fake_packet.UpdateInventoryFakePacket;
 
 import net.minecraft.util.Identifier;
 
@@ -17,5 +18,6 @@ public class FakePacketHandlers {
     }
 
     public static void registerDefaults() {
+        register(new Identifier("replayfps:update_inventory"), UpdateInventoryFakePacket::new);
     }
 }
