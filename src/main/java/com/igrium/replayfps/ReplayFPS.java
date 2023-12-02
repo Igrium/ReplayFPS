@@ -1,18 +1,16 @@
 package com.igrium.replayfps;
 
-import net.fabricmc.api.ModInitializer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.igrium.replayfps.channel.handler.ChannelHandlers;
 import com.igrium.replayfps.config.ReplayFPSConfig;
-import com.igrium.replayfps.events.ChannelRegistrationCallback;
-import com.igrium.replayfps.networking.FakePacketHandlers;
-import com.igrium.replayfps.networking.PacketRedirectors;
-import com.igrium.replayfps.playback.ClientPlaybackModule;
-import com.igrium.replayfps.recording.ClientRecordingModule;
-import com.igrium.replayfps.util.ReplayModHooks;
+import com.igrium.replayfps.core.playback.ClientPlaybackModule;
+import com.igrium.replayfps.core.recording.ClientRecordingModule;
+import com.igrium.replayfps.core.util.ReplayModHooks;
+import com.igrium.replayfps.game.channel.DefaultChannelHandlers;
+import com.igrium.replayfps.game.networking.DefaultPacketRedirectors;
+
+import net.fabricmc.api.ModInitializer;
 
 public class ReplayFPS implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("ReplayFPS");
@@ -58,16 +56,7 @@ public class ReplayFPS implements ModInitializer {
             clientPlaybackModule.register();
         });
 
-        ChannelRegistrationCallback.EVENT.register(consumer -> {
-            consumer.accept(ChannelHandlers.PLAYER_POS);
-            consumer.accept(ChannelHandlers.PLAYER_ROT);
-            consumer.accept(ChannelHandlers.PLAYER_VELOCITY);
-            consumer.accept(ChannelHandlers.PLAYER_STRIDE);
-            consumer.accept(ChannelHandlers.HORIZONTAL_SPEED);
-        });
-
-        // CustomPacketReceivedEvent.EVENT.register(CustomReplayPacketManager::onPacketReceived);
-        FakePacketHandlers.registerDefaults();
-        PacketRedirectors.registerDefaults();
+        DefaultChannelHandlers.registerDefaults();
+        DefaultPacketRedirectors.registerDefaults();
     }
 }

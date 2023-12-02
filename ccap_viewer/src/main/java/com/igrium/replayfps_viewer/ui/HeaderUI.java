@@ -1,9 +1,9 @@
 package com.igrium.replayfps_viewer.ui;
 
-import com.igrium.replayfps.channel.handler.ChannelHandler;
-import com.igrium.replayfps.channel.handler.ChannelHandlers;
-import com.igrium.replayfps.recording.ClientCapHeader;
-import com.igrium.replayfps.util.AnimationUtils;
+import com.igrium.replayfps.core.channel.ChannelHandler;
+import com.igrium.replayfps.core.channel.ChannelHandlers;
+import com.igrium.replayfps.core.recording.ClientCapHeader;
+import com.igrium.replayfps.core.util.AnimationUtils;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;

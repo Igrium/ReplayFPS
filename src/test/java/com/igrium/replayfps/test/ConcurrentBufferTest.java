@@ -6,7 +6,7 @@ import java.util.concurrent.Executor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
 
-import com.igrium.replayfps.util.ConcurrentBuffer;
+import com.igrium.replayfps.core.util.ConcurrentBuffer;
 
 public class ConcurrentBufferTest {
     class DemoBuffer extends ConcurrentBuffer<Integer> {

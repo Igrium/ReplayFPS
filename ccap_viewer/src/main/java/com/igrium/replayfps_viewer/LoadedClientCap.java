@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import com.igrium.replayfps.playback.ClientCapReader;
-import com.igrium.replayfps.recording.ClientCapHeader;
+import com.igrium.replayfps.core.playback.ClientCapReader;
+import com.igrium.replayfps.core.recording.ClientCapHeader;
 
 public class LoadedClientCap implements Closeable {
     private final ClientCapReader reader;

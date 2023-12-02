@@ -13,8 +13,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.common.io.CountingInputStream;
-import com.igrium.replayfps.channel.handler.ChannelHandlers;
-import com.igrium.replayfps.channel.type.ChannelType;
+import com.igrium.replayfps.core.channel.ChannelHandlers;
+import com.igrium.replayfps.core.channel.type.ChannelType;
 
 public class TestChannelHandlers {
 

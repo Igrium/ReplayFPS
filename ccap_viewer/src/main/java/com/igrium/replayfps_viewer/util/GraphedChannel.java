@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.igrium.replayfps.channel.handler.ChannelHandler;
-import com.igrium.replayfps.playback.ClientCapReader;
-import com.igrium.replayfps.playback.UnserializedFrame;
-import com.igrium.replayfps.util.NoHeaderException;
+import com.igrium.replayfps.core.channel.ChannelHandler;
+import com.igrium.replayfps.core.playback.ClientCapReader;
+import com.igrium.replayfps.core.playback.UnserializedFrame;
+import com.igrium.replayfps.core.util.NoHeaderException;
 
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;

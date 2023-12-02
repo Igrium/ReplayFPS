@@ -6,8 +6,8 @@ import java.util.Random;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.RepetitionInfo;
 
-import com.igrium.replayfps.channel.type.ChannelTypes;
-import com.igrium.replayfps.channel.type.NumberChannel.ByteChannel;
+import com.igrium.replayfps.core.channel.type.ChannelTypes;
+import com.igrium.replayfps.core.channel.type.NumberChannel.ByteChannel;
 
 public class TestNumberChannels {
 
