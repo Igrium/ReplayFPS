@@ -3,7 +3,7 @@ package com.igrium.replayfps.game.networking.fake_packet;
 import java.util.function.Consumer;
 
 import com.igrium.replayfps.core.networking.FakePacketHandler;
-import com.igrium.replayfps.game.events.UpdateSelectedSlotEvent;
+import com.igrium.replayfps.game.event.UpdateSelectedSlotEvent;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;

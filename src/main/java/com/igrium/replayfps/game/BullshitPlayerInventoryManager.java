@@ -3,8 +3,8 @@ package com.igrium.replayfps.game;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.igrium.replayfps.game.events.ClientJoinedWorldEvent;
-import com.igrium.replayfps.game.events.HotbarModifiedEvent;
+import com.igrium.replayfps.game.event.ClientJoinedWorldEvent;
+import com.igrium.replayfps.game.event.HotbarModifiedEvent;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;

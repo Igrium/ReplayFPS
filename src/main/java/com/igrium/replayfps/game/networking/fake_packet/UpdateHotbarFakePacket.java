@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import com.igrium.replayfps.core.networking.FakePacketHandler;
-import com.igrium.replayfps.game.events.HotbarModifiedEvent;
+import com.igrium.replayfps.game.event.HotbarModifiedEvent;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;

@@ -1,4 +1,4 @@
-package com.igrium.replayfps.game.events;
+package com.igrium.replayfps.game.event;
 
 import java.util.Map;
 
