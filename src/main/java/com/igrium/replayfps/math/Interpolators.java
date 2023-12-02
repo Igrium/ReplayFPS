@@ -24,13 +24,6 @@ public final class Interpolators {
 
     public static final Interpolator<Object> DISCRETE = new Discrete<>();
 
-    /**
-     * Create an interpolator that simply returns a if delta < 1 and b if delta >=
-     * 1.
-     * 
-     * @param <T> Interpolator type.
-     * @return The interpolator.
-     */
     @SuppressWarnings("unchecked")
     public static <T> Interpolator<T> discrete() {
         return (Interpolator<T>) DISCRETE;

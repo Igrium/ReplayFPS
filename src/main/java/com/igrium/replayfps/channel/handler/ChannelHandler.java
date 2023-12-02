@@ -9,7 +9,7 @@ import com.igrium.replayfps.recording.ClientCaptureContext;
 
 /**
  * Handles the application and capturing of a specific animation channel.
- * Handlers are <i>not<i> tied to any given recording instance; they are
+ * Handlers are <em>not</em> tied to any given recording instance; they are
  * registered globally.
  */
 public interface ChannelHandler<T> {

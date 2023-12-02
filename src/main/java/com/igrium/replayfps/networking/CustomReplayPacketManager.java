@@ -112,7 +112,7 @@ public class CustomReplayPacketManager {
     /**
      * Send a "fake" packet that will be "received" during replay playback.
      * @param id Packet channel.
-     * @param packet Packet data.
+     * @param payload Packet data.
      */
     public static void sendReplayPacket(Identifier id, PacketByteBuf payload) {
         MinecraftClient client = MinecraftClient.getInstance();

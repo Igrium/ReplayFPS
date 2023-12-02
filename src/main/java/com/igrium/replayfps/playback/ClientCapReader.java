@@ -185,7 +185,7 @@ public class ClientCapReader implements Closeable {
      * 
      * @param frame Frame index.
      * @throws NoHeaderException         If the file header has not been read.
-     * @throws IndexOutOfBoundsException If frame < 0.
+     * @throws IndexOutOfBoundsException If frame is less than 0.
      * @throws IOException               If an IO exception occurs seeking within
      *                                   the file.
      */

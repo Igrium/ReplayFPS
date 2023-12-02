@@ -20,7 +20,7 @@ public abstract class FakePacketHandler<T> implements ReplayPacketConsumer {
 
     /**
      * Defines the behavior a packet should take if it's encountered while the
-     * camera is <em>not</code> spectating them.
+     * camera is <em>not</em> spectating them.
      */
     public static enum SpectatorBehavior {
         /**
@@ -32,7 +32,7 @@ public abstract class FakePacketHandler<T> implements ReplayPacketConsumer {
         /**
          * Skip handling this packet all-together. Useful for packets that must only be
          * applied only for the local player, but do not have a lasting effect (sound
-         * effects, etc.) <b> Do not use for packets that could cause desyncs if missed!</code>
+         * effects, etc.) <b> Do not use for packets that could cause desyncs if missed!</b>
          */
         SKIP,
 
