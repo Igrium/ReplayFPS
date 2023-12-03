@@ -11,6 +11,7 @@ import com.igrium.replayfps.core.util.PlaybackUtils;
 import com.mojang.logging.LogUtils;
 
 import io.netty.channel.Channel;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.player.PlayerEntity;
@@ -50,47 +51,94 @@ public class CustomReplayPacketManager {
      * @return If this packet should be "consumed". If <code>true</code> no other
      *         recievers (including the registered one) will recieve the packet.
      */
-    public boolean onPacketReceived(Identifier channel, PacketByteBuf payload) {
-        if (!channel.getNamespace().startsWith(PREFIX)) return false;
+    public boolean onPacketReceived(Identifier channel, PacketByteBuf nettyPayload) {
+        if (!channel.getNamespace().startsWith(PREFIX))
+            return false;
 
         MinecraftClient client = MinecraftClient.getInstance();
-        PlayerEntity localPlayer = PlaybackUtils.getCurrentPlaybackPlayer();
-        if (localPlayer == null) {
-            return true;
-        }
+        PacketByteBuf payload = PacketByteBufs.copy(nettyPayload);
 
         String namespace = channel.getNamespace().substring(PREFIX.length());
         Identifier finalID = new Identifier(namespace, channel.getPath());
 
+        // There's a possibility that the 
         ReplayPacketConsumer receiver = listeners.get(finalID);
+
         if (receiver == null) {
             LogUtils.getLogger().warn("Unknown replay packet channel: " + finalID);
             return true;
         }
-        
-        if (receiver instanceof FakePacketHandler handler) {
-            SpectatorBehavior spectatorBehavior = handler.getSpectatorBehavior();
 
-            boolean shouldRun = localPlayer.equals(client.cameraEntity) || spectatorBehavior == SpectatorBehavior.APPLY;
-            if (shouldRun) {
-                handler.onPacket(client, payload, localPlayer);
-                
-            } else if (spectatorBehavior == SpectatorBehavior.QUEUE) {
-                Object val = handler.parse(payload);
-                queue.add(new CachedValue(handler, val));
-            }
-
+        if (receiver instanceof FakePacketHandler<?> handler) {
+            onFakePacketReceived(client, handler, payload);
         } else {
-            try {
-                receiver.onPacket(client, payload, localPlayer);
-            } catch (Exception e) {
-                LogUtils.getLogger().error("Error parsing custom replay packet.", e);
-            }
+            client.execute(() -> {
+                try {
+                    receiver.onPacket(client, payload, null);
+                } catch (Exception e) {
+                    LogUtils.getLogger().error("Error applying custom replay packet: " + finalID, e);
+                }
+            });
         }
+
+        // client.execute(() -> {
+        //     PlayerEntity localPlayer = PlaybackUtils.getCurrentPlaybackPlayer();
+        //     if (localPlayer == null) {
+        //         return;
+        //     }
+
+
+
+        //     ReplayPacketConsumer receiver = listeners.get(finalID);
+        //     if (receiver == null) {
+        //         LogUtils.getLogger().warn("Unknown replay packet channel: " + finalID);
+        //         return;
+        //     }
+
+        //     if (receiver instanceof FakePacketHandler handler) {
+        //         SpectatorBehavior spectatorBehavior = handler.getSpectatorBehavior();
+
+        //         boolean shouldRun = localPlayer.equals(client.cameraEntity)
+        //                 || spectatorBehavior == SpectatorBehavior.APPLY;
+        //         if (shouldRun) {
+        //             handler.onPacket(client, payload, localPlayer);
+
+        //         } else if (spectatorBehavior == SpectatorBehavior.QUEUE) {
+        //             Object val = handler.parse(payload);
+        //             queue.add(new CachedValue(handler, val));
+        //         }
+
+        //     } else {
+        //         try {
+        //             receiver.onPacket(client, payload, localPlayer);
+        //         } catch (Exception e) {
+        //             LogUtils.getLogger().error("Error parsing custom replay packet.", e);
+        //         }
+        //     }
+
+        // });
 
         return true;
     }
 
+    private <T> void onFakePacketReceived(MinecraftClient client, FakePacketHandler<T> handler, PacketByteBuf buffer) {
+        T val = handler.parse(buffer);
+        // Local player acquisition must happen on client thread.
+        client.execute(() -> {
+            SpectatorBehavior spectatorBehavior = handler.getSpectatorBehavior();
+            PlayerEntity localPlayer = PlaybackUtils.getCurrentPlaybackPlayer();
+            if (localPlayer == null) return;
+
+            boolean shouldRun = localPlayer.equals(client.cameraEntity) || spectatorBehavior == SpectatorBehavior.APPLY;
+
+            if (shouldRun) {
+                handler.apply(val, client, localPlayer);
+
+            } else if (spectatorBehavior == SpectatorBehavior.QUEUE) {
+                queue.add(new CachedValue(handler, val));
+            }
+        });
+    }
 
     public void clearQueue() {
         queue.clear();
