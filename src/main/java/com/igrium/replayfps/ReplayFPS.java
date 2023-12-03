@@ -25,8 +25,12 @@ public class ReplayFPS implements ModInitializer {
 
     private ReplayFPSConfig config;
 
-    public ReplayFPSConfig getConfig() {
+    public ReplayFPSConfig config() {
         return config;
+    }
+
+    public static ReplayFPSConfig getConfig() {
+        return getInstance().config();
     }
 
     private ClientRecordingModule clientRecordingModule;

@@ -25,7 +25,7 @@ public class GameRendererMixin {
     void replayfps$onStartRender(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
         ClientCapPlayer playback = ClientPlaybackModule.getInstance().getCurrentPlayer();
         MinecraftClient client = MinecraftClient.getInstance();
-        if (playback == null || client.world == null || !ReplayFPS.getInstance().getConfig().shouldDrawHud()) {
+        if (playback == null || client.world == null || !ReplayFPS.getInstance().config().shouldDrawHud()) {
             replayfps$prevGamemode = null;
             return;
         }

@@ -21,6 +21,22 @@ public final class ReplayFPSConfig {
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
     public static final String CONFIG_FILE = "config/replayfps.json";
 
+    private boolean playClientCap = true;
+
+    /**
+     * Whether to use the client-cap system in the first place.
+     */
+    public boolean shouldPlayClientCap() {
+        return playClientCap;
+    }
+
+    /**
+     * Whether to use the client-cap system in the first place.
+     */
+    public void setPlayClientCap(boolean playClientCap) {
+        this.playClientCap = playClientCap;
+    }
+
     private boolean drawHud = false;
 
     /**
@@ -37,17 +53,40 @@ public final class ReplayFPSConfig {
         this.drawHud = drawHud;
     }
 
+    private boolean drawHotbar = true;
+
+    public boolean shouldDrawHotbar() {
+        return drawHotbar;
+    }
+
+    public void setDrawHotbar(boolean drawHotbar) {
+        this.drawHotbar = drawHotbar;
+    }
+
     public Screen getScreen(Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
                 .setTitle(Text.translatable("title.replayfps.config"));
+                
 
         ConfigCategory general = builder.getOrCreateCategory(Text.translatable("category.replayfps.general"));
-
-        general.addEntry(builder.entryBuilder().startBooleanToggle(Text.translatable("option.replayfps.drawhud.tooltip"), drawHud)
+        general.addEntry(builder.entryBuilder().startBooleanToggle(Text.translatable("option.replayfps.use_clientcap"), playClientCap)
+                .setDefaultValue(true)
+                .setTooltip(Text.translatable("option.replayfps.use_clientcap.tooltip"))
+                .setSaveConsumer(val -> this.setPlayClientCap(val))
+                .build());
+        
+        ConfigCategory hud = builder.getOrCreateCategory(Text.translatable("category.replayfps.hud"));
+        hud.addEntry(builder.entryBuilder().startBooleanToggle(Text.translatable("option.replayfps.drawhud"), drawHud)
                 .setDefaultValue(false)
-                .setTooltip(Text.of(""))
+                .setTooltip(Text.of("option.replayfps.drawhud.tooltip"))
                 .setSaveConsumer(val -> setDrawHud(val))
+                .build());
+        
+        hud.addEntry(builder.entryBuilder().startBooleanToggle(Text.translatable("option.replayfps.drawhotbar"), drawHotbar)
+                .setDefaultValue(true)
+                .setTooltip(Text.translatable("option.replayfps.drawhotbar.tooltip"))
+                .setSaveConsumer(val -> setDrawHotbar(val))
                 .build());
         
         builder.setSavingRunnable(this::save);

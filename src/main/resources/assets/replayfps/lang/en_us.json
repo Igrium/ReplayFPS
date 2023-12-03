@@ -1,6 +1,12 @@
 {
     "title.replayfps.config": "Replay FPS Config",
     "category.replayfps.general": "General",
+    "option.replayfps.use_clientcap": "Client-Capture Enabled",
+    "option.replayfps.use_clientcap.tooltip": "Whether to use the client-capture playback system in the first place.",
+
+    "category.replayfps.hud": "HUD",
     "option.replayfps.drawhud": "Render HUD",
-    "option.replayfps.drawhud.tooltip": "Whether to render the HUD (hotbar, etc) in replay renderings."
+    "option.replayfps.drawhud.tooltip": "Render the HUD (hotbar, etc) in replay renderings.",
+    "option.replayfps.drawhotbar": "Show Hotbar",
+    "option.replayfps.drawhotbar.tooltip": "Show the hotbar in replay renderings."
 }

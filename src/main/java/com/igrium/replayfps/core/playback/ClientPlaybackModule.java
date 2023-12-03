@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+import com.igrium.replayfps.ReplayFPS;
 import com.igrium.replayfps.core.events.ReplayEvents;
 import com.igrium.replayfps.core.networking.CustomReplayPacketManager;
 import com.igrium.replayfps.core.networking.FakePacketHandlers;
@@ -68,6 +69,7 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
     private void onReplayOpened(ReplayHandler handler) {
         currentReplay = handler;
         ReplayFile file = handler.getReplayFile();
+        if (!ReplayFPS.getConfig().shouldPlayClientCap()) return;
 
         try {
             var opt = file.get(ClientRecordingModule.ENTRY);

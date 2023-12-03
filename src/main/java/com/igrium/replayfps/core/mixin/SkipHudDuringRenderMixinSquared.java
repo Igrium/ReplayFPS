@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.bawnorton.mixinsquared.TargetHandler;
+import com.igrium.replayfps.ReplayFPS;
 import com.igrium.replayfps.core.util.PlaybackUtils;
 
 import net.minecraft.client.gui.hud.InGameHud;
@@ -18,7 +19,7 @@ public class SkipHudDuringRenderMixinSquared {
     )
     @Inject(method = "@MixinSquared:Handler", at = @At("HEAD"), cancellable = true)
     void replayfps$dontSkipHudDuringRender(CallbackInfo ci) {
-        if (PlaybackUtils.isViewingPlaybackPlayer()) {
+        if (PlaybackUtils.isViewingPlaybackPlayer() && ReplayFPS.getConfig().shouldDrawHud()) {
             ci.cancel();
         }
     }
