@@ -12,7 +12,7 @@
         "sources": "https://github.com/Igrium/ReplayFPS"
     },
     "license": "MIT",
-    "icon": "assets/replayfps/icon.png",
+    "icon": "assets/replayfps/logo.png",
     "environment": "*",
     "entrypoints": {
         "main": [
