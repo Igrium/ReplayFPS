@@ -3,7 +3,7 @@ package com.igrium.replayfps.game.networking.fake_packet;
 import java.util.function.Consumer;
 
 import com.igrium.replayfps.core.networking.FakePacketHandler;
-import com.igrium.replayfps.game.event.HotbarModifiedEvent;
+import com.igrium.replayfps.game.event.InventoryModifiedEvent;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -27,7 +27,7 @@ public class UpdateHotbarFakePacket extends FakePacketHandler<UpdateHotbarValue>
     @Override
     @SuppressWarnings("resource")
     public void registerListener(Consumer<UpdateHotbarValue> consumer) {
-        HotbarModifiedEvent.EVENT.register((inv, map) -> {
+        InventoryModifiedEvent.EVENT.register((inv, map) -> {
             if (!inv.player.getWorld().isClient) return;
 
             // Map<Integer, ItemStack> changed = new HashMap<>();

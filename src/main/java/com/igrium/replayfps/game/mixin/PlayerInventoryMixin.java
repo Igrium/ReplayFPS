@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.igrium.replayfps.game.event.UpdateSelectedSlotEvent;
+import com.igrium.replayfps.game.event.ClientPlayerEvents;
 
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -28,7 +28,7 @@ public abstract class PlayerInventoryMixin {
     @Inject(method = "updateItems", at = @At("RETURN"))
     void replayfps$onUpdateItems(CallbackInfo ci) {
         if (selectedSlot != prevSelectedSlot) {
-            UpdateSelectedSlotEvent.EVENT.invoker().onUpdateSlot((PlayerInventory) (Object) this, selectedSlot);
+            ClientPlayerEvents.SELECT_SLOT.invoker().onSelectSlot((PlayerInventory) (Object) this, selectedSlot);
         }
         prevSelectedSlot = selectedSlot;
     }

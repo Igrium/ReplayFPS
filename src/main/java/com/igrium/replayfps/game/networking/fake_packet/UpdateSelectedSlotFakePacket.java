@@ -3,7 +3,7 @@ package com.igrium.replayfps.game.networking.fake_packet;
 import java.util.function.Consumer;
 
 import com.igrium.replayfps.core.networking.FakePacketHandler;
-import com.igrium.replayfps.game.event.UpdateSelectedSlotEvent;
+import com.igrium.replayfps.game.event.ClientPlayerEvents;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,7 +24,7 @@ public class UpdateSelectedSlotFakePacket extends FakePacketHandler<Integer> {
     @Override
     @SuppressWarnings("resource")
     public void registerListener(Consumer<Integer> consumer) {
-        UpdateSelectedSlotEvent.EVENT.register((inv, slot) -> {
+        ClientPlayerEvents.SELECT_SLOT.register((inv, slot) -> {
             if (!inv.player.getWorld().isClient) return;
             consumer.accept(slot);
         });

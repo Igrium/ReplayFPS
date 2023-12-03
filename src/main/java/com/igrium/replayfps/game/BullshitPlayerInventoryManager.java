@@ -1,7 +1,7 @@
 package com.igrium.replayfps.game;
 
 import com.igrium.replayfps.game.event.ClientJoinedWorldEvent;
-import com.igrium.replayfps.game.event.HotbarModifiedEvent;
+import com.igrium.replayfps.game.event.InventoryModifiedEvent;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -39,7 +39,7 @@ public class BullshitPlayerInventoryManager {
         }
 
         if (!updated.isEmpty()) {
-            HotbarModifiedEvent.EVENT.invoker().onInventoryModified(player.getInventory(), updated);
+            InventoryModifiedEvent.EVENT.invoker().onInventoryModified(player.getInventory(), updated);
         }
 
     }
