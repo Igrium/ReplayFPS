@@ -1,7 +1,6 @@
 package com.igrium.replayfps.game.event;
 
-import java.util.Map;
-
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.player.PlayerInventory;
@@ -16,5 +15,5 @@ public interface HotbarModifiedEvent {
             }
         });
     
-    public void onInventoryModified(PlayerInventory inventory, Map<Integer, ItemStack> updates);
+    public void onInventoryModified(PlayerInventory inventory, Int2ObjectMap<ItemStack> updates);
 }

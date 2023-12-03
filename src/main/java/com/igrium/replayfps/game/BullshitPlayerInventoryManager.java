@@ -1,11 +1,10 @@
 package com.igrium.replayfps.game;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.igrium.replayfps.game.event.ClientJoinedWorldEvent;
 import com.igrium.replayfps.game.event.HotbarModifiedEvent;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,23 +26,18 @@ public class BullshitPlayerInventoryManager {
         PlayerEntity player = client.player;
         if (player == null) return;
 
-        Map<Integer, ItemStack> updated = new HashMap<>();
+        Int2ObjectMap<ItemStack> updated = new Int2ObjectArrayMap<>(36);
 
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < prevInventory.length; i++) {
             ItemStack newStack = inventory.getStack(i);
-            if (!stackEquals(prevInventory[i], newStack)) {
+            if (prevInventory[i] == null || !ItemStack.areEqual(prevInventory[i], newStack)) {
                 updated.put(i, newStack);
             }
             
-            prevInventory[i] = newStack;
+            prevInventory[i] = newStack.copy();
         }
-        // if (inventory.getChangeCount() > lastChangeCount)
-        //             HotbarModifiedEvent.EVENT.invoker().onInventoryModified(player.getInventory(), updated);
 
-        // lastChangeCount = inventory.getChangeCount();
-
-        // if (updated.isEmpty()) return;
         if (!updated.isEmpty()) {
             HotbarModifiedEvent.EVENT.invoker().onInventoryModified(player.getInventory(), updated);
         }
@@ -56,11 +50,4 @@ public class BullshitPlayerInventoryManager {
         }
     }
 
-    private static boolean stackEquals(ItemStack first, ItemStack second) {
-        if (first == null || second == null) {
-            return first == second;
-        }
-        return (ItemStack.canCombine(first, second)) && (first.getCount() == second.getCount());
-        
-    }
 }

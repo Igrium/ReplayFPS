@@ -1,12 +1,12 @@
 package com.igrium.replayfps.game.networking.fake_packet;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import com.igrium.replayfps.core.networking.FakePacketHandler;
 import com.igrium.replayfps.game.event.HotbarModifiedEvent;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -29,11 +29,19 @@ public class UpdateHotbarFakePacket extends FakePacketHandler<UpdateHotbarValue>
     public void registerListener(Consumer<UpdateHotbarValue> consumer) {
         HotbarModifiedEvent.EVENT.register((inv, map) -> {
             if (!inv.player.getWorld().isClient) return;
+
             // Map<Integer, ItemStack> changed = new HashMap<>();
             // for (int i = 0; i < inv.main.size(); i++) {
             //     changed.put(i, inv.main.get(i));
             // }
-            consumer.accept(new UpdateHotbarValue(map));
+            Int2ObjectMap<ItemStack> changed = new Int2ObjectArrayMap<>(inv.main.size());
+            int i = 0;
+            for (ItemStack stack : inv.main) {
+                changed.put(i, stack);
+                i++;
+            }
+
+            consumer.accept(new UpdateHotbarValue(changed));
         });
     }
 
@@ -50,7 +58,7 @@ public class UpdateHotbarFakePacket extends FakePacketHandler<UpdateHotbarValue>
     @Override
     public UpdateHotbarValue parse(PacketByteBuf buf) {
         int size = buf.readInt();
-        Map<Integer, ItemStack> map = new HashMap<>();
+        Int2ObjectMap<ItemStack> map = new Int2ObjectArrayMap<>(size);
         for (int i = 0; i < size; i++) {
             int slot = buf.readInt();
             ItemStack stack = buf.readItemStack();
@@ -75,4 +83,4 @@ public class UpdateHotbarFakePacket extends FakePacketHandler<UpdateHotbarValue>
     
 }
 
-record UpdateHotbarValue(Map<Integer, ItemStack> map) {};
+record UpdateHotbarValue(Int2ObjectMap<ItemStack> map) {};

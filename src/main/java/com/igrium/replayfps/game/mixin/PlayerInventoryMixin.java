@@ -21,12 +21,6 @@ public abstract class PlayerInventoryMixin {
     @Shadow
     int selectedSlot;
     
-    @Inject(method = "setStack", at = @At("HEAD"))
-    void replayfps$onSetStack(int slot, ItemStack stack, CallbackInfo ci) {
-        // HotbarModifiedEvent.EVENT.invoker().onInventoryModified(
-        //     (PlayerInventory) (Object) this, Map.of(slot, stack));
-    }
-
     @Unique
     private int prevSelectedSlot = -1;
     
