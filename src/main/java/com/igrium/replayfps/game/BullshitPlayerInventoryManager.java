@@ -21,10 +21,8 @@ public class BullshitPlayerInventoryManager {
         ClientJoinedWorldEvent.EVENT.register((client, world) -> reset());
     }
 
-    private static ItemStack[] prevInventory = new ItemStack[9];
+    private static ItemStack[] prevInventory = new ItemStack[36];
     
-    private static int lastChangeCount;
-
     private static void onEndTick(MinecraftClient client) {
         PlayerEntity player = client.player;
         if (player == null) return;
@@ -32,12 +30,23 @@ public class BullshitPlayerInventoryManager {
         Map<Integer, ItemStack> updated = new HashMap<>();
 
         PlayerInventory inventory = player.getInventory();
-        if (inventory.getChangeCount() > lastChangeCount)
-                    HotbarModifiedEvent.EVENT.invoker().onInventoryModified(player.getInventory(), updated);
+        for (int i = 0; i < prevInventory.length; i++) {
+            ItemStack newStack = inventory.getStack(i);
+            if (!stackEquals(prevInventory[i], newStack)) {
+                updated.put(i, newStack);
+            }
+            
+            prevInventory[i] = newStack;
+        }
+        // if (inventory.getChangeCount() > lastChangeCount)
+        //             HotbarModifiedEvent.EVENT.invoker().onInventoryModified(player.getInventory(), updated);
 
-        lastChangeCount = inventory.getChangeCount();
+        // lastChangeCount = inventory.getChangeCount();
 
-        if (updated.isEmpty()) return;
+        // if (updated.isEmpty()) return;
+        if (!updated.isEmpty()) {
+            HotbarModifiedEvent.EVENT.invoker().onInventoryModified(player.getInventory(), updated);
+        }
 
     }
 
@@ -45,14 +54,13 @@ public class BullshitPlayerInventoryManager {
         for (int i = 0; i < prevInventory.length; i++) {
             prevInventory[i] = null;
         }
-        lastChangeCount = 0;
     }
 
-    // private static boolean stackEquals(ItemStack first, ItemStack second) {
-    //     if (first == null || second == null) {
-    //         return first == second;
-    //     }
-    //     return (ItemStack.canCombine(first, second)) && (first.getCount() == second.getCount());
+    private static boolean stackEquals(ItemStack first, ItemStack second) {
+        if (first == null || second == null) {
+            return first == second;
+        }
+        return (ItemStack.canCombine(first, second)) && (first.getCount() == second.getCount());
         
-    // }
+    }
 }
