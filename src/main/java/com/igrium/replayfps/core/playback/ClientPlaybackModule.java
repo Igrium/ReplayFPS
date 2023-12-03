@@ -34,6 +34,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.GameMode;
 
 public class ClientPlaybackModule extends EventRegistrations implements Module {
     private static ClientPlaybackModule instance;
@@ -64,10 +65,21 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
     public CustomReplayPacketManager getCustomPacketManager() {
         return customPacketManager;
     }
+    
+    private GameMode hudGamemode = GameMode.SURVIVAL;
+
+    public void setHudGamemode(GameMode localPlayerGamemode) {
+        this.hudGamemode = localPlayerGamemode;
+    }
+
+    public GameMode getHudGamemode() {
+        return hudGamemode;
+    }
 
     { on(ReplayOpenedCallback.EVENT, this::onReplayOpened); }
     private void onReplayOpened(ReplayHandler handler) {
         currentReplay = handler;
+        hudGamemode = GameMode.SURVIVAL;
         ReplayFile file = handler.getReplayFile();
         if (!ReplayFPS.getConfig().shouldPlayClientCap()) return;
 

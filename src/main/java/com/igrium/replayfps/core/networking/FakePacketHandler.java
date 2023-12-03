@@ -126,5 +126,7 @@ public abstract class FakePacketHandler<T> implements ReplayPacketConsumer {
      * Declare what this packet should do if it is recieved during a replay and
      * we're <em>not</em> spectating the local player.
      */
-    public abstract SpectatorBehavior getSpectatorBehavior();
+    public SpectatorBehavior getSpectatorBehavior() {
+        return SpectatorBehavior.APPLY;
+    }
 }

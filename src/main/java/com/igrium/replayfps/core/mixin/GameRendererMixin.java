@@ -40,7 +40,7 @@ public class GameRendererMixin {
         if (localPlayer.equals(client.getCameraEntity()) && localPlayer instanceof PlayerEntity localPlayerEnt) {
             // TODO: Store recording gamemode.
             replayfps$prevGamemode = client.interactionManager.getCurrentGameMode();
-            client.interactionManager.setGameMode(GameMode.SURVIVAL);
+            client.interactionManager.setGameMode(ClientPlaybackModule.getInstance().getHudGamemode());
         }
     }
 
