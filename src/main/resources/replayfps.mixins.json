@@ -15,7 +15,8 @@
         "ClientConnectionAccessor",
         "ClientConnectionMixin",
         "ReplayHandlerMixin",
-        "FullReplaySenderMixin"
+        "FullReplaySenderMixin",
+        "ChatHudMixin"
     ],
     "injectors": {
         "defaultRequire": 1
