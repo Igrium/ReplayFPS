@@ -26,7 +26,7 @@ public class SignEditScreenSerializer implements ScreenSerializer<SignEditScreen
     }
 
     @Override
-    public SignEditScreenValue read(PacketByteBuf buffer) {
+    public SignEditScreenValue readBuffer(PacketByteBuf buffer) {
         BlockPos pos = buffer.readBlockPos();
         byte numMessages = buffer.readByte();
         String[] messages = new String[numMessages];
@@ -42,7 +42,7 @@ public class SignEditScreenSerializer implements ScreenSerializer<SignEditScreen
     }
 
     @Override
-    public void write(SignEditScreenValue value, PacketByteBuf buffer) {
+    public void writeBuffer(SignEditScreenValue value, PacketByteBuf buffer) {
         buffer.writeBlockPos(value.pos());
 
         if (value.messages().length > Byte.MAX_VALUE) {
@@ -59,7 +59,7 @@ public class SignEditScreenSerializer implements ScreenSerializer<SignEditScreen
     }
 
     @Override
-    public SignEditScreenValue parse(SignEditScreen screen) {
+    public SignEditScreenValue serialize(SignEditScreen screen) {
         AbstractSignEditScreenAccessor accessor = (AbstractSignEditScreenAccessor) screen;
         SignBlockEntity blockEntity = accessor.getBlockEntity();
 

@@ -48,7 +48,7 @@ public class OpenScreenFakePacket extends FakePacketHandler<OpenScreenPacketData
     }
 
     private <S extends Screen, T> T readScreenData(ScreenSerializer<S, T> serializer, Screen screen) {
-        return serializer.parse(serializer.getScreenType().cast(screen));
+        return serializer.serialize(serializer.getScreenType().cast(screen));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class OpenScreenFakePacket extends FakePacketHandler<OpenScreenPacketData
     }
 
     private <T> void serializeAndWrite(ScreenSerializer<?, T> serializer, Object value, PacketByteBuf buffer) {
-        serializer.write(serializer.getSerializedType().cast(value), buffer);
+        serializer.writeBuffer(serializer.getSerializedType().cast(value), buffer);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class OpenScreenFakePacket extends FakePacketHandler<OpenScreenPacketData
             return EMPTY;
         }
 
-        Object val = serializer.read(buf);
+        Object val = serializer.readBuffer(buf);
         return new OpenScreenPacketData(serializer, val);
     }
 

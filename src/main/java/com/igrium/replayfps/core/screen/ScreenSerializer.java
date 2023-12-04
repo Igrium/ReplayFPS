@@ -21,21 +21,21 @@ public interface ScreenSerializer<S extends Screen, T> {
      * @param buffer Buffer to read from.
      * @return Serialized screen object.
      */
-    public T read(PacketByteBuf buffer);
+    public T readBuffer(PacketByteBuf buffer);
 
     /**
      * Write a serialized screen object to a buffer.
      * @param value Serialized screen object.
      * @param buffer Buffer to write to.
      */
-    public void write(T value, PacketByteBuf buffer);
+    public void writeBuffer(T value, PacketByteBuf buffer);
 
     /**
      * Serialize a screen's current state.
      * @param screen Screen to serialize.
      * @return Serialized screen object.
      */
-    public T parse(S screen);
+    public T serialize(S screen);
 
     /**
      * Apply a serialized screen state to a screen.
@@ -63,7 +63,7 @@ public interface ScreenSerializer<S extends Screen, T> {
     public boolean hasChanged(S screen, T value);
   
     public static <S extends Screen, T> void readAndApply(MinecraftClient client, ScreenSerializer<S, T> serializer, S screen, PacketByteBuf buffer) {
-        T val = serializer.read(buffer);
+        T val = serializer.readBuffer(buffer);
         serializer.apply(client, val, screen);
     }
 }

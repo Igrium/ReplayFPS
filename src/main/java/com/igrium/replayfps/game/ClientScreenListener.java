@@ -56,6 +56,6 @@ public class ClientScreenListener {
     }
 
     private static <S extends Screen, T> T serializeScreen(ScreenSerializer<S, T> serializer, Screen screen) {
-        return serializer.parse(serializer.getScreenType().cast(screen));
+        return serializer.serialize(serializer.getScreenType().cast(screen));
     }
 }
