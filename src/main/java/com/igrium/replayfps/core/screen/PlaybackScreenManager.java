@@ -47,11 +47,12 @@ public class PlaybackScreenManager {
     public void setScreen(Optional<Screen> screen) {
         this.screen.ifPresent(s -> {
             s.removed();
+            prevSizeX = -1;
+            prevSizeY = -1;
         });
         this.screen = screen;
         screen.ifPresent(s -> {
             s.onDisplayed();
-            s.init(client, client.getWindow().getScaledHeight(), client.getWindow().getScaledHeight());
         });
     }
 
@@ -63,10 +64,22 @@ public class PlaybackScreenManager {
         setScreen(Optional.empty());
     }
 
+    private int prevSizeX = -1;
+    private int prevSizeY = -1;
+
     public void render(DrawContext drawContext, float tickDelta) {
         if (!screen.isPresent()) return;
         // Don't draw over the game menu.
         if (client.currentScreen instanceof GameMenuScreen) return;
+
+        int sizeX = drawContext.getScaledWindowWidth();
+        int sizeY = drawContext.getScaledWindowHeight();
+
+        if (prevSizeX != sizeX || prevSizeY != sizeY) {
+            screen.get().init(client, sizeX, sizeY);
+            prevSizeX = sizeX;
+            prevSizeY = sizeY;
+        }
 
         screen.get().render(drawContext, (int) mouseX, (int) mouseY, tickDelta);
     }
@@ -87,27 +100,4 @@ public class PlaybackScreenManager {
             LogUtils.getLogger().error("Error opening screen " + serializer.getScreenType().getSimpleName(), e);
         }
     }
-
-    // public void onOpenScreenPacket(PacketByteBuf buffer) {
-    //     Identifier id = buffer.readIdentifier();
-    //     ScreenSerializer<?, ?> serializer = ScreenSerializers.get(id);
-
-    //     if (serializer == null) {
-    //         LogUtils.getLogger().error("Unknown serialized screen type: " + id);
-    //         clearScreen();
-    //         return;
-    //     }
-
-    //     try {
-    //         setScreen(serializerParse(serializer, buffer));
-    //     } catch (Exception e) {
-    //         LogUtils.getLogger().error("Error spawning screen: " + id, e);
-    //         clearScreen();
-    //     }
-    // }
-
-    // private <T> Screen serializerParse(ScreenSerializer<?, T> serializer, PacketByteBuf buf) throws Exception {
-    //     T serialized = serializer.read(buf);
-    //     return serializer.create(client, serialized);
-    // }
 }
