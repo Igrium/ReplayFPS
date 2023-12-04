@@ -8,6 +8,7 @@ import com.mojang.logging.LogUtils;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 
 
@@ -64,6 +65,9 @@ public class PlaybackScreenManager {
 
     public void render(DrawContext drawContext, float tickDelta) {
         if (!screen.isPresent()) return;
+        // Don't draw over the game menu.
+        if (client.currentScreen instanceof GameMenuScreen) return;
+
         screen.get().render(drawContext, (int) mouseX, (int) mouseY, tickDelta);
     }
 
