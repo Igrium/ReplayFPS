@@ -16,6 +16,8 @@ By storing client-side camera data alongside the primary replay data, the moveme
 
 This addon doesn't contain any user-facing usage beyond the normal Replay Mod stuff. Simply install it alongside the replay mod and use it as normal. Keep in mind, however, that the enhancements provided by this addon will only ever apply to the player that recorded the replay, and only if that player had this addon installed while recording.
 
+> Note: In the current build (0.2.0), Mod Menu must be installed to access the config menu.
+
 ## Technical
 
 ### Client-Capture
