@@ -6,7 +6,8 @@
         "ClientPlayerEntityMixin",
         "LivingEntityAccessor",
         "PlayerInventoryMixin",
-        "MinecraftClientMixin"
+        "MinecraftClientMixin",
+        "AbstractSignEditScreenAccessor"
     ],
     "injectors": {
         "defaultRequire": 1
