@@ -16,7 +16,8 @@
         "ClientConnectionMixin",
         "ReplayHandlerMixin",
         "FullReplaySenderMixin",
-        "ChatHudMixin"
+        "ChatHudMixin",
+        "MixinRenderFakeScreen"
     ],
     "injectors": {
         "defaultRequire": 1

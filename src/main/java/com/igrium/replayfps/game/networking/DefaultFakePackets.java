@@ -1,6 +1,7 @@
 package com.igrium.replayfps.game.networking;
 
 import com.igrium.replayfps.core.networking.FakePacketHandlers;
+import com.igrium.replayfps.game.networking.fake_packet.OpenScreenFakePacket;
 import com.igrium.replayfps.game.networking.fake_packet.SetGamemodeFakePacket;
 import com.igrium.replayfps.game.networking.fake_packet.UpdateHotbarFakePacket;
 import com.igrium.replayfps.game.networking.fake_packet.UpdateSelectedSlotFakePacket;
@@ -12,5 +13,7 @@ public class DefaultFakePackets {
         FakePacketHandlers.register(new Identifier("replayfps:update_hotbar"), UpdateHotbarFakePacket::new);
         FakePacketHandlers.register(new Identifier("replayfps:update_slot"), UpdateSelectedSlotFakePacket::new);
         FakePacketHandlers.register(new Identifier("replayfps:set_gamemode"), SetGamemodeFakePacket::new);
+
+        FakePacketHandlers.register(new Identifier("replayfps:open_screen"), OpenScreenFakePacket::new);
     }
 }

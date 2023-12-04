@@ -21,6 +21,11 @@ public class SignEditScreenSerializer implements ScreenSerializer<SignEditScreen
     }
 
     @Override
+    public Class<SignEditScreenValue> getSerializedType() {
+        return SignEditScreenValue.class;
+    }
+
+    @Override
     public SignEditScreenValue read(PacketByteBuf buffer) {
         BlockPos pos = buffer.readBlockPos();
         byte numMessages = buffer.readByte();

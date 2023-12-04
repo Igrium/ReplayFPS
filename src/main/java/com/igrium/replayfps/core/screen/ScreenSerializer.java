@@ -14,6 +14,8 @@ public interface ScreenSerializer<S extends Screen, T> {
      */
     public Class<S> getScreenType();
 
+    public Class<T> getSerializedType();
+
     /**
      * Read a serialized screen object from a buffer.
      * @param buffer Buffer to read from.
