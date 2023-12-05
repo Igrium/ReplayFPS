@@ -14,15 +14,27 @@ import com.igrium.replayfps.util.SerializableFields.IntField;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.SignEditScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractSignEditScreen;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 
-public class SignEditScreenSerializer implements ScreenSerializer<SignEditScreen, SignEditScreenValue> {
+public class SignEditScreenSerializer<T extends AbstractSignEditScreen> implements ScreenSerializer<T, SignEditScreenValue> {
+
+    public static interface SignScreenFactory<T extends AbstractSignEditScreen> {
+        T create(SignBlockEntity entity, boolean front, boolean filtered);
+    }
+
+    protected final SignScreenFactory<T> factory;
+    private final Class<T> screenType;
+
+    public SignEditScreenSerializer(SignScreenFactory<T> factory, Class<T> screenType) {
+        this.factory = factory;
+        this.screenType = screenType;
+    }
 
     @Override
-    public Class<SignEditScreen> getScreenType() {
-        return SignEditScreen.class;
+    public Class<T> getScreenType() {
+        return screenType;
     }
 
     @Override
@@ -43,7 +55,7 @@ public class SignEditScreenSerializer implements ScreenSerializer<SignEditScreen
     }
 
     @Override
-    public SignEditScreenValue serialize(SignEditScreen screen) {
+    public SignEditScreenValue serialize(AbstractSignEditScreen screen) {
         SignEditScreenValue value = new SignEditScreenValue();
 
         AbstractSignEditScreenAccessor accessor = (AbstractSignEditScreenAccessor) screen;
@@ -61,7 +73,7 @@ public class SignEditScreenSerializer implements ScreenSerializer<SignEditScreen
     }
 
     @Override
-    public void apply(MinecraftClient client, SignEditScreenValue value, SignEditScreen screen) {
+    public void apply(MinecraftClient client, SignEditScreenValue value, AbstractSignEditScreen screen) {
         AbstractSignEditScreenAccessor accessor = (AbstractSignEditScreenAccessor) screen;
 
         if (value.messages.isPresent()) {
@@ -78,16 +90,16 @@ public class SignEditScreenSerializer implements ScreenSerializer<SignEditScreen
     }
 
     @Override
-    public SignEditScreen create(MinecraftClient client, SignEditScreenValue value) {
+    public T create(MinecraftClient client, SignEditScreenValue value) {
         Optional<SignBlockEntity> opt = client.world.getBlockEntity(value.blockPos.get(), BlockEntityType.SIGN);
+        opt = opt.or(() -> client.world.getBlockEntity(value.blockPos.get(), BlockEntityType.HANGING_SIGN));
         SignBlockEntity ent = opt.orElseThrow(() -> new IllegalStateException("No sign block entity found."));
 
-        return new SignEditScreen(ent, value.front.getBool(), client.shouldFilterText());
-
+        return factory.create(ent, value.front.getBool(), client.shouldFilterText());
     }
 
     @Override
-    public boolean hasChanged(SignEditScreen screen, SignEditScreenValue value) {
+    public boolean hasChanged(AbstractSignEditScreen screen, SignEditScreenValue value) {
         AbstractSignEditScreenAccessor accessor = (AbstractSignEditScreenAccessor) screen;
         if (value.messages.isPresent() && !Arrays.equals(value.messages.get(), accessor.getMessages()))
             return true;
@@ -98,9 +110,6 @@ public class SignEditScreenSerializer implements ScreenSerializer<SignEditScreen
         else return false;
     }
 }
-
-record OldSignEditScreenValue(BlockPos pos, String[] messages, boolean front, int currentRow) {
-};
 
 class SignEditScreenValue {
     final BlockPosField blockPos = new BlockPosField();
