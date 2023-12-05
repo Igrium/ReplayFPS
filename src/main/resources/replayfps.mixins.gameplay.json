@@ -8,7 +8,8 @@
         "PlayerInventoryMixin",
         "MinecraftClientMixin",
         "AbstractSignEditScreenAccessor",
-        "AbstractSignEditScreenMixin"
+        "AbstractSignEditScreenMixin",
+        "DeathScreenAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

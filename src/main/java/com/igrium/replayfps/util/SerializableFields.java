@@ -1,6 +1,5 @@
 package com.igrium.replayfps.util;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import net.minecraft.network.PacketByteBuf;
@@ -9,33 +8,33 @@ import net.minecraft.util.Identifier;
 public final class SerializableFields {
 
     public static abstract class NumberField<T extends Number> extends SerializableField<T> {
-        public byte getByte() throws NoSuchElementException {
-            Optional<T> val = getValue();
+        public byte getByte() {
+            Optional<T> val = optional();
             return val.isPresent() ? val.get().byteValue() : 0;
         }
 
-        public short getShort() throws NoSuchElementException {
-            Optional<T> val = getValue();
+        public short getShort() {
+            Optional<T> val = optional();
             return val.isPresent() ? val.get().shortValue() : 0;
         }
         
-        public int getInt() throws NoSuchElementException {
-            Optional<T> val = getValue();
+        public int getInt() {
+            Optional<T> val = optional();
             return val.isPresent() ? val.get().intValue() : 0;
         }
 
-        public long getLong() throws NoSuchElementException {
-            Optional<T> val = getValue();
+        public long getLong() {
+            Optional<T> val = optional();
             return val.isPresent() ? val.get().longValue() : 0;
         }
 
-        public float getFloat() throws NoSuchElementException {
-            Optional<T> val = getValue();
+        public float getFloat() {
+            Optional<T> val = optional();
             return val.isPresent() ? val.get().floatValue() : 0;
         }
 
-        public double getDouble() throws NoSuchElementException {
-            Optional<T> val = getValue();
+        public double getDouble() {
+            Optional<T> val = optional();
             return val.isPresent() ? val.get().doubleValue() : 0;
         }
     }
@@ -136,8 +135,8 @@ public final class SerializableFields {
             buffer.writeBoolean(value);
         }
         
-        public boolean getBool() throws NoSuchElementException {
-            Optional<Boolean> val = getValue();
+        public boolean getBool() {
+            Optional<Boolean> val = optional();
             return val.isPresent() ? val.get().booleanValue() : false;
         }
     }
@@ -154,8 +153,8 @@ public final class SerializableFields {
             buffer.writeChar(value);
         }
 
-        public char getChar() throws NoSuchElementException {
-            Optional<Character> val = getValue();
+        public char getChar() {
+            Optional<Character> val = optional();
             return val.isPresent() ? val.get().charValue() : '\u0000';
         }
     }

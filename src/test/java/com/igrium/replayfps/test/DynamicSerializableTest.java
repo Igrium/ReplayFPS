@@ -43,7 +43,7 @@ public class DynamicSerializableTest {
         DynamicSerializable serializable2 = new DynamicSerializable(field2);
         serializable2.read(buffer);
 
-        assertArrayEquals(strArray, field2.getValue().get());
+        assertArrayEquals(strArray, field2.optional().get());
     }
 
     @RepeatedTest(5)

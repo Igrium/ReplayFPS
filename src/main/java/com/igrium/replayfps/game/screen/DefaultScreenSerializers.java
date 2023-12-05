@@ -12,5 +12,7 @@ public class DefaultScreenSerializers {
                 new SignEditScreenSerializer<>(SignEditScreen::new, SignEditScreen.class));
         ScreenSerializers.register(new Identifier("minecraft:hanging_sign_edit"),
                 new SignEditScreenSerializer<>(HangingSignEditScreen::new, HangingSignEditScreen.class));
+        
+        ScreenSerializers.register(new Identifier("minecraft:death_screen"), new DeathScreenSerializer());
     }
 }

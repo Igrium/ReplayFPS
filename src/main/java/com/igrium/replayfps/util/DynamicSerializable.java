@@ -48,7 +48,7 @@ public class DynamicSerializable {
         int bitSet = 0;
 
         for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getValue().isPresent()) {
+            if (fields[i].optional().isPresent()) {
                 bitSet = setBit(bitSet, i);
             }
         }
@@ -56,7 +56,7 @@ public class DynamicSerializable {
         buffer.writeInt(bitSet);
 
         for (SerializableField<?> field : fields) {
-            if (field.getValue().isPresent()) field.write(buffer);
+            if (field.optional().isPresent()) field.write(buffer);
         }
     }
 
