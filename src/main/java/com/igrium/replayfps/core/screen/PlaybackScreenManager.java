@@ -18,6 +18,7 @@ import net.minecraft.util.Identifier;
 public class PlaybackScreenManager {
     private final MinecraftClient client;
 
+    // Mouse position relative to center of the screen.
     private float mouseX;
     private float mouseY;
 
@@ -81,6 +82,10 @@ public class PlaybackScreenManager {
         int sizeX = drawContext.getScaledWindowWidth();
         int sizeY = drawContext.getScaledWindowHeight();
 
+        // Mouse is recorded relative to center of screen.
+        float mouseX = this.mouseX + sizeX / 2;
+        float mouseY = this.mouseY + sizeY / 2;
+
         if (prevSizeX != sizeX || prevSizeY != sizeY) {
             screen.get().init(client, sizeX, sizeY);
             prevSizeX = sizeX;
@@ -89,10 +94,10 @@ public class PlaybackScreenManager {
 
         screen.get().render(drawContext, (int) mouseX, (int) mouseY, tickDelta);
 
-        drawMouse(drawContext);
+        drawMouse(drawContext, mouseX, mouseY);
     }
 
-    private void drawMouse(DrawContext context) {
+    private void drawMouse(DrawContext context, float mouseX, float mouseY) {
         float x1 = mouseX;
         float x2 = mouseX + 8;
         float y1 = mouseY;

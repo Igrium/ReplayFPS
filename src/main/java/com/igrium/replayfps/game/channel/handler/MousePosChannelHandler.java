@@ -26,6 +26,9 @@ public class MousePosChannelHandler implements ChannelHandler<Vector2fc> {
         float x = (float) (client.mouse.getX() * client.getWindow().getScaledWidth() / client.getWindow().getWidth());
         float y = (float) (client.mouse.getY() * client.getWindow().getScaledHeight() / client.getWindow().getHeight());
 
+        x -= client.getWindow().getScaledWidth() / 2;
+        y -= client.getWindow().getScaledHeight() / 2;
+
         return new Vector2f(x, y);
     }
 
