@@ -5,8 +5,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.network.PacketByteBuf;
 
 public abstract class SerializableField<T> {
@@ -16,9 +14,8 @@ public abstract class SerializableField<T> {
         return value;
     }
 
-    @Nullable
     public T get() {
-        return value.orElse(null);
+        return value.get();
     }
 
     public void set(Optional<T> value) {
@@ -27,6 +24,14 @@ public abstract class SerializableField<T> {
 
     public final void set(T value) {
         set(Optional.ofNullable(value));
+    }
+
+    public final void clear() {
+        set(Optional.empty());
+    }
+
+    public final boolean isPresent() {
+        return value.isPresent();
     }
 
     protected abstract T doRead(PacketByteBuf buffer) throws Exception;

@@ -21,7 +21,7 @@ public interface ScreenSerializer<S extends Screen, T> {
      * @param buffer Buffer to read from.
      * @return Serialized screen object.
      */
-    public T readBuffer(PacketByteBuf buffer);
+    public T readBuffer(PacketByteBuf buffer) throws Exception;
 
     /**
      * Write a serialized screen object to a buffer.
@@ -61,9 +61,4 @@ public interface ScreenSerializer<S extends Screen, T> {
      * @return Whether it has changed.
      */
     public boolean hasChanged(S screen, T value);
-  
-    public static <S extends Screen, T> void readAndApply(MinecraftClient client, ScreenSerializer<S, T> serializer, S screen, PacketByteBuf buffer) {
-        T val = serializer.readBuffer(buffer);
-        serializer.apply(client, val, screen);
-    }
 }

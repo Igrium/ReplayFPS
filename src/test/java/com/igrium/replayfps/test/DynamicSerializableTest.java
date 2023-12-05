@@ -60,6 +60,14 @@ public class DynamicSerializableTest {
         serializable.write(buffer);
         buffer.resetReaderIndex();
 
+        byteField.clear();
+        shortField.clear();
+        intField.clear();
+        stringField.clear();
+        longField.clear();
+        floatField.clear();
+        doubleField.clear();
+        
         DynamicSerializable val2 = new DynamicSerializable(byteField, shortField, intField, stringField, longField, floatField, doubleField);
         val2.read(buffer);
 

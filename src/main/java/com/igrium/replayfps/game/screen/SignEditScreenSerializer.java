@@ -5,6 +5,11 @@ import java.util.Optional;
 
 import com.igrium.replayfps.core.screen.ScreenSerializer;
 import com.igrium.replayfps.game.mixin.AbstractSignEditScreenAccessor;
+import com.igrium.replayfps.util.DynamicSerializable;
+import com.igrium.replayfps.util.SerializableField;
+import com.igrium.replayfps.util.ArrayField.StringArrayField;
+import com.igrium.replayfps.util.SerializableFields.BoolField;
+import com.igrium.replayfps.util.SerializableFields.IntField;
 
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -26,80 +31,101 @@ public class SignEditScreenSerializer implements ScreenSerializer<SignEditScreen
     }
 
     @Override
-    public SignEditScreenValue readBuffer(PacketByteBuf buffer) {
-        BlockPos pos = buffer.readBlockPos();
-        byte numMessages = buffer.readByte();
-        String[] messages = new String[numMessages];
-
-        for (int i = 0; i < numMessages; i++) {
-            messages[i] = buffer.readString();
-        }
-
-        boolean front = buffer.readBoolean();
-        int currentRow = buffer.readInt();
-
-        return new SignEditScreenValue(pos, messages, front, currentRow);
+    public SignEditScreenValue readBuffer(PacketByteBuf buffer) throws Exception {
+        SignEditScreenValue val = new SignEditScreenValue();
+        val.serializer.read(buffer);
+        return val;
     }
 
     @Override
     public void writeBuffer(SignEditScreenValue value, PacketByteBuf buffer) {
-        buffer.writeBlockPos(value.pos());
-
-        if (value.messages().length > Byte.MAX_VALUE) {
-            throw new IllegalStateException("Too many messages.");
-        }
-
-        buffer.writeByte(value.messages().length);
-        for (var message : value.messages()) {
-            buffer.writeString(message);
-        }
-
-        buffer.writeBoolean(value.front());
-        buffer.writeInt(value.currentRow());
+        value.serializer.write(buffer);
     }
 
     @Override
     public SignEditScreenValue serialize(SignEditScreen screen) {
+        SignEditScreenValue value = new SignEditScreenValue();
+
         AbstractSignEditScreenAccessor accessor = (AbstractSignEditScreenAccessor) screen;
         SignBlockEntity blockEntity = accessor.getBlockEntity();
 
-        String[] messages = accessor.getMessages();
-        messages = Arrays.copyOf(messages, messages.length);
+        value.blockPos.set(blockEntity.getPos());
+        
+        String[] messages = accessor.getMessages().clone();
+        value.messages.set(messages);
+        
+        value.front.set(accessor.isFront());
+        value.currentRow.set(accessor.getCurrentRow());
 
-        boolean front = accessor.isFront();
-        int currentRow = accessor.getCurrentRow();
-
-        return new SignEditScreenValue(blockEntity.getPos(), messages, front, currentRow);
+        return value;
     }
 
     @Override
     public void apply(MinecraftClient client, SignEditScreenValue value, SignEditScreen screen) {
-        String[] screenMessages = ((AbstractSignEditScreenAccessor) screen).getMessages();
-        for (int i = 0; i < screenMessages.length && i < value.messages().length; i++) {
-            screenMessages[i] = value.messages()[i];
+        AbstractSignEditScreenAccessor accessor = (AbstractSignEditScreenAccessor) screen;
+
+        if (value.messages.isPresent()) {
+            String[] screenMessages = accessor.getMessages();
+            String[] serializedMessages = value.messages.get();
+            for (int i = 0; i < screenMessages.length && i < serializedMessages.length; i++) {
+                screenMessages[i] = serializedMessages[i];
+            }
         }
 
-        ((AbstractSignEditScreenAccessor) screen).setCurrentRow(value.currentRow());
+        if (value.currentRow.isPresent())
+            accessor.setCurrentRow(value.currentRow.getInt());
+
     }
 
     @Override
     public SignEditScreen create(MinecraftClient client, SignEditScreenValue value) {
-        Optional<SignBlockEntity> opt = client.world.getBlockEntity(value.pos(), BlockEntityType.SIGN);
+        Optional<SignBlockEntity> opt = client.world.getBlockEntity(value.blockPos.get(), BlockEntityType.SIGN);
         SignBlockEntity ent = opt.orElseThrow(() -> new IllegalStateException("No sign block entity found."));
 
-        return new SignEditScreen(ent, value.front(), client.shouldFilterText());
+        return new SignEditScreen(ent, value.front.getBool(), client.shouldFilterText());
+
     }
 
     @Override
     public boolean hasChanged(SignEditScreen screen, SignEditScreenValue value) {
         AbstractSignEditScreenAccessor accessor = (AbstractSignEditScreenAccessor) screen;
-
-        if (!Arrays.equals(accessor.getMessages(), value.messages())) return true;
-        else if (accessor.isFront() != value.front()) return true;
-        else if (accessor.getCurrentRow() != value.currentRow()) return true;
+        if (value.messages.isPresent() && !Arrays.equals(value.messages.get(), accessor.getMessages()))
+            return true;
+        else if (value.front.isPresent() && value.front.getBool() != accessor.isFront())
+            return true;
+        else if (value.currentRow.isPresent() && value.currentRow.getInt() != accessor.getCurrentRow())
+            return true;
         else return false;
     }
 }
 
-record SignEditScreenValue(BlockPos pos, String[] messages, boolean front, int currentRow) {
+record OldSignEditScreenValue(BlockPos pos, String[] messages, boolean front, int currentRow) {
 };
+
+class SignEditScreenValue {
+    final BlockPosField blockPos = new BlockPosField();
+    final StringArrayField messages = new StringArrayField();
+    final BoolField front = new BoolField();
+    final IntField currentRow = new IntField();
+
+    final DynamicSerializable serializer = new DynamicSerializable(
+        blockPos,
+        messages,
+        front,
+        currentRow
+    );
+}
+
+class BlockPosField extends SerializableField<BlockPos> {
+
+    @Override
+    protected BlockPos doRead(PacketByteBuf buffer) {
+        return buffer.readBlockPos();
+    }
+
+    @Override
+    protected void doWrite(BlockPos value, PacketByteBuf buffer) {
+        buffer.writeBlockPos(value);
+    }
+    
+}

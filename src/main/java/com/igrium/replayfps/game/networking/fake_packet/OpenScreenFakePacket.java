@@ -82,9 +82,15 @@ public class OpenScreenFakePacket extends FakePacketHandler<OpenScreenPacketData
             LogUtils.getLogger().error("Unknown screen serializer: " + id);
             return EMPTY;
         }
-
-        Object val = serializer.readBuffer(buf);
-        return new OpenScreenPacketData(serializer, val);
+        
+        Object val;
+        try {
+            val = serializer.readBuffer(buf);
+            return new OpenScreenPacketData(serializer, val);
+        } catch (Exception e) {
+            LogUtils.getLogger().error("Error opening fake screen.", e);
+            return EMPTY;
+        }
     }
 
 

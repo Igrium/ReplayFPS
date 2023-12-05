@@ -49,7 +49,7 @@ public class DynamicSerializable {
 
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getValue().isPresent()) {
-                setBit(bitSet, i);
+                bitSet = setBit(bitSet, i);
             }
         }
 
