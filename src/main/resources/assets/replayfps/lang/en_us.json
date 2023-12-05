@@ -8,5 +8,7 @@
     "option.replayfps.drawhud": "Render HUD",
     "option.replayfps.drawhud.tooltip": "Render the HUD (hotbar, etc) in replay renderings.",
     "option.replayfps.drawhotbar": "Show Hotbar",
-    "option.replayfps.drawhotbar.tooltip": "Show the hotbar in replay renderings."
+    "option.replayfps.drawhotbar.tooltip": "Show the hotbar in replay renderings.",
+    "option.replayfps.drawscreens": "Render Screens",
+    "option.replayfps.drawscreens.tooltip": "Render supported screens when appropriate (signs, inventory, etc.)"
 }

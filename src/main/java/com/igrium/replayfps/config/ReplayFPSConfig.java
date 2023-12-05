@@ -63,6 +63,16 @@ public final class ReplayFPSConfig {
         this.drawHotbar = drawHotbar;
     }
 
+    private boolean drawScreens = true;
+
+    public boolean shouldDrawScreens() {
+        return drawScreens;
+    }
+
+    public void setDrawScreens(boolean drawScreens) {
+        this.drawScreens = drawScreens;
+    }
+
     public Screen getScreen(Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
@@ -88,7 +98,13 @@ public final class ReplayFPSConfig {
                 .setTooltip(Text.translatable("option.replayfps.drawhotbar.tooltip"))
                 .setSaveConsumer(val -> setDrawHotbar(val))
                 .build());
-        
+
+        hud.addEntry(builder.entryBuilder().startBooleanToggle(Text.translatable("option.replayfps.drawscreens"), drawScreens)
+                .setDefaultValue(true)
+                .setTooltip(Text.translatable("option.replayfps.drawscreens"))
+                .setSaveConsumer(val -> setDrawScreens(val))
+                .build());
+
         builder.setSavingRunnable(this::save);
         
         return builder.build();

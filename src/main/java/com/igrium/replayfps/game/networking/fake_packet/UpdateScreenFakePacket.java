@@ -56,21 +56,23 @@ public class UpdateScreenFakePacket extends FakePacketHandler<PacketByteBuf> {
 
     @Override
     public void apply(PacketByteBuf value, MinecraftClient client, PlayerEntity player) {
-        ClientPlaybackModule module = ClientPlaybackModule.getInstance();
-        PlaybackScreenManager screenManager = module.getPlaybackScreenManager();
-        if (screenManager == null) return;
-
-        Screen screen = screenManager.getScreen().orElse(null);
-        if (screen == null) return;
-
-        ScreenSerializer<?, ?> serializer = ScreenSerializers.get(screen.getClass());
-        if (serializer == null) return;
-
         try {
+            ClientPlaybackModule module = ClientPlaybackModule.getInstance();
+            PlaybackScreenManager screenManager = module.getPlaybackScreenManager();
+            if (screenManager == null)
+                return;
+
+            Screen screen = screenManager.getScreen().orElse(null);
+            if (screen == null)
+                return;
+
+            ScreenSerializer<?, ?> serializer = ScreenSerializers.get(screen.getClass());
+            if (serializer == null)
+                return;
             Object serialized = serializer.readBuffer(value);
             castScreenAndApply(client, serializer, screen, serialized);
         } catch (Exception e) {
-            LogUtils.getLogger().error("Error loading screen " + screen.getClass().getSimpleName(), e);
+            LogUtils.getLogger().error("Error loading screen.", e);
         }
     }
 

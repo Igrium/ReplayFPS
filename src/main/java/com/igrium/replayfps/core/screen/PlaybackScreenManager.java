@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.igrium.replayfps.ReplayFPS;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.client.MinecraftClient;
@@ -68,7 +69,7 @@ public class PlaybackScreenManager {
     private int prevSizeY = -1;
 
     public void render(DrawContext drawContext, float tickDelta) {
-        if (!screen.isPresent()) return;
+        if (!screen.isPresent() || !ReplayFPS.getConfig().shouldDrawScreens()) return;
         // Don't draw over the game menu.
         if (client.currentScreen instanceof GameMenuScreen) return;
 
