@@ -5,12 +5,14 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.igrium.replayfps.ReplayFPS;
+import com.igrium.replayfps.core.util.RenderUtils;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.Identifier;
 
 
 public class PlaybackScreenManager {
@@ -18,6 +20,8 @@ public class PlaybackScreenManager {
 
     private float mouseX;
     private float mouseY;
+
+    public static final Identifier MOUSE_TEXTURE = new Identifier("replayfps", "textures/cursor/cursor_mc.png");
 
     public PlaybackScreenManager(MinecraftClient client) {
         this.client = client;
@@ -70,6 +74,7 @@ public class PlaybackScreenManager {
 
     public void render(DrawContext drawContext, float tickDelta) {
         if (!screen.isPresent() || !ReplayFPS.getConfig().shouldDrawScreens()) return;
+        
         // Don't draw over the game menu.
         if (client.currentScreen instanceof GameMenuScreen) return;
 
@@ -83,6 +88,19 @@ public class PlaybackScreenManager {
         }
 
         screen.get().render(drawContext, (int) mouseX, (int) mouseY, tickDelta);
+
+        drawMouse(drawContext);
+    }
+
+    private void drawMouse(DrawContext context) {
+        float x1 = mouseX;
+        float x2 = mouseX + 8;
+        float y1 = mouseY;
+        float y2 = mouseY + 8;
+
+        RenderUtils.drawTexturedQuad(MOUSE_TEXTURE, 
+        x1, x2, y1, y2, 64, 
+        0, 1, 0, 1, context.getMatrices());
     }
 
     public void tick() {
