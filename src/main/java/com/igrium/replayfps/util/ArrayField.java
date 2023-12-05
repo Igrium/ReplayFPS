@@ -1,14 +1,21 @@
 package com.igrium.replayfps.util;
 
+import java.util.function.IntFunction;
+
 import net.minecraft.network.PacketByteBuf;
 
 public abstract class ArrayField<T> extends SerializableField<T[]> {
 
+    private final IntFunction<T[]> arrayFactory;
+
+    public ArrayField(IntFunction<T[]> arrayFactory) {
+        this.arrayFactory = arrayFactory;
+    }
+
     @Override
-    @SuppressWarnings("unchecked")
     protected T[] doRead(PacketByteBuf buffer) throws Exception {
         int amount = buffer.readUnsignedShort();
-        T[] array = (T[]) new Object[amount];
+        T[] array = arrayFactory.apply(amount);
         for (int i = 0; i < amount; i++) {
             array[i] = readValue(buffer);
         }
@@ -29,6 +36,11 @@ public abstract class ArrayField<T> extends SerializableField<T[]> {
     protected abstract void writeValue(T value, PacketByteBuf buffer);
 
     public static class StringArrayField extends ArrayField<String> {
+        
+
+        public StringArrayField() {
+            super(String[]::new);
+        }
 
         @Override
         protected String readValue(PacketByteBuf buffer) throws Exception {
@@ -41,4 +53,5 @@ public abstract class ArrayField<T> extends SerializableField<T[]> {
         }
         
     }
+
 }

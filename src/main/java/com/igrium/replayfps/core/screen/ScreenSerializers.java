@@ -1,8 +1,11 @@
 package com.igrium.replayfps.core.screen;
 
+import java.util.Optional;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.Identifier;
 
@@ -26,5 +29,10 @@ public final class ScreenSerializers {
 
     public static Identifier getId(ScreenSerializer<?, ?> serializer) {
         return REGISTRY.inverse().get(serializer);
+    }
+
+    public static Optional<ScreenSerializer<?, ?>> getCurrentSerializer(MinecraftClient client) {
+        if (client.currentScreen == null) return Optional.empty();
+        return Optional.ofNullable(get(client.currentScreen.getClass()));
     }
 }

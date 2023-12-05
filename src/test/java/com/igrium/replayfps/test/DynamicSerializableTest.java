@@ -1,13 +1,16 @@
 package com.igrium.replayfps.test;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.igrium.replayfps.util.DynamicSerializable;
+import com.igrium.replayfps.util.ArrayField.StringArrayField;
 import com.igrium.replayfps.util.SerializableFields.ByteField;
 import com.igrium.replayfps.util.SerializableFields.DoubleField;
 import com.igrium.replayfps.util.SerializableFields.FloatField;
@@ -24,6 +27,24 @@ import net.minecraft.network.PacketByteBuf;
 @ExtendWith(RandomBeansExtension.class)
 public class DynamicSerializableTest {
 
+    @Test
+    public void testArray() throws Exception {
+        String[] strArray = new String[] { "val1", "val2", "val3" };
+        StringArrayField field = new StringArrayField();
+        field.set(strArray);
+        
+
+        DynamicSerializable serializable = new DynamicSerializable(field);
+
+        PacketByteBuf buffer = PacketByteBufs.create();
+        serializable.write(buffer);
+
+        StringArrayField field2 = new StringArrayField();
+        DynamicSerializable serializable2 = new DynamicSerializable(field2);
+        serializable2.read(buffer);
+
+        assertArrayEquals(strArray, field2.getValue().get());
+    }
 
     @RepeatedTest(5)
     public void testDynamicSerializable(@Random byte randByte, @Random short randShort, @Random int randInt,
