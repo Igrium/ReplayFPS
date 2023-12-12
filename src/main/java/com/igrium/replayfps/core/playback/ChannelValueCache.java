@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import java.util.Map;
-
 import com.igrium.replayfps.core.channel.ChannelHandler;
 
 public class ChannelValueCache {

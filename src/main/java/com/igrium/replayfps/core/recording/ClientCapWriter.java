@@ -4,7 +4,6 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import com.igrium.replayfps.core.channel.type.ChannelType;
 import com.igrium.replayfps.core.playback.UnserializedFrame;
 

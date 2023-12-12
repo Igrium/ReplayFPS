@@ -157,13 +157,13 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         }
     }
     
-    { CustomPacketReceivedEvent.EVENT.register(this::onCustomPacketReceived); }
-    private boolean onCustomPacketReceived(Identifier channel, PacketByteBuf payload) {
-        if (customPacketManager != null) {
-            return customPacketManager.onPacketReceived(channel, payload);
-        }
-        return false;
-    }
+    // { CustomPacketReceivedEvent.EVENT.register(this::onCustomPacketReceived); }
+    // private boolean onCustomPacketReceived(Identifier channel, PacketByteBuf payload) {
+    //     if (customPacketManager != null) {
+    //         return customPacketManager.onPacketReceived(channel, payload);
+    //     }
+    //     return false;
+    // }
 
     { PacketReceivedEvent.EVENT.register(this::onPacketReceived); }
     private boolean onPacketReceived(Packet<?> packet, PacketListener l) {

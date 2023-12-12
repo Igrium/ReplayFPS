@@ -28,10 +28,10 @@
     ],
     "depends": {
         "fabricloader": ">=0.14.24",
-        "minecraft": "~1.20.1",
+        "minecraft": "~1.20.2",
         "java": ">=17",
         "fabric-api": "*",
-        "replaymod": ">=1.20.1-2.6.13",
+        "replaymod": ">=1.20.2-2.6.14",
         "cloth-config": ">=11.1.106"
     },
     "suggests": {

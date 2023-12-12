@@ -40,3 +40,6 @@ replay_*.log
 *.jfr
 
 log/*
+logs/*
+
+dev/*

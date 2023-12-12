@@ -12,12 +12,13 @@ import com.mojang.logging.LogUtils;
 
 import io.netty.channel.Channel;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.impl.networking.payload.UntypedPayload;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.util.Identifier;
 
 /**
@@ -169,7 +170,8 @@ public class CustomReplayPacketManager {
             throw new IllegalStateException("Replay packets can only be sent while a game is active.");
         }
         
-        CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(new Identifier(PREFIX + id.getNamespace(), id.getPath()), payload);
+        CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(
+                new UntypedPayload(new Identifier(PREFIX + id.getNamespace(), id.getPath()), payload));
         sendFakePacket(packet);
     }
 

@@ -13,7 +13,6 @@ import java.io.RandomAccessFile;
 import java.nio.channels.Channels;
 
 import org.jetbrains.annotations.Nullable;
-
 import com.google.common.io.CountingInputStream;
 import com.igrium.replayfps.core.channel.ChannelHandler;
 import com.igrium.replayfps.core.recording.ClientCapHeader;

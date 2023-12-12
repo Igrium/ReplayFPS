@@ -2,8 +2,7 @@ package com.igrium.replayfps.core.networking.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.network.PacketByteBuf;
+import net.fabricmc.fabric.impl.networking.payload.ResolvedPayload;
 import net.minecraft.util.Identifier;
 
 /**
@@ -16,7 +15,7 @@ public interface CustomPacketReceivedEvent {
             listeners -> (channel, payload) -> {
 
                 for (CustomPacketReceivedEvent listener : listeners) {
-                    if (listener.onPacketReceived(channel, PacketByteBufs.slice(payload)))
+                    if (listener.onPacketReceived(channel, payload))
                         return true;
                 }
 
@@ -31,5 +30,5 @@ public interface CustomPacketReceivedEvent {
      * @return If this packet should be "consumed". If <code>true</code> no other
      *         recievers (including the registered one) will recieve the packet.
      */
-    public boolean onPacketReceived(Identifier channel, PacketByteBuf payload);
+    public boolean onPacketReceived(Identifier channel, ResolvedPayload payload);
 }
