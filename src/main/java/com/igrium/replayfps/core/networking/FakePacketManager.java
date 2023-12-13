@@ -81,22 +81,30 @@ public class FakePacketManager {
     }
 
     private void handle(Identifier id, ResolvablePayload payload) {
-        @Nullable var handler = handlers.get(id);
-        if (handler == null) return;
+        @Nullable
+        var handler = handlers.get(id);
+        if (handler == null)
+            return;
 
-        Optional<PlayerEntity> playerOpt = module.getLocalPlayer();
-        if (playerOpt.isEmpty()) return;
-        PlayerEntity player = playerOpt.get();
+        // TODO: Do we want to keep some of this on the netty thread?
+        client.execute(() -> {
+            Optional<PlayerEntity> playerOpt = module.getLocalPlayer();
+            if (playerOpt.isEmpty())
+                return;
+            PlayerEntity player = playerOpt.get();
 
-        SpectatorRule rule = spectatorRules.getOrDefault(player, SpectatorRule.APPLY);
-        if (client.getCameraEntity() != player && rule != SpectatorRule.APPLY) return;
+            SpectatorRule rule = spectatorRules.getOrDefault(player, SpectatorRule.APPLY);
+            if (client.getCameraEntity() != player && rule != SpectatorRule.APPLY)
+                return;
 
-        try {
-            ResolvedPayload resolved = payload.resolve(handler.type());
-            handler.internal().handle(resolved, player);
-        } catch (Throwable ex) {
-            LogUtils.getLogger().error("Error handling fake packet: " + id, ex);
-        }
+            try {
+                ResolvedPayload resolved = payload.resolve(handler.type());
+                handler.internal().handle(resolved, player);
+            } catch (Throwable ex) {
+                LogUtils.getLogger().error("Error handling fake packet: " + id, ex);
+            }
+        });
+
     }
 
     public <T extends FabricPacket> void registerReceiver(PacketType<T> type, FakePacketHandler<T> handler) {
