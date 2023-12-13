@@ -95,6 +95,7 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         }
 
         fakePacketManager = new FakePacketManager(client, this, currentPlayer);
+        fakePacketManager.initReceivers();
         
         // customPacketManager = new CustomReplayPacketManager();
         // for (var h : FakePacketHandlers.REGISTRY.values()) {
