@@ -1,8 +1,8 @@
-package com.igrium.replayfps.game.networking.fake_packet;
+package com.igrium.replayfps.game.networking.fake_packet.old;
 
 import java.util.function.Consumer;
 
-import com.igrium.replayfps.core.networking.FakePacketHandler;
+import com.igrium.replayfps.core.networking.old.FakePacketHandler;
 import com.igrium.replayfps.game.event.ClientPlayerEvents;
 
 import net.minecraft.client.MinecraftClient;

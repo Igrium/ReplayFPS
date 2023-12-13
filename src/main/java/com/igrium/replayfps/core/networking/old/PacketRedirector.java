@@ -1,4 +1,4 @@
-package com.igrium.replayfps.core.networking;
+package com.igrium.replayfps.core.networking.old;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;

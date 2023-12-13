@@ -4,14 +4,14 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.igrium.replayfps.ReplayFPS;
-import com.igrium.replayfps.core.events.ReplayEvents;
-import com.igrium.replayfps.core.networking.CustomReplayPacketManager;
-import com.igrium.replayfps.core.networking.FakePacketHandlers;
-import com.igrium.replayfps.core.networking.PacketRedirectors;
+import com.igrium.replayfps.core.networking.FakePacketManager;
 import com.igrium.replayfps.core.networking.event.CustomPacketReceivedEvent;
 import com.igrium.replayfps.core.networking.event.PacketReceivedEvent;
+
+import com.igrium.replayfps.core.networking.old.PacketRedirectors;
 import com.igrium.replayfps.core.recording.ClientRecordingModule;
 import com.igrium.replayfps.core.util.GlobalReplayContext;
 import com.mojang.logging.LogUtils;
@@ -24,16 +24,15 @@ import com.replaymod.replay.events.ReplayOpenedCallback;
 import com.replaymod.replaystudio.replay.ReplayFile;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.impl.networking.payload.ResolvablePayload;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.Packet;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
 
 public class ClientPlaybackModule extends EventRegistrations implements Module {
@@ -41,7 +40,7 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
 
     private ReplayHandler currentReplay;
     private ClientCapPlayer currentPlayer;
-    private CustomReplayPacketManager customPacketManager;
+    private FakePacketManager fakePacketManager;
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 
@@ -62,8 +61,8 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         return currentPlayer;
     }
 
-    public CustomReplayPacketManager getCustomPacketManager() {
-        return customPacketManager;
+    public FakePacketManager getFakePacketManager() {
+        return fakePacketManager;
     }
     
     private GameMode hudGamemode = GameMode.SURVIVAL;
@@ -94,20 +93,22 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         } catch (IOException e) {
             LogUtils.getLogger().error("Error loading client capture.", e);
         }
+
+        fakePacketManager = new FakePacketManager(client, this, currentPlayer);
         
-        customPacketManager = new CustomReplayPacketManager();
-        for (var h : FakePacketHandlers.REGISTRY.values()) {
-            customPacketManager.registerReceiver(h.getId(), h);
-        }
+        // customPacketManager = new CustomReplayPacketManager();
+        // for (var h : FakePacketHandlers.REGISTRY.values()) {
+        //     customPacketManager.registerReceiver(h.getId(), h);
+        // }
     }
 
-    { on(ReplayEvents.REPLAY_SETUP, this::onReplaySetup); }
-    private void onReplaySetup(ReplayHandler handler) {
-        // Upon rewinding the replay, we need to clear any queued fake packets.
-        if (customPacketManager != null) {
-            customPacketManager.clearQueue();
-        }
-    }
+    // { on(ReplayEvents.REPLAY_SETUP, this::onReplaySetup); }
+    // private void onReplaySetup(ReplayHandler handler) {
+    //     // Upon rewinding the replay, we need to clear any queued fake packets.
+    //     if (customPacketManager != null) {
+    //         customPacketManager.clearQueue();
+    //     }
+    // }
 
     { on(ReplayClosingCallback.EVENT, this::onReplayClosing); }
     private void onReplayClosing(ReplayHandler handler) {
@@ -127,7 +128,7 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
             currentPlayer = null;
         }
 
-        customPacketManager = null;
+        fakePacketManager = null;
     }
 
     { on(PreRenderCallback.EVENT, this::tickRender); }
@@ -152,9 +153,9 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
         currentPlayer.tickClient(context);
 
         // If we're viewing from the camera, attempt to flush the packet queue.
-        if (client.cameraEntity.equals(context.localPlayer().orElse(null)) && customPacketManager != null) {
-            customPacketManager.flushQueue(client, context.localPlayer().get());
-        }
+        // if (client.cameraEntity.equals(context.localPlayer().orElse(null)) && customPacketManager != null) {
+        //     customPacketManager.flushQueue(client, context.localPlayer().get());
+        // }
     }
     
     // { CustomPacketReceivedEvent.EVENT.register(this::onCustomPacketReceived); }
@@ -164,6 +165,14 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
     //     }
     //     return false;
     // }
+
+    { CustomPacketReceivedEvent.EVENT.register(this::onCustomPacketReceived); }
+    private boolean onCustomPacketReceived(ResolvablePayload payload) {
+        if (fakePacketManager != null) {
+            return fakePacketManager.processPacket(payload);
+        }
+        return false;
+    }
 
     { PacketReceivedEvent.EVENT.register(this::onPacketReceived); }
     private boolean onPacketReceived(Packet<?> packet, PacketListener l) {
@@ -176,6 +185,23 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
             return true;
         }
         return false;
+    }
+
+    /**
+     * If a client-cap is playing, get a reference to the player who recorded the
+     * replay.
+     * 
+     * @return The original player. An empty optional if there is no client-cap
+     *         playing or the local player was not found.
+     */
+    public Optional<PlayerEntity> getLocalPlayer() {
+        if (client.world == null || this.currentPlayer == null)
+            return Optional.empty();
+        
+        ClientCapReader reader = currentPlayer.getReader();
+        if (reader.getHeader() == null) return Optional.empty();
+
+        return Optional.ofNullable((PlayerEntity) client.world.getEntityById(reader.getHeader().getLocalPlayerID()));
     }
 
     private ClientPlaybackContext genContext(int timestamp) {

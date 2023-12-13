@@ -1,6 +1,6 @@
-package com.igrium.replayfps.core.networking.event;
+package com.igrium.replayfps.core.networking.old;
 
-import com.igrium.replayfps.core.networking.FakePacketManager;
+import java.util.function.Consumer;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
@@ -8,11 +8,11 @@ import net.fabricmc.fabric.api.event.EventFactory;
 public interface FakePacketRegistrationCallback {
 
     public static final Event<FakePacketRegistrationCallback> EVENT = EventFactory.createArrayBacked(
-        FakePacketRegistrationCallback.class, listeners -> manager -> {
+        FakePacketRegistrationCallback.class, listeners -> consumer -> {
             for (var l : listeners) {
-                l.register(manager);
+                l.register(consumer);
             }
         });
 
-    void register(FakePacketManager manager);
+    void register(Consumer<FakePacketHandler<?>> consumer);
 }

@@ -1,4 +1,4 @@
-package com.igrium.replayfps.core.networking;
+package com.igrium.replayfps.core.networking.old;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.igrium.replayfps.core.mixin.ClientConnectionAccessor;
-import com.igrium.replayfps.core.networking.FakePacketHandler.SpectatorBehavior;
+import com.igrium.replayfps.core.networking.old.FakePacketHandler.SpectatorBehavior;
 import com.igrium.replayfps.core.util.PlaybackUtils;
 import com.mojang.logging.LogUtils;
 

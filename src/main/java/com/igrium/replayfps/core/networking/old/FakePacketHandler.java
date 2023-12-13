@@ -1,9 +1,9 @@
-package com.igrium.replayfps.core.networking;
+package com.igrium.replayfps.core.networking.old;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.igrium.replayfps.core.networking.CustomReplayPacketManager.ReplayPacketConsumer;
+import com.igrium.replayfps.core.networking.old.CustomReplayPacketManager.ReplayPacketConsumer;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;

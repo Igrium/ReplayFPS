@@ -4,7 +4,7 @@ package com.igrium.replayfps.core.mixin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-import com.igrium.replayfps.core.networking.PacketRedirectors;
+import com.igrium.replayfps.core.networking.old.PacketRedirectors;
 import com.replaymod.lib.com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.replaymod.replay.FullReplaySender;
 
