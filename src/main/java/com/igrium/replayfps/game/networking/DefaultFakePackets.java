@@ -16,9 +16,5 @@ public class DefaultFakePackets {
         UpdateHotbarFakePacket.registerListener();
         UpdateSelectedSlotFakePacket.registerListener();
         SetGamemodeFakePacket.registerListener();
-
-        // FakePacketHandlers.register(new Identifier("replayfps:update_hotbar"), UpdateHotbarFakePacket::new);
-        // FakePacketHandlers.register(new Identifier("replayfps:update_slot"), UpdateSelectedSlotFakePacket::new);
-        // FakePacketHandlers.register(new Identifier("replayfps:set_gamemode"), SetGamemodeFakePacket::new);
     }
 }
