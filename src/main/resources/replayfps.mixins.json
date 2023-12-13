@@ -11,12 +11,12 @@
         "SkipHudDuringRenderMixinSquared",
         "SkipOverlayDuringRenderMixin",
         "ShowHotbarDuringRenderMixin",
-        "ClientPacketListenerMixin",
         "ClientConnectionAccessor",
         "ClientConnectionMixin",
         "ReplayHandlerMixin",
         "FullReplaySenderMixin",
-        "ChatHudMixin"
+        "ChatHudMixin",
+        "AbstractChanneledNetworkAddonMixin"
     ],
     "injectors": {
         "defaultRequire": 1

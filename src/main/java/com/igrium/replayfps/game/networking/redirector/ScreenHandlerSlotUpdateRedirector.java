@@ -27,7 +27,7 @@ public class ScreenHandlerSlotUpdateRedirector implements PacketRedirector<Scree
     }
     
     private void doRedirect(ScreenHandlerSlotUpdateS2CPacket packet, PlayerEntity localPlayer, MinecraftClient client) {
-        ItemStack itemStack = packet.getItemStack();
+        ItemStack itemStack = packet.getStack();
         int slot = packet.getSlot();
 
         if (packet.getSyncId() == ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID) {

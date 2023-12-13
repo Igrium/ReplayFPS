@@ -187,11 +187,11 @@ public class ClientCapHeader {
     }
 
     public void writeHeader(OutputStream out) throws IOException {
-        NbtIo.write(writeNBT(new NbtCompound()), new DataOutputStream(out));
+        NbtIo.writeCompound(writeNBT(new NbtCompound()), new DataOutputStream(out));
     }
 
     public void readHeader(InputStream in) throws IOException {
-        NbtCompound nbt = NbtIo.read(new DataInputStream(in));
+        NbtCompound nbt = NbtIo.readCompound(new DataInputStream(in));
         readNBT(nbt);
     }
     

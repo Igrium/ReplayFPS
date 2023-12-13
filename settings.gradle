@@ -10,4 +10,5 @@ pluginManagement {
 }
 
 rootProject.name = 'replay_fps'
-include 'ccap_viewer'
+// Disable until CraftFX is updated
+// include 'ccap_viewer'
