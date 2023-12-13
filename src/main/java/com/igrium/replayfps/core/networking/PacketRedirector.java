@@ -1,4 +1,4 @@
-package com.igrium.replayfps.core.networking.old;
+package com.igrium.replayfps.core.networking;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,11 +13,13 @@ public interface PacketRedirector<T extends Packet<?>> {
 
     /**
      * Get the class of the packet that will be captured.
-=     */
+     */
     public Class<T> getPacketClass();
 
     /**
-     * Decide whether a given packet should redirect given the current context.
+     * Decide whether a given packet should redirect given the current context. Do
+     * <em>not</em> modify the gameplay state during this method. Instead, use
+     * {@link #redirect}.
      * 
      * @param packet      Subject packet.
      * @param localPlayer The player who recorded the replay.

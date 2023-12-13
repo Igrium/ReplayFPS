@@ -8,10 +8,9 @@ import java.util.Optional;
 
 import com.igrium.replayfps.ReplayFPS;
 import com.igrium.replayfps.core.networking.FakePacketManager;
+import com.igrium.replayfps.core.networking.PacketRedirectors;
 import com.igrium.replayfps.core.networking.event.CustomPacketReceivedEvent;
 import com.igrium.replayfps.core.networking.event.PacketReceivedEvent;
-
-import com.igrium.replayfps.core.networking.old.PacketRedirectors;
 import com.igrium.replayfps.core.recording.ClientRecordingModule;
 import com.igrium.replayfps.core.util.GlobalReplayContext;
 import com.mojang.logging.LogUtils;
@@ -96,20 +95,7 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
 
         fakePacketManager = new FakePacketManager(client, this, currentPlayer);
         fakePacketManager.initReceivers();
-        
-        // customPacketManager = new CustomReplayPacketManager();
-        // for (var h : FakePacketHandlers.REGISTRY.values()) {
-        //     customPacketManager.registerReceiver(h.getId(), h);
-        // }
     }
-
-    // { on(ReplayEvents.REPLAY_SETUP, this::onReplaySetup); }
-    // private void onReplaySetup(ReplayHandler handler) {
-    //     // Upon rewinding the replay, we need to clear any queued fake packets.
-    //     if (customPacketManager != null) {
-    //         customPacketManager.clearQueue();
-    //     }
-    // }
 
     { on(ReplayClosingCallback.EVENT, this::onReplayClosing); }
     private void onReplayClosing(ReplayHandler handler) {
@@ -152,20 +138,7 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
 
         ClientPlaybackContext context = genContext(currentReplay.getReplaySender().currentTimeStamp());
         currentPlayer.tickClient(context);
-
-        // If we're viewing from the camera, attempt to flush the packet queue.
-        // if (client.cameraEntity.equals(context.localPlayer().orElse(null)) && customPacketManager != null) {
-        //     customPacketManager.flushQueue(client, context.localPlayer().get());
-        // }
     }
-    
-    // { CustomPacketReceivedEvent.EVENT.register(this::onCustomPacketReceived); }
-    // private boolean onCustomPacketReceived(Identifier channel, PacketByteBuf payload) {
-    //     if (customPacketManager != null) {
-    //         return customPacketManager.onPacketReceived(channel, payload);
-    //     }
-    //     return false;
-    // }
 
     { CustomPacketReceivedEvent.EVENT.register(this::onCustomPacketReceived); }
     private boolean onCustomPacketReceived(ResolvablePayload payload) {

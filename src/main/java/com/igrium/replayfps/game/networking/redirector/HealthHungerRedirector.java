@@ -1,6 +1,6 @@
 package com.igrium.replayfps.game.networking.redirector;
 
-import com.igrium.replayfps.core.networking.old.PacketRedirector;
+import com.igrium.replayfps.core.networking.PacketRedirector;
 import com.igrium.replayfps.game.mixin.LivingEntityAccessor;
 
 import net.minecraft.client.MinecraftClient;

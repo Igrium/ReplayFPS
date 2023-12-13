@@ -37,9 +37,6 @@ public class FakePacketManager {
 
     public static enum SpectatorRule { APPLY, SKIP }
 
-    // private final Map<Identifier, Handler<FakePacketHandler>> handlers = Collections
-    //         .synchronizedMap(new HashMap<>());
-
     private final MinecraftClient client;
     private final ClientPlaybackModule module;
     private final ClientCapPlayer clientCap;
@@ -119,21 +116,6 @@ public class FakePacketManager {
     public <T extends FabricPacket> void addSpectatorRule(Identifier id, SpectatorRule spectatorRule) {
         spectatorRules.put(id, Objects.requireNonNull(spectatorRule));
     }
-
-    // /**
-    //  * Called when a custom packet of <em>any kind</code> is received during replay playback.
-    //  * @param payload The packet payload.
-    //  * @return If the packet was handled as a fake packet.
-    //  */
-    // public boolean handlePacket(ResolvablePayload payload) {
-    //     Identifier rawId = payload.id()#
-    //     if (!rawId.getNamespace().startsWith(PREFIX)) return false;
-
-    //     String namespace = rawId.getNamespace().substring(PREFIX.length());
-    //     Identifier id = new Identifier(namespace, rawId.getPath());
-
-        
-    // }
 
     @SuppressWarnings("unchecked")
     private <T extends FabricPacket> Handler<FakePacketHandlerInternal> wrapTyped(PacketType<T> type, FakePacketHandler<T> actual) {

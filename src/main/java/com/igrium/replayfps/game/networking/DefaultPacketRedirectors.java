@@ -1,6 +1,6 @@
 package com.igrium.replayfps.game.networking;
 
-import com.igrium.replayfps.core.networking.old.PacketRedirectors;
+import com.igrium.replayfps.core.networking.PacketRedirectors;
 import com.igrium.replayfps.game.networking.redirector.EntityEquipmentUpdateRedirector;
 import com.igrium.replayfps.game.networking.redirector.ExperienceUpdateRedirector;
 import com.igrium.replayfps.game.networking.redirector.HealthHungerRedirector;

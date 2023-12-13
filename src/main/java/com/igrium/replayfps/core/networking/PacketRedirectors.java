@@ -1,4 +1,4 @@
-package com.igrium.replayfps.core.networking.old;
+package com.igrium.replayfps.core.networking;
 
 import java.util.Collections;
 import java.util.Map;
