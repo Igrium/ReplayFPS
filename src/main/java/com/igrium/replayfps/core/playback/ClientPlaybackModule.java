@@ -142,9 +142,14 @@ public class ClientPlaybackModule extends EventRegistrations implements Module {
 
     { CustomPacketReceivedEvent.EVENT.register(this::onCustomPacketReceived); }
     private boolean onCustomPacketReceived(ResolvablePayload payload) {
-        if (fakePacketManager != null) {
-            return fakePacketManager.processPacket(payload);
+        if (FakePacketManager.isFakePacket(payload.id())) {
+            if (fakePacketManager != null) {
+                return fakePacketManager.processPacket(payload);
+            } else {
+                return true;
+            }
         }
+        
         return false;
     }
 

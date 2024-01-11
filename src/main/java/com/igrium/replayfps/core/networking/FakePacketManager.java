@@ -17,6 +17,7 @@ import com.mojang.logging.LogUtils;
 
 import io.netty.channel.Channel;
 import net.fabricmc.fabric.api.networking.v1.FabricPacket;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.fabricmc.fabric.impl.networking.payload.ResolvablePayload;
 import net.fabricmc.fabric.impl.networking.payload.ResolvedPayload;
@@ -59,6 +60,15 @@ public class FakePacketManager {
      */
     public void initReceivers() {
         FakePacketRegistrationCallback.EVENT.invoker().register(this);
+    }
+    
+    /**
+     * Determine if a given packet should be parsed as a fake packet.
+     * @param rawId Unprocessed packet ID.
+     * @return If this is a fake packet.
+     */
+    public static boolean isFakePacket(Identifier rawId) {
+        return rawId.getNamespace().startsWith(PREFIX);
     }
 
     /**
@@ -167,6 +177,12 @@ public class FakePacketManager {
     }
 
     private static void injectPacketInternal(Channel channel, Packet<?> packet) {
+        if (packet instanceof CustomPayloadS2CPacket customPayload && customPayload.payload() instanceof FabricPacketModifiedPayload) {
+            // Force re-create the packet if it has a modified payload so recieving code works properly.
+            PacketByteBuf buf = PacketByteBufs.create();
+            packet.write(buf);
+            packet = new CustomPayloadS2CPacket(buf);
+        }
         channel.pipeline().fireChannelRead(packet);
     }
 
